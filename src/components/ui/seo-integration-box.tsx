@@ -922,6 +922,74 @@ export function SeoIntegrationBox() {
             </div>
           </div>
 
+
+          {/* GOOGLE WEBMASTER & ANALYTICS CONNECTION BOARD */}
+          <div className="border border-emerald-500/20 bg-emerald-950/5 rounded-3xl p-6 md:p-8 space-y-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-3">
+              <ShieldCheck className="text-emerald-500/20 h-10 w-10" />
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-[0.2em] font-black block">
+                ✦ Live Google Webmaster & Analytics Console
+              </span>
+              <h3 className="text-xl font-serif text-white uppercase tracking-tight">
+                Search Engine Connection Status
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 bg-black/40 border border-emerald-500/10 rounded-2xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-serif text-neutral-300 font-bold">Google Analytics (v4)</span>
+                  <span className="text-[9px] font-mono bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-bold">CONNECTED</span>
+                </div>
+                <p className="text-[10px] font-mono text-neutral-500">Tag ID: G-755QBQW73T</p>
+                <p className="text-[11px] text-neutral-400 font-sans leading-tight">
+                  Status active across all pages. Google tag script is running dynamically via Next.js Layout.
+                </p>
+              </div>
+
+              <div className="p-4 bg-black/40 border border-amber-500/10 rounded-2xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-serif text-neutral-300 font-bold">Google Search Console</span>
+                  <span className="text-[9px] font-mono bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full font-bold">READY TO VERIFY</span>
+                </div>
+                <p className="text-[10px] font-mono text-neutral-500">Method: HTML Tag & Analytics Link</p>
+                <p className="text-[11px] text-neutral-400 font-sans leading-tight">
+                  Verification tag active in root metadata. You can verify instantly on Search Console.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-4 border-t border-white/5">
+              <h4 className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest font-boldLabel">
+                Connection Instructions (2 Minutes Setup):
+              </h4>
+              
+              <div className="space-y-2 text-xs text-neutral-300 font-sans font-light">
+                <div className="flex items-start gap-2.5">
+                  <span className="font-mono text-[#C8EB5F] font-bold shrink-0">1.</span>
+                  <p className="text-[11px] leading-relaxed">
+                    Go to the <strong><a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer" className="text-[#C8EB5F] hover:underline">Google Search Console</a></strong> dashboard and click <strong>Add Property</strong> for your custom live domain URL.
+                  </p>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="font-mono text-[#C8EB5F] font-bold shrink-0">2.</span>
+                  <p className="text-[11px] leading-relaxed">
+                    Select the <strong>HTML Tag</strong> verification method, or click <strong>Google Analytics</strong> method which will authorize automatically because your active Analytics Tag is synchronized with the website.
+                  </p>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="font-mono text-[#C8EB5F] font-bold shrink-0">3.</span>
+                  <p className="text-[11px] leading-relaxed">
+                    If you prefer the HTML Tag method, copy your verification token and define it as the <code>NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION</code> variable in the Settings panel. The site will instantly start rendering your token!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* 7. HIGHLY REQUISITE INTERNAL LINKS MAP */}
           <div className="border border-white/5 rounded-2xl p-6 bg-zinc-950/40 space-y-4">
             <div className="flex items-center gap-2 border-b border-white/5 pb-3">
