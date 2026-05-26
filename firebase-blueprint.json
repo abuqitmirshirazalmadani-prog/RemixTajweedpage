@@ -1,0 +1,91 @@
+{
+  "entities": {
+    "blog": {
+      "title": "Blog Post",
+      "description": "An educational journal article about Tajweed and Quran memorization.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The unique post identifier."
+        },
+        "slug": {
+          "type": "string",
+          "description": "The URL-safe slug for the post."
+        },
+        "category": {
+          "type": "string",
+          "description": "The category name of the article.",
+          "enum": ["Tajweed Secrets", "Noorani Phonetics", "Retention & Hifz"]
+        },
+        "titleNL": {
+          "type": "string",
+          "description": "Dutch title."
+        },
+        "titleEN": {
+          "type": "string",
+          "description": "English title."
+        },
+        "subtitleNL": {
+          "type": "string",
+          "description": "Dutch subtitle/lead."
+        },
+        "subtitleEN": {
+          "type": "string",
+          "description": "English subtitle/lead."
+        },
+        "author": {
+          "type": "object",
+          "description": "Author structure containing name, title, and avatar."
+        },
+        "readTime": {
+          "type": "string",
+          "description": "Expected read time (e.g. 5 Min)."
+        },
+        "date": {
+          "type": "string",
+          "description": "Readable publish date."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "Cover banner image URL."
+        },
+        "quoteNL": {
+          "type": "string",
+          "description": "Sublime Dutch pull quote."
+        },
+        "quoteEN": {
+          "type": "string",
+          "description": "Sublime English pull quote."
+        },
+        "contentNL": {
+          "type": "array",
+          "description": "Dutch paragraph lines list."
+        },
+        "contentEN": {
+          "type": "array",
+          "description": "English paragraph lines list."
+        },
+        "keyHighlightsNL": {
+          "type": "array",
+          "description": "Bullets of key highlights in Dutch."
+        },
+        "keyHighlightsEN": {
+          "type": "array",
+          "description": "Bullets of key highlights in English."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp for sorting."
+        }
+      },
+      "required": ["id", "slug", "category", "titleNL", "titleEN", "subtitleNL", "subtitleEN", "author", "readTime", "date", "imageUrl", "quoteNL", "quoteEN", "contentNL", "contentEN"]
+    }
+  },
+  "firestore": {
+    "blogs": {
+      "schema": "blog",
+      "description": "Collection of educational Quranic articles."
+    }
+  }
+}

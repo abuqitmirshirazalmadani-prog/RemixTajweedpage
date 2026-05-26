@@ -1,0 +1,77 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper: is user signed in
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper: is authenticated user the designated verified administrator
+    function isAdmin() {
+      return isSignedIn() 
+        && request.auth.token.email == 'abuqitmirshirazalmadani@gmail.com' 
+        && request.auth.token.email_verified == true;
+    }
+
+    // Helper: ID check to prevent ID poisoning / wallet exhaustion attacks
+    function isValidId(id) {
+      return id is string 
+        && id.size() >= 1 
+        && id.size() <= 128 
+        && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Helper: Validate Blog Post fields
+    function isValidBlog(data) {
+      return data.keys().hasAll([
+        'id', 'slug', 'category', 'titleNL', 'titleEN', 
+        'subtitleNL', 'subtitleEN', 'author', 'readTime', 
+        'date', 'imageUrl', 'quoteNL', 'quoteEN', 
+        'contentNL', 'contentEN', 'createdAt'
+      ])
+        && data.id is string && data.id.size() <= 128
+        && data.slug is string && data.slug.size() <= 200
+        && data.category is string && data.category.size() <= 100
+        && data.titleNL is string && data.titleNL.size() <= 300
+        && data.titleEN is string && data.titleEN.size() <= 300
+        && data.subtitleNL is string && data.subtitleNL.size() <= 1000
+        && data.subtitleEN is string && data.subtitleEN.size() <= 1000
+        && data.author is map
+        && data.readTime is string && data.readTime.size() <= 100
+        && data.date is string && data.date.size() <= 100
+        && data.imageUrl is string && data.imageUrl.size() <= 1500
+        && data.quoteNL is string && data.quoteNL.size() <= 1000
+        && data.quoteEN is string && data.quoteEN.size() <= 1000
+        && data.contentNL is list && data.contentNL.size() <= 100
+        && data.contentEN is list && data.contentEN.size() <= 100;
+    }
+
+    // 2. Collection Rules for "blogs"
+    match /blogs/{blogId} {
+      // Public articles are visible to all visitors
+      allow read, list: if true;
+
+      // Only the verified admin can create blog documents
+      allow create: if isAdmin() 
+        && isValidId(blogId) 
+        && isValidBlog(request.resource.data)
+        && request.resource.data.createdAt == request.time;
+
+      // Only the verified admin can update block contents
+      allow update: if isAdmin() 
+        && isValidId(blogId)
+        && isValidBlog(request.resource.data)
+        && request.resource.data.id == resource.data.id
+        && request.resource.data.createdAt == resource.data.createdAt;
+
+      // Only the verified admin can delete articles
+      allow delete: if isAdmin() && isValidId(blogId);
+    }
+  }
+}

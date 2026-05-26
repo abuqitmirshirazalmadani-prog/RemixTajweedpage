@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Tajweedpage",
+  "description": "Modern online Quran and Tajweed learning platform with interactive courses, qualified teachers, and comprehensive resources.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
