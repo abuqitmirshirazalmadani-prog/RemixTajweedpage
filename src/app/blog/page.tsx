@@ -453,16 +453,35 @@ export default function BlogPage() {
 
   // Prevent parent body scroll when overlay sheets/modals are active to eliminate double scrollbars
   useEffect(() => {
-    if (typeof document !== "undefined" && document.body) {
+    if (typeof document !== "undefined") {
+      const htmlEl = document.documentElement;
+      const bodyEl = document.body;
       if (selectedBlog || bookingOpen || adminPanelOpen) {
-        document.body.style.overflow = "hidden";
+        bodyEl.classList.add("no-scroll", "overflow-hidden");
+        htmlEl.classList.add("no-scroll", "overflow-hidden");
+        bodyEl.style.setProperty("overflow", "hidden", "important");
+        htmlEl.style.setProperty("overflow", "hidden", "important");
+        bodyEl.style.setProperty("height", "100%", "important");
+        htmlEl.style.setProperty("height", "100%", "important");
       } else {
-        document.body.style.overflow = "";
+        bodyEl.classList.remove("no-scroll", "overflow-hidden");
+        htmlEl.classList.remove("no-scroll", "overflow-hidden");
+        bodyEl.style.removeProperty("overflow");
+        htmlEl.style.removeProperty("overflow");
+        bodyEl.style.removeProperty("height");
+        htmlEl.style.removeProperty("height");
       }
     }
     return () => {
-      if (typeof document !== "undefined" && document.body) {
-        document.body.style.overflow = "";
+      if (typeof document !== "undefined") {
+        const htmlEl = document.documentElement;
+        const bodyEl = document.body;
+        bodyEl.classList.remove("no-scroll", "overflow-hidden");
+        htmlEl.classList.remove("no-scroll", "overflow-hidden");
+        bodyEl.style.removeProperty("overflow");
+        htmlEl.style.removeProperty("overflow");
+        bodyEl.style.removeProperty("height");
+        htmlEl.style.removeProperty("height");
       }
     };
   }, [selectedBlog, bookingOpen, adminPanelOpen]);
@@ -1687,7 +1706,7 @@ export default function BlogPage() {
       {/* Interactive Reader Drawer (Slide-Over panel) */}
       <AnimatePresence>
         {selectedBlog && (
-          <div className="fixed inset-0 z-50 flex justify-center bg-[#080808]/98 backdrop-blur-xl" id="blog-reader-backdrop">
+          <div className="fixed inset-0 z-50 flex justify-center bg-[#080808]/98 backdrop-blur-xl overflow-hidden" id="blog-reader-backdrop">
             {/* Click backdrop to exit */}
             <div className="absolute inset-0" onClick={() => setSelectedBlog(null)} />
             

@@ -61,6 +61,15 @@ html.has-scroll-dragging {
   overflow: hidden;
 }
 
+/* Disable all body/html scrolling with high priority for active modals/overlays */
+html.no-scroll,
+body.no-scroll {
+  overflow: hidden !important;
+  height: 100% !important;
+  touch-action: none !important;
+  -webkit-overflow-scrolling: none !important;
+}
+
 .has-scroll-smooth [data-scroll-container] {
   min-height: 100vh;
 }
