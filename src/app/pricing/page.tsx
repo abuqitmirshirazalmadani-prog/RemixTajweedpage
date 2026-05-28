@@ -443,7 +443,7 @@ export default function PricingPage() {
               Consult General Helpdesk <ArrowRight size={14} />
             </Link>
             <a 
-              href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%2520online%2520classes%2520with%2520Tajweedpage." 
+              href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%2520online%2520classes%2520with%2520Tajweedpage." 
               target="_blank" 
               rel="noopener noreferrer" 
               className="px-8 py-4 bg-[#25D366] text-white font-mono text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-emerald-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#25D366]/5 font-sans"
@@ -474,7 +474,7 @@ export default function PricingPage() {
 
         {/* WhatsApp Floating Button */}
         <a 
-          href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%2520online%2520classes%2520with%2520Tajweedpage." 
+          href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%2520online%2520classes%2520with%2520Tajweedpage." 
           target="_blank" 
           rel="noopener noreferrer" 
           className="group relative flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-[0_0_20px_rgba(37,211,102,0.4)] hover:shadow-[0_0_30px_rgba(37,211,102,0.6)] hover:scale-110 transition-all duration-300"

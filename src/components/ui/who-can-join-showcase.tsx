@@ -1,7 +1,139 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Check, ArrowRight } from "lucide-react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+function cx(...parts: Array<string | undefined | false | null>): string {
+  return parts.filter(Boolean).join(" ");
+}
+
+export interface FlowSectionProps {
+  className?: string;
+  style?: React.CSSProperties;
+  children: React.ReactNode;
+  "aria-label"?: string;
+}
+
+export const FlowSection: React.FC<FlowSectionProps> = ({
+  className,
+  style = {},
+  children,
+  "aria-label": ariaLabel,
+}) => (
+  <section
+    data-flow-section
+    aria-label={ariaLabel}
+    className={cx("relative min-h-screen w-full overflow-hidden flex flex-col justify-between", className)}
+    style={style}
+  >
+    <div
+      data-flow-inner
+      className={cx(
+        "flow-art-container relative flex min-h-screen w-full flex-col justify-between gap-6 px-[4vw] pt-[clamp(2rem,8vw,4vw)] pb-[4vw]",
+        "will-change-transform"
+      )}
+      style={{ transformOrigin: "bottom left" }}
+    >
+      {children}
+    </div>
+  </section>
+);
+
+export interface FlowArtProps {
+  children: React.ReactNode;
+  className?: string;
+  "aria-label"?: string;
+}
+
+const childCount = (children: React.ReactNode) => React.Children.count(children);
+
+export const FlowArt: React.FC<FlowArtProps> = ({
+  children,
+  className,
+  "aria-label": ariaLabel = "Story scroll",
+}) => {
+  const containerRef = useRef<HTMLElement>(null);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReducedMotion(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  useGSAP(
+    () => {
+      if (!containerRef.current || reducedMotion) return;
+
+      const sections = Array.from(
+        containerRef.current.querySelectorAll<HTMLElement>("[data-flow-section]")
+      );
+      if (sections.length === 0) return;
+
+      const triggers: ScrollTrigger[] = [];
+
+      sections.forEach((section, i) => {
+        gsap.set(section, { zIndex: i + 1 });
+
+        const inner = section.querySelector<HTMLElement>(".flow-art-container");
+        if (!inner) return;
+
+        if (i > 0) {
+          gsap.set(inner, { rotation: 30, transformOrigin: "bottom left" });
+          const tween = gsap.to(inner, {
+            rotation: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top bottom",
+              end: "top 25%",
+              scrub: true,
+            },
+          });
+          if (tween.scrollTrigger) triggers.push(tween.scrollTrigger);
+        }
+
+        if (i < sections.length - 1) {
+          triggers.push(
+            ScrollTrigger.create({
+              trigger: section,
+              start: "bottom bottom",
+              end: "bottom top",
+              pin: true,
+              pinSpacing: false,
+            })
+          );
+        }
+      });
+
+      ScrollTrigger.refresh();
+
+      return () => {
+        triggers.forEach((t) => t.kill());
+      };
+    },
+    { scope: containerRef, dependencies: [childCount(children), reducedMotion] }
+  );
+
+  return (
+    <main
+      ref={containerRef}
+      aria-label={ariaLabel}
+      className={cx("w-full overflow-x-hidden", className)}
+    >
+      {children}
+    </main>
+  );
+};
 
 // --- Custom slides data with Quran / Tajweed target audiences ---
 const audienceSlides = [
@@ -73,316 +205,113 @@ const audienceSlides = [
 ];
 
 export function WhoCanJoinShowcase() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isDesktop, setIsDesktop] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // --- Check screen size on client to avoid hydration mismatch ---
-  useEffect(() => {
-    const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 1024);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // --- Scroll Handler for Window Scroll on Desktop ---
-  useEffect(() => {
-    if (!isDesktop) return;
-
-    const handleScroll = () => {
-      const el = containerRef.current;
-      if (!el) return;
-
-      const rect = el.getBoundingClientRect();
-      const totalHeight = rect.height - window.innerHeight;
-      
-      // Calculate scroll progress through this specific container
-      const scrolled = -rect.top;
-      
-      if (scrolled >= 0 && scrolled <= totalHeight) {
-        const step = totalHeight / audienceSlides.length;
-        const currentActiveIndex = Math.min(
-          audienceSlides.length - 1,
-          Math.max(0, Math.floor(scrolled / step))
-        );
-        setActiveIndex(currentActiveIndex);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isDesktop]);
-
-  const handleDotClick = (index: number) => {
-    const el = containerRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const containerTop = rect.top + scrollTop;
-    const totalHeight = rect.height - window.innerHeight;
-    const step = totalHeight / audienceSlides.length;
-
-    // Direct scroll to the step point with a tiny offset buffer
-    const targetScrollY = containerTop + (step * index) + 15;
-
-    window.scrollTo({
-      top: targetScrollY,
-      behavior: "smooth"
-    });
-  };
-
-  const currentSlide = audienceSlides[activeIndex];
-
-  // Grid background style
-  const gridPatternStyle = {
-    "--grid-color": "rgba(255, 255, 255, 0.03)",
-    backgroundImage: `
-      linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px)
-    `,
-    backgroundSize: "3.5rem 3.5rem"
-  } as React.CSSProperties;
-
   return (
-    <>
-      {/* Mobile/Tablet view (CSS controlled) */}
-      <div className="block lg:hidden">
-        <section 
-          id="who-can-join-showcase-mobile"
-          className="relative w-full bg-[#050608] py-24 px-6 md:px-12 border-t border-b border-white/5"
+    <FlowArt className="bg-black text-white py-0">
+      {audienceSlides.map((slide, index) => (
+        <FlowSection
+          key={index}
+          className="bg-black border-b border-white/5"
+          style={{ backgroundColor: slide.bgColor }}
+          aria-label={slide.title}
         >
-          <div className="max-w-xl mx-auto text-center space-y-4 mb-16">
-            <span className="text-[10px] tracking-[0.25em] font-mono font-bold text-[#C8EB5F] uppercase block">
-              TARGET AUDIENCE SCOPE
-            </span>
-            <h2 className="text-3xl md:text-4xl font-light font-serif tracking-tight text-white uppercase leading-none">
-              Who Can Join This Course?
-            </h2>
-            <p className="text-neutral-500 text-xs font-light max-w-sm mx-auto leading-relaxed">
-              Our online Tajweed lessons have zero age bar or academic boundaries. We align our learning tracks perfectly to your exact background.
-            </p>
-          </div>
-
-          <div className="max-w-2xl mx-auto space-y-12">
-            {audienceSlides.map((slide, index) => (
-              <div 
-                key={index} 
-                className="bg-[#090a0d] border border-white/5 rounded-[30px] p-6 md:p-8 space-y-6 relative overflow-hidden group hover:border-white/10 transition-all duration-300 shadow-xl"
-              >
-                <div 
-                  className="absolute top-0 left-0 w-full h-[3px] transition-all duration-350" 
-                  style={{ backgroundColor: slide.accentColor }} 
-                />
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">SEGMENT 0{index + 1}</span>
-                  <span className="text-[9px] font-mono px-2.5 py-1 rounded-full border border-white/10 bg-white/5 text-white/95">
-                    {slide.subTitle}
-                  </span>
-                </div>
-
-                <div className="space-y-3">
-                  <h3 className="text-xl md:text-2xl font-serif text-white uppercase tracking-wide group-hover:text-[#C8EB5F] transition-colors duration-300">
-                    {slide.title}
-                  </h3>
-                  <p className="text-neutral-400 text-xs md:text-sm font-light leading-relaxed">
-                    {slide.description}
-                  </p>
-                </div>
-
-                {/* Responsive Cinematic Image */}
-                <div className="relative aspect-[1.5] w-full overflow-hidden rounded-2xl border border-white/10 shadow-lg">
-                  <img
-                    src={slide.image}
-                    alt={slide.title}
-                    className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 pointer-events-none"
-                    referrerPolicy="no-referrer"
-                    onError={(e) => { 
-                      const target = e.target as HTMLImageElement;
-                      target.onerror = null; 
-                      target.src = `https://placehold.co/600x400/222222/cccccc?text=Segment+Image`; 
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-                </div>
-
-                {/* Bullet points mapping */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-white/5 pt-5">
-                  {slide.bullets.map((bullet, idx) => (
-                    <div key={idx} className="flex items-center gap-2.5 text-xs font-light text-neutral-350">
-                      <Check size={13} className="text-[#C8EB5F] shrink-0" />
-                      <span>{bullet}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* CTA booking trigger bottom */}
-          <div className="text-center pt-12">
-            <a
-              href="#booking-card"
-              className="inline-flex items-center gap-2.5 px-9 py-4 bg-white text-black font-semibold text-xs tracking-widest uppercase rounded-full hover:bg-[#C8EB5F] hover:text-black transition-all duration-300 shadow-xl border border-white/15"
-            >
-              <span>Reserve Your Timings</span>
-              <ArrowRight size={14} />
-            </a>
-          </div>
-        </section>
-      </div>
-
-      {/* Desktop Sticky View (CSS controlled) */}
-      <div className="hidden lg:block">
-        <section 
-          ref={containerRef}
-          id="who-can-join-showcase"
-          className="relative w-full"
-          style={{ height: `${audienceSlides.length * 100}vh` }}
-        >
-      <div 
-        className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden transition-all duration-700"
-        style={{ backgroundColor: currentSlide.bgColor }}
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-12 h-full w-full max-w-7xl mx-auto items-center px-6 md:px-12 relative">
-          
-          {/* Left Column: Pagination, Headers, Paragraphs, Bullets - col span 7 */}
-          <div className="relative md:col-span-12 lg:col-span-7 flex flex-col justify-center h-full max-w-xl z-20 space-y-6 lg:border-r lg:border-white/5 lg:pr-12 py-12">
-            
-            {/* Top Subtitle Progress Header */}
-            <div className="flex flex-col gap-2">
+          {/* Top Header Row */}
+          <div className="flex items-center justify-between border-b border-white/5 pb-4 w-full max-w-7xl mx-auto z-20">
+            <div className="flex items-center gap-3">
               <span className="text-[10px] tracking-[0.25em] font-mono font-bold text-[#C8EB5F] uppercase">
                 TARGET AUDIENCE SCOPE
               </span>
-              <h2 className="text-4xl md:text-5xl font-light font-serif tracking-tight text-white uppercase leading-none">
-                Who Can Join This Course?
-              </h2>
-            </div>
-
-            {/* Custom Pagination Bars */}
-            <div className="flex items-center gap-2 pt-2">
-              {audienceSlides.map((slide, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleDotClick(index)}
-                  className="group relative flex flex-col py-2 cursor-pointer focus:outline-none"
-                  aria-label={`Jump to segment ${index + 1}`}
-                >
-                  <div 
-                    className={`h-[3px] rounded-full transition-all duration-500 ease-in-out ${
-                      index === activeIndex 
-                        ? "w-10 bg-[#C8EB5F]" 
-                        : "w-5 bg-white/20 group-hover:bg-white/40"
-                    }`}
-                  />
-                  <span className="absolute top-5 left-0 text-[8px] font-mono text-neutral-500 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    {slide.subTitle}
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            {/* Description Body & Dynamic content transitions */}
-            <div className="relative h-[250px] md:h-[220px] w-full pt-4">
-              {audienceSlides.map((slide, index) => {
-                const isActive = index === activeIndex;
-                return (
-                  <div
-                    key={index}
-                    className={`absolute inset-0 flex flex-col gap-4 transition-all duration-700 ease-out ${
-                      isActive
-                        ? "opacity-100 translate-y-0 pointer-events-auto"
-                        : "opacity-0 translate-y-6 pointer-events-none"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] uppercase tracking-widest font-mono text-neutral-500">SEGMENT 0{index + 1}</span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-white/90">
-                        {slide.subTitle}
-                      </span>
-                    </div>
-
-                    <h3 className="text-2xl md:text-3xl font-serif text-white tracking-wide uppercase">
-                      {slide.title}
-                    </h3>
-                    
-                    <p className="text-neutral-400 text-xs md:text-sm font-light leading-relaxed">
-                      {slide.description}
-                    </p>
-
-                    {/* Bullets lists */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                      {slide.bullets.map((bullet, idx) => (
-                        <div key={idx} className="flex items-center gap-2 text-[11px] font-light text-neutral-300">
-                          <Check size={12} className="text-[#C8EB5F] shrink-0" />
-                          <span>{bullet}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Bottom Form Selector Trigger */}
-            <div className="pt-4 flex items-center gap-4">
-              <a
-                href="#booking-card"
-                className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-black font-semibold text-xs tracking-widest uppercase rounded-full hover:bg-[#C8EB5F] transition-all duration-300 shadow-xl group border border-white/10"
+              <span className="text-white/20 hidden sm:inline">|</span>
+              <span
+                style={{ fontFamily: "var(--font-cormorant), serif" }}
+                className="text-xs sm:text-sm italic tracking-wide text-neutral-400 font-light hidden sm:inline"
               >
-                <span>Reserve Your Timings</span>
-                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-              </a>
-              <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest hidden sm:inline">
-                * Zero restrictions on background
+                Who Can Join This Course?
               </span>
             </div>
-
+            <div className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+              [ SEGMENT 0{index + 1} / 0{audienceSlides.length} ]
+            </div>
           </div>
 
-          {/* Right Column: Image Content with dynamic Translate, styled with grid - col span 5 */}
-          <div 
-            className="hidden lg:flex md:col-span-12 lg:col-span-5 items-center justify-center p-8 relative h-full w-full"
-            style={gridPatternStyle}
-          >
-            {/* Glowing Backdrop according to current slide accent */}
-            <div 
-              className="absolute w-[250px] h-[250px] rounded-full blur-[100px] opacity-20 transition-all duration-1000"
-              style={{ backgroundColor: currentSlide.accentColor }}
-            />
+          {/* Core Content Grid */}
+          <div className="w-full max-w-7xl mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center flex-1 py-8 lg:py-12 z-20">
+            {/* Left Column: Descriptions and Bullets */}
+            <div className="lg:col-span-7 space-y-6 lg:space-y-8">
+              <div className="space-y-3">
+                <span className="text-[#C8EB5F] font-mono text-[10px] sm:text-xs tracking-widest uppercase block">
+                  {slide.subTitle}
+                </span>
+                <h3
+                  style={{ fontFamily: "var(--font-cormorant), serif" }}
+                  className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-white tracking-wide uppercase leading-tight"
+                >
+                  {slide.title}
+                </h3>
+                <div className="w-16 h-[1px] bg-white/20" />
+              </div>
 
-            <div className="relative w-[75%] aspect-[0.75] rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] border border-white/10 bg-zinc-950/80 z-10 group">
-              <div 
-                className="absolute top-0 left-0 w-full h-full transition-transform duration-700 ease-out"
-                style={{ transform: `translateY(-${activeIndex * 100}%)` }}
-              >
-                {audienceSlides.map((slide, index) => (
-                  <div key={index} className="w-full h-full relative">
-                    <img
-                      src={slide.image}
-                      alt={slide.title}
-                      className="h-full w-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-1000 pointer-events-none"
-                      referrerPolicy="no-referrer"
-                      onError={(e) => { 
-                        const target = e.target as HTMLImageElement;
-                        target.onerror = null; 
-                        target.src = `https://placehold.co/600x800/222222/cccccc?text=Segment+Image`; 
-                      }}
-                    />
-                    {/* Shadow overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+              <p className="text-neutral-300 text-xs sm:text-sm md:text-base font-light leading-relaxed max-w-2xl">
+                {slide.description}
+              </p>
+
+              {/* Bullet points mapping with luxury checkmark dots */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 border-t border-white/10">
+                {slide.bullets.map((bullet, idx) => (
+                  <div key={idx} className="flex items-start gap-3 text-xs sm:text-sm font-light text-neutral-200">
+                    <span className="mt-1 flex items-center justify-center w-4 h-4 rounded-full bg-[#C8EB5F]/10 border border-[#C8EB5F]/20 shrink-0">
+                      <Check size={10} className="text-[#C8EB5F]" />
+                    </span>
+                    <span>{bullet}</span>
                   </div>
                 ))}
               </div>
             </div>
+
+            {/* Right Column: Immersive Photography with glowing effect */}
+            <div className="lg:col-span-5 relative flex items-center justify-center">
+              {/* Blur backdrop light */}
+              <div
+                className="absolute w-[200px] sm:w-[300px] h-[200px] sm:h-[300px] rounded-full blur-[100px] opacity-10 transition-all duration-1000 pointer-events-none"
+                style={{ backgroundColor: slide.accentColor }}
+              />
+
+              {/* Floating Frame with cinematic depth */}
+              <div className="relative w-full aspect-[4/3] max-w-sm rounded-[24px] overflow-hidden border border-white/10 shadow-[0_25px_50px_rgba(0,0,0,0.9)] bg-neutral-950 flex justify-center items-center group">
+                <img
+                  src={slide.image}
+                  alt={slide.title}
+                  className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-1000 pointer-events-none transform scale-100 group-hover:scale-105"
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.onerror = null;
+                    target.src = `https://placehold.co/800x600/111111/cccccc?text=Segment+0${index + 1}`;
+                  }}
+                />
+
+                {/* Visual indicator watermark */}
+                <div className="absolute bottom-4 right-4 bg-black/85 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 text-[9px] font-mono uppercase tracking-widest text-[#C8EB5F]">
+                  REVELATION 0{index + 1}
+                </div>
+              </div>
+            </div>
           </div>
 
-        </div>
-      </div>
-    </section>
-      </div>
-    </>
+          {/* Bottom Footer Row */}
+          <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-white/5 w-full max-w-7xl mx-auto gap-4 z-20">
+            <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest text-center sm:text-left">
+              * Dedicated Quran & Tajweed Academy | Developed by <a href="https://abuqitmirlabs.tech" target="_blank" rel="noopener noreferrer" className="text-[#C8EB5F] hover:text-white transition-colors underline font-medium">AbuQitmirLabs.tech</a>
+            </span>
+            <a
+              href="#booking-card"
+              className="inline-flex items-center gap-2.5 px-6 py-2.5 bg-white text-black font-semibold text-[10px] tracking-[0.25em] uppercase rounded-full hover:bg-[#C8EB5F] hover:text-black transition-all duration-300 shadow-xl border border-white/10 group active:scale-95"
+            >
+              <span>RESERVE BLUEPRINT SEAT</span>
+              <ArrowRight size={11} className="group-hover:translate-x-1 transition-transform" />
+            </a>
+          </div>
+        </FlowSection>
+      ))}
+    </FlowArt>
   );
 }

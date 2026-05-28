@@ -128,7 +128,7 @@ export function SecureBookingCard() {
 
             <div className="flex flex-col gap-2.5 pt-2 max-w-xs mx-auto">
               <a 
-                href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20have%20just%20submitted%2520a%2520booking%2520request%2520on%2520Tajweedpage."
+                href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20have%20just%20submitted%2520a%2520booking%2520request%2520on%2520Tajweedpage."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-[#C8EB5F] text-black font-mono text-[10px] tracking-widest font-extrabold py-3 rounded-xl hover:bg-white text-center transition-colors block"

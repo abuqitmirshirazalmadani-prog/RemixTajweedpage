@@ -985,9 +985,9 @@ export default function BlogPage() {
             initial={{ opacity: 0, scale: 0.9 }} 
             animate={{ opacity: 1, scale: 1 }} 
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-[#1d4ed8]/10 text-blue-400 text-[10px] font-mono font-bold tracking-[0.3em] uppercase px-4 py-1.5 rounded-full border border-blue-500/20 shadow-[0_0_15px_rgba(37,99,235,0.15)]"
+            className="inline-flex items-center gap-2 bg-[#C8EB5F]/10 text-[#C8EB5F] text-[10px] font-mono font-bold tracking-[0.3em] uppercase px-4 py-1.5 rounded-full border border-[#C8EB5F]/20 shadow-[0_0_15px_rgba(200,235,95,0.1)]"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" /> LATEST INSIGHTING
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C8EB5F] animate-pulse" /> SCIENTIFIC JOURNAL
           </motion.div>
           
           <motion.h1 
@@ -996,7 +996,7 @@ export default function BlogPage() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-5xl sm:text-6xl md:text-8xl font-sans font-black tracking-tighter leading-none uppercase text-white"
           >
-            DISCOVER OUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-cyan-400 to-[#C8EB5F]">INSIGHTS</span>
+            DISCOVER OUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-400 to-[#C8EB5F]">JOURNAL</span>
           </motion.h1>
           
           <motion.p 
@@ -1037,7 +1037,7 @@ export default function BlogPage() {
                   <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-black via-black/40 to-transparent" />
                   
                   {/* Featured Story Indicator Ribbon inside Photo */}
-                  <div className="absolute top-6 left-6 z-10 bg-black/80 backdrop-blur-md px-4 py-2 border border-white/15 rounded-full text-[9px] font-mono tracking-[0.25em] text-cyan-400 uppercase font-bold">
+                  <div className="absolute top-6 left-6 z-10 bg-black/80 backdrop-blur-md px-4 py-2 border border-white/15 rounded-full text-[9px] font-mono tracking-[0.25em] text-[#C8EB5F] uppercase font-bold">
                     FEATURED STORY
                   </div>
                 </div>
@@ -1045,7 +1045,7 @@ export default function BlogPage() {
                 {/* Editorial text context on right */}
                 <div className="lg:col-span-5 p-8 md:p-12 flex flex-col justify-between bg-[#080808] border-t lg:border-t-0 lg:border-l border-white/5 space-y-8">
                   <div className="space-y-4">
-                    <span className="inline-block px-3 py-1 rounded bg-[#1d4ed8]/20 border border-blue-500/30 text-[9px] font-mono tracking-widest text-[#2563eb] font-bold uppercase">
+                    <span className="inline-block px-3 py-1 rounded bg-[#C8EB5F]/10 border border-[#C8EB5F]/20 text-[9px] font-mono tracking-widest text-[#C8EB5F] font-bold uppercase">
                       {featured.category.toUpperCase()}
                     </span>
                     
@@ -1170,9 +1170,9 @@ export default function BlogPage() {
                         key={cat}
                         onClick={() => setActiveCategory(cat)}
                         className={cn(
-                          "w-full text-left px-5 py-3 rounded-2xl text-[11px] font-mono uppercase tracking-widest transition-all duration-300",
+                          "w-full text-left px-5 py-3 rounded-2xl text-[11px] font-mono uppercase tracking-widest transition-all duration-300 cursor-pointer",
                           isActive
-                            ? "bg-[#2563eb] text-white font-bold shadow-[0_4px_20px_rgba(37,99,235,0.4)]"
+                            ? "bg-[#C8EB5F] text-black font-extrabold shadow-[0_4px_20px_rgba(200,235,95,0.25)]"
                             : "bg-transparent text-neutral-400 hover:text-white hover:bg-white/5"
                         )}
                       >
@@ -1195,9 +1195,9 @@ export default function BlogPage() {
                   <input 
                     type="email" 
                     placeholder="sheraz@gmail.com" 
-                    className="w-full bg-black border border-white/10 text-white placeholder-neutral-700 text-[10px] px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-[#2563eb] transition-all font-mono"
+                    className="w-full bg-black border border-white/10 text-white placeholder-neutral-700 text-[10px] px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-[#C8EB5F] transition-all font-mono"
                   />
-                  <button className="w-full bg-[#2563eb] hover:bg-blue-500 text-white font-mono text-[9px] uppercase font-bold tracking-widest py-2.5 rounded-xl transition-all cursor-pointer shadow-[0_4px_10px_rgba(37,99,235,0.2)]">
+                  <button className="w-full bg-[#C8EB5F] hover:bg-white text-black font-mono text-[9px] uppercase font-bold tracking-widest py-2.5 rounded-xl transition-all cursor-pointer shadow-[0_4px_15px_rgba(200,235,95,0.15)]">
                     SUBSCRIBE NOW
                   </button>
                 </div>
@@ -1229,7 +1229,7 @@ export default function BlogPage() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-40px" }}
                         transition={{ duration: 0.6 }}
-                        className="group flex flex-col justify-between h-full bg-[#050505] border border-white/5 rounded-[28px] overflow-hidden hover:border-blue-500/20 hover:shadow-[0_15px_40px_rgba(37,99,235,0.06)] transition-all duration-500"
+                        className="group flex flex-col justify-between h-full bg-[#050505] border border-white/5 rounded-[28px] overflow-hidden hover:border-[#C8EB5F]/20 hover:shadow-[0_15px_40px_rgba(200,235,95,0.02)] transition-all duration-500"
                       >
                         <div>
                           {/* Card Photo visual */}
@@ -1252,14 +1252,14 @@ export default function BlogPage() {
                             
                             {/* Short Reading time float */}
                             <div className="absolute bottom-4 left-4 z-10 flex items-center gap-1 font-mono text-[8px] tracking-widest text-[#eee] uppercase bg-black/85 px-2 py-1 rounded">
-                              <Clock size={10} className="text-[#2563eb]" />
+                              <Clock size={10} className="text-[#C8EB5F]" />
                               <span>{blog.readTime.toUpperCase()}</span>
                             </div>
                           </div>
 
                           {/* Card content and categories display */}
                           <div className="p-6 md:p-8 space-y-4">
-                            <div className="flex justify-between items-center text-[9px] font-mono text-[#2563eb] tracking-widest uppercase font-bold">
+                            <div className="flex justify-between items-center text-[9px] font-mono text-[#C8EB5F] tracking-widest uppercase font-bold">
                               <span>
                                 {blog.category} • {blog.date}
                               </span>
@@ -1280,7 +1280,7 @@ export default function BlogPage() {
                                         e.stopPropagation();
                                         openEditor(blog);
                                       }}
-                                      className="p-1.5 text-blue-400 hover:text-white transition-colors"
+                                      className="p-1.5 text-neutral-400 hover:text-white transition-colors"
                                       title="Edit"
                                     >
                                       <Edit size={11} />
@@ -1302,7 +1302,7 @@ export default function BlogPage() {
                                 setSelectedBlog(blog);
                                 setReadingLanguage("EN");
                               }}
-                              className="text-lg md:text-xl font-sans font-black tracking-tight uppercase leading-snug text-white hover:text-[#2563eb] cursor-pointer transition-colors duration-300"
+                              className="text-lg md:text-xl font-sans font-black tracking-tight uppercase leading-snug text-white hover:text-[#C8EB5F] cursor-pointer transition-colors duration-300"
                             >
                               {readingLanguage === "NL" ? blog.titleNL : blog.titleEN}
                             </h3>
@@ -1329,7 +1329,7 @@ export default function BlogPage() {
                               setSelectedBlog(blog);
                               setReadingLanguage("EN");
                             }}
-                            className="text-[9px] font-mono text-white group-hover:text-blue-400 tracking-widest font-bold uppercase flex items-center gap-1.5 transition-colors"
+                            className="text-[9px] font-mono text-white group-hover:text-[#C8EB5F] tracking-widest font-bold uppercase flex items-center gap-1.5 transition-colors"
                           >
                             READ STORY <ArrowRight size={10} className="group-hover:translate-x-1 transition-transform" />
                           </button>
@@ -1596,37 +1596,39 @@ export default function BlogPage() {
             >
               
               {/* Header inside drawer */}
-              <div className="p-6 border-b border-white/5 flex items-center justify-between bg-black/90 backdrop-blur-md sticky top-0 z-20">
+              <div className="p-6 border-b border-white/5 flex items-center justify-between bg-black/95 backdrop-blur-md sticky top-0 z-20">
                 <button 
                   onClick={() => setSelectedBlog(null)}
-                  className="flex items-center gap-2 text-xs font-mono tracking-widest text-neutral-400 hover:text-[#C8EB5F] transition-colors"
+                  className="flex items-center gap-2 text-xs font-mono tracking-widest text-neutral-400 hover:text-[#C8EB5F] transition-colors cursor-pointer"
                 >
                   <ChevronLeft size={16} />
                   <span>BACK TO JOURNAL</span>
                 </button>
                 
                 {/* Language toggle selector inside dynamic story viewer */}
-                <div className="flex items-center gap-1.5 bg-zinc-900 px-3 py-1.5 rounded-lg border border-white/5">
-                  <Globe size={11} className="text-[#C8EB5F]" />
-                  <span className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase mr-1">Language:</span>
-                  <button 
-                    onClick={() => setReadingLanguage("NL")}
-                    className={cn(
-                      "px-2 py-0.5 text-[9px] font-mono rounded font-bold transition-all",
-                      readingLanguage === "NL" ? "bg-[#C8EB5F] text-black" : "text-neutral-400 hover:text-white"
-                    )}
-                  >
-                    NL
-                  </button>
-                  <button 
-                    onClick={() => setReadingLanguage("EN")}
-                    className={cn(
-                      "px-2 py-0.5 text-[9px] font-mono rounded font-bold transition-all",
-                      readingLanguage === "EN" ? "bg-[#C8EB5F] text-black" : "text-neutral-400 hover:text-white"
-                    )}
-                  >
-                    EN
-                  </button>
+                <div className="flex items-center gap-1.5 bg-black border border-white/10 px-3 py-1.5 rounded-full text-[10px] uppercase font-mono tracking-wider">
+                  <Globe size={11} className="text-neutral-500" />
+                  <span className="text-neutral-400 mr-2">Language:</span>
+                  <div className="flex gap-1">
+                    <button 
+                      onClick={() => setReadingLanguage("NL")}
+                      className={cn(
+                        "px-2.5 py-0.5 text-[9px] font-mono rounded font-black transition-all cursor-pointer",
+                        readingLanguage === "NL" ? "bg-[#C8EB5F] text-black font-extrabold" : "text-neutral-400 hover:text-white"
+                      )}
+                    >
+                      NL
+                    </button>
+                    <button 
+                      onClick={() => setReadingLanguage("EN")}
+                      className={cn(
+                        "px-2.5 py-0.5 text-[9px] font-mono rounded font-black transition-all cursor-pointer",
+                        readingLanguage === "EN" ? "bg-[#C8EB5F] text-black font-extrabold" : "text-neutral-400 hover:text-white"
+                      )}
+                    >
+                      EN
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -1634,41 +1636,54 @@ export default function BlogPage() {
               <div className="flex-1 overflow-y-auto p-6 md:p-12 space-y-8 select-text">
                 
                 {/* Visual Cover Banner with full black overlays */}
-                <div className="relative h-[250px] md:h-[350px] w-full rounded-2xl overflow-hidden shadow-inner font-mono text-zinc-400">
+                <div className="relative h-[250px] md:h-[400px] w-full rounded-[24px] overflow-hidden shadow-inner font-mono text-zinc-400">
                   <Image 
                     src={selectedBlog.imageUrl} 
                     alt={readingLanguage === "NL" ? selectedBlog.titleNL : selectedBlog.titleEN} 
                     fill 
-                    className="object-cover brightness-80"
+                    className="object-cover brightness-85"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-4 z-10 font-mono text-[9px] tracking-widest text-[#C8EB5F] uppercase bg-[#080808]/90 px-3 py-1.5 border border-white/5 rounded-full">
-                    {selectedBlog.category} • {selectedBlog.readTime}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent opacity-80" />
+                  
+                  {/* Floating category + read time badge on bottom-left, exact matches */}
+                  <div className="absolute bottom-6 left-6 z-10 font-mono text-[9px] tracking-widest uppercase bg-black/85 backdrop-blur-md px-3.5 py-2 border border-white/10 rounded-full flex items-center gap-1.5 shadow-xl">
+                    <span className="text-[#C8EB5F] font-bold">{selectedBlog.category.toUpperCase()}</span>
+                    <span className="text-neutral-600">•</span>
+                    <span className="text-neutral-300 font-medium">{selectedBlog.readTime.toUpperCase()}</span>
                   </div>
                 </div>
 
                 {/* Article Info Column */}
                 <div className="space-y-4">
-                  <div className="text-[10px] font-mono text-neutral-500 uppercase flex items-center gap-3">
-                    <span>{selectedBlog.date}</span>
-                    <span>•</span>
+                  <div className="text-[10px] font-mono tracking-[0.25em] text-neutral-500 uppercase flex flex-wrap items-center gap-2 mt-3">
+                    <span>{selectedBlog.date.toUpperCase()}</span>
+                    <span className="text-neutral-700 font-bold">•</span>
                     <span>Written by {selectedBlog.author.name}</span>
                   </div>
                   
-                  <h1 className="text-3xl md:text-5xl font-serif font-light leading-tight text-white uppercase tracking-tight">
+                  <h1 
+                    style={{ fontFamily: "var(--font-cormorant)" }}
+                    className="text-3xl md:text-5xl font-normal leading-tight text-white uppercase tracking-tight"
+                  >
                     {readingLanguage === "NL" ? selectedBlog.titleNL : selectedBlog.titleEN}
                   </h1>
 
-                  <p className="font-serif text-sm md:text-lg text-neutral-300 italic max-w-2xl font-light">
+                  <p 
+                    style={{ fontFamily: "var(--font-cormorant)" }}
+                    className="font-serif text-sm md:text-xl text-neutral-400 italic max-w-2xl font-light leading-relaxed"
+                  >
                     {readingLanguage === "NL" ? selectedBlog.subtitleNL : selectedBlog.subtitleEN}
                   </p>
                 </div>
 
                 {/* Main Excerpt Block Quote */}
                 <div className="bg-[#C8EB5F]/3 border-l-2 border-[#C8EB5F] p-5 my-6 rounded-r-xl">
-                  <p className="font-serif text-md text-white italic font-light leading-relaxed">
-                    {readingLanguage === "NL" ? selectedBlog.quoteNL : selectedBlog.quoteEN}
+                  <p 
+                    style={{ fontFamily: "var(--font-cormorant)" }}
+                    className="font-serif text-md md:text-lg text-neutral-200 italic font-light leading-relaxed"
+                  >
+                    "{readingLanguage === "NL" ? selectedBlog.quoteNL : selectedBlog.quoteEN}"
                   </p>
                 </div>
 
@@ -1681,12 +1696,12 @@ export default function BlogPage() {
 
                 {/* Deep Highlights Checklist Box */}
                 <div className="bg-zinc-950 p-6 md:p-8 rounded-3xl border border-white/5 space-y-4 my-8">
-                  <span className="text-[10px] font-mono tracking-widest text-[#C8EB5F] uppercase block">CRITICAL KEY TAKEAWAYS</span>
+                  <span className="text-[10px] font-mono tracking-widest text-[#C8EB5F] uppercase block font-bold">CRITICAL KEY TAKEAWAYS</span>
                   <div className="space-y-3">
                     {(readingLanguage === "NL" ? selectedBlog.keyHighlightsNL : selectedBlog.keyHighlightsEN).map((h, i) => (
                       <div key={i} className="flex items-start gap-3 text-xs md:text-sm text-neutral-300 font-sans">
-                        <span className="h-5 w-5 rounded-full border border-cyan-400/20 bg-cyan-400/5 flex items-center justify-center shrink-0 mt-0.5">
-                          <Check size={10} className="text-cyan-400" />
+                        <span className="h-5 w-5 rounded-full border border-[#C8EB5F]/25 bg-[#C8EB5F]/5 flex items-center justify-center shrink-0 mt-0.5">
+                          <Check size={10} className="text-[#C8EB5F]" />
                         </span>
                         <span>{h}</span>
                       </div>
@@ -1696,7 +1711,12 @@ export default function BlogPage() {
 
                 {/* Integrated Booking CTA Area within Journal */}
                 <div className="border-t border-white/5 pt-8 text-center space-y-4 bg-zinc-950/40 p-6 rounded-3xl mt-12">
-                  <span className="font-serif text-lg tracking-wide uppercase text-[#C8EB5F]">Ready to Elevate Your Recitation to elite status?</span>
+                  <span 
+                    style={{ fontFamily: "var(--font-cormorant)" }}
+                    className="text-xl md:text-2xl tracking-wide uppercase text-[#C8EB5F] block"
+                  >
+                    Ready to Elevate Your Recitation to elite status?
+                  </span>
                   <p className="text-xs text-neutral-400 font-light max-w-lg mx-auto leading-relaxed">
                     Schedule a complimentary 1-on-1 sensing class today with our certified scholars and receive direct expert guidance on your pronunciation.
                   </p>
@@ -1706,7 +1726,7 @@ export default function BlogPage() {
                         setSelectedBlog(null);
                         setBookingOpen(true);
                       }}
-                      className="px-6 py-3 bg-[#C8EB5F] text-black hover:bg-white text-[10px] font-mono font-bold uppercase tracking-widest transition-all rounded-lg"
+                      className="px-6 py-3 bg-[#C8EB5F] hover:bg-white text-black text-[10px] font-mono font-bold uppercase tracking-widest transition-all rounded-lg cursor-pointer"
                     >
                       Secure Free Trial Lesson
                     </button>
@@ -1893,7 +1913,7 @@ export default function BlogPage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 15 }}
               transition={{ type: "spring", damping: 28, stiffness: 220 }}
-              className="relative w-full max-w-6xl h-[85vh] bg-[#070708] border border-white/10 rounded-[32px] flex flex-col md:flex-row shadow-[0_45px_100px_rgba(0,0,0,0.98)] overflow-hidden z-10 text-white text-left selection:bg-blue-600 selection:text-white"
+              className="relative w-full max-w-6xl h-[85vh] bg-[#070708] border border-white/10 rounded-[32px] flex flex-col md:flex-row shadow-[0_45px_100px_rgba(0,0,0,0.98)] overflow-hidden z-10 text-white text-left selection:bg-[#C8EB5F] selection:text-black"
             >
               
               {/* SIDEBAR (Screenshot 2 Design) */}
@@ -1902,7 +1922,7 @@ export default function BlogPage() {
                   
                   {/* Brand logo */}
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-bold font-mono shadow-[0_0_12px_rgba(37,99,235,0.4)]">
+                    <div className="w-7 h-7 rounded-lg bg-[#C8EB5F] flex items-center justify-center text-black text-xs font-black font-mono shadow-[0_0_12px_rgba(200,235,95,0.3)]">
                       TP
                     </div>
                     <div>
@@ -1919,7 +1939,7 @@ export default function BlogPage() {
                           <Image src={adminUser.photoURL} alt="Scholar Avatar" fill className="object-cover" referrerPolicy="no-referrer" />
                         </div>
                       ) : (
-                        <div className="h-8 w-8 rounded-full bg-blue-600/10 border border-blue-500/20 text-blue-400 font-mono font-bold flex items-center justify-center text-[10px] shrink-0">
+                        <div className="h-8 w-8 rounded-full bg-[#C8EB5F]/10 border border-[#C8EB5F]/20 text-[#C8EB5F] font-mono font-bold flex items-center justify-center text-[10px] shrink-0">
                           AD
                         </div>
                       )}
@@ -1940,7 +1960,7 @@ export default function BlogPage() {
                       <button
                         type="button"
                         onClick={() => openEditor(null)}
-                        className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-mono text-[10px] font-bold uppercase tracking-widest px-4 py-3 rounded-xl transition-all shadow-[0_4px_15px_rgba(37,99,235,0.3)] active:scale-98 cursor-pointer border border-blue-400/20"
+                        className="w-full flex items-center justify-center gap-2 bg-[#C8EB5F] hover:bg-white text-black font-mono text-[10px] font-bold uppercase tracking-widest px-4 py-3 rounded-xl transition-all shadow-[0_4px_15px_rgba(200,235,95,0.15)] active:scale-98 cursor-pointer border border-[#C8EB5F]/20"
                       >
                         <Plus size={12} className="stroke-[3px]" /> CREATE NEW POST
                       </button>
@@ -1957,7 +1977,7 @@ export default function BlogPage() {
                             : "bg-transparent text-neutral-400 hover:text-white hover:bg-white/3"
                         )}
                       >
-                        <BookOpen size={12} className="text-blue-500" />
+                        <BookOpen size={12} className="text-[#C8EB5F]" />
                         <span>ALL STORIES ({blogs.length})</span>
                       </button>
                     </div>
@@ -2417,7 +2437,7 @@ export default function BlogPage() {
       {/* Floating WhatsApp Action Trigger with Glowing Badge (Screenshot 7) */}
       <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3 pointer-events-auto">
         <a 
-          href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%2520online%2520classes%2520with%2520Tajweedpage." 
+          href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%2520online%2520classes%2520with%2520Tajweedpage." 
           target="_blank" 
           rel="noopener noreferrer"
           className="relative h-14 w-14 rounded-full bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center shadow-[0_10px_30px_rgba(16,185,129,0.35)] hover:scale-105 active:scale-95 transition-all text-white outline-none cursor-pointer"

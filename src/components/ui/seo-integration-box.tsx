@@ -742,7 +742,7 @@ export function SeoIntegrationBox() {
 
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
             <a
-              href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%20online%20classes%2520with%2520Tajweedpage."
+              href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%20online%20classes%2520with%2520Tajweedpage."
               target="_blank"
               rel="noopener noreferrer"
               className="bg-[#C8EB5F] text-black hover:bg-white text-xs sm:text-sm font-bold tracking-widest px-8 py-4 font-mono uppercase transition-all duration-300 shadow-[0_4px_25px_rgba(200,235,95,0.25)] flex items-center gap-3"

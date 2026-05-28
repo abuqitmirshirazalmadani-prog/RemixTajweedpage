@@ -444,7 +444,7 @@ export default function FreeTrialPage() {
 
         {/* WhatsApp Floating Button */}
         <a 
-          href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%20online%20classes%20with%20Tajweedpage." 
+          href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%20online%20classes%20with%20Tajweedpage." 
           target="_blank" 
           rel="noopener noreferrer" 
           className="group relative flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-[0_0_20px_rgba(37,211,102,0.4)] hover:shadow-[0_0_30px_rgba(37,211,102,0.6)] hover:scale-110 transition-all duration-300"
@@ -509,13 +509,13 @@ export default function FreeTrialPage() {
               {/* Direct Instant Booking Channels */}
               <div className="grid grid-cols-2 gap-3 mb-6 p-4 bg-zinc-900/60 rounded-2xl border border-white/5">
                 <a 
-                  href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%252520am%252520interested%25252520in%25252520taking%25252520Tajweed%25252520online%25252520classes%25252520with%25252520Tajweedpage."
+                  href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%252520am%252520interested%25252520in%25252520taking%25252520Tajweed%25252520online%25252520classes%25252520with%25252520Tajweedpage."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex flex-col items-center justify-center p-3.5 bg-[#C8EB5F] hover:bg-white text-black text-center transition-all duration-300 rounded-xl"
                 >
                   <span className="text-[10px] font-mono tracking-wider font-extrabold uppercase">WhatsApp Admin</span>
-                  <span className="text-[9px] font-mono opacity-80 mt-0.5">+923708201211</span>
+                  <span className="text-[9px] font-mono opacity-80 mt-0.5">+923233260859</span>
                 </a>
                 <a 
                   href="mailto:abuqitmirshirazalmadani@gmail.com?subject=Tajweedpage%20Quran%2520Classes%2520Inquiry"
@@ -542,7 +542,7 @@ export default function FreeTrialPage() {
                   
                   <div className="flex flex-col gap-2 pt-2">
                     <a 
-                      href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20have%20just%20submitted%20a%20booking%20request%20on%20Tajweedpage."
+                      href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20have%20just%20submitted%20a%20booking%20request%20on%20Tajweedpage."
                       target="_blank"
                       rel="noopener noreferrer"
                       className="bg-[#C8EB5F] text-black font-mono text-[10px] tracking-widest font-bold py-2.5 rounded-lg hover:bg-white text-center transition-colors"

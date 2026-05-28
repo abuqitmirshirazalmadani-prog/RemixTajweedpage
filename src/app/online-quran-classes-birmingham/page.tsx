@@ -1027,7 +1027,7 @@ export default function BirminghamQuranClasses() {
                 </div>
                 <div>
                   <span className="text-[9px] font-mono text-neutral-500 uppercase block tracking-wider">WHATSAPP DIRECT CONCIERGE</span>
-                  <a href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%2520online%2520classes%2520with%2520Tajweedpage." target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-emerald-400 hover:text-white transition-colors">+92 370 8201211</a>
+                  <a href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%2520online%2520classes%2520with%2520Tajweedpage." target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-emerald-400 hover:text-white transition-colors">+92 323 3260859</a>
                 </div>
               </div>
             </div>
@@ -1132,7 +1132,7 @@ export default function BirminghamQuranClasses() {
         </a>
 
         <a 
-          href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%2520online%2520classes%2520with%2520Tajweedpage." 
+          href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%2520online%2520classes%2520with%2520Tajweedpage." 
           target="_blank" 
           rel="noopener noreferrer" 
           className="group relative flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-[0_0_20px_rgba(37,211,102,0.4)] hover:shadow-[0_0_30px_rgba(37,211,102,0.6)] hover:scale-110 transition-all duration-300"

@@ -476,13 +476,13 @@ export default function Home() {
               {/* Direct Instant Booking Channels */}
               <div className="grid grid-cols-2 gap-3 mb-6 p-4 bg-zinc-900/60 rounded-2xl border border-white/5">
                 <a 
-                  href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%20online%20classes%20with%20Tajweedpage."
+                  href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%20online%20classes%20with%20Tajweedpage."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex flex-col items-center justify-center p-3.5 bg-[#C8EB5F] hover:bg-white text-black text-center transition-all duration-300 rounded-xl"
                 >
                   <span className="text-[10px] font-mono tracking-wider font-extrabold uppercase">WhatsApp Admin</span>
-                  <span className="text-[9px] font-mono opacity-80 mt-0.5">+923708201211</span>
+                  <span className="text-[9px] font-mono opacity-80 mt-0.5">+923233260859</span>
                 </a>
                 <a 
                   href="mailto:abuqitmirshirazalmadani@gmail.com?subject=Tajweedpage%20Quran%20Classes%20Inquiry"
@@ -509,7 +509,7 @@ export default function Home() {
                   
                   <div className="flex flex-col gap-2 pt-2">
                     <a 
-                      href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20have%20just%20submitted%20a%20booking%20request%20on%20Tajweedpage."
+                      href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20have%20just%20submitted%20a%20booking%20request%20on%20Tajweedpage."
                       target="_blank"
                       rel="noopener noreferrer"
                       className="bg-[#C8EB5F] text-black font-mono text-[10px] tracking-widest font-bold py-2.5 rounded-lg hover:bg-white text-center transition-colors"

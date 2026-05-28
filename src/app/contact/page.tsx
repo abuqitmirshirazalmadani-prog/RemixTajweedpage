@@ -269,14 +269,14 @@ export default function ContactPage() {
               </div>
 
               <a 
-                href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%20online%2520classes%2520with%252520Tajweedpage."
+                href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%20online%2520classes%2520with%252520Tajweedpage."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-6 rounded-2xl bg-zinc-950/40 border border-white/5 hover:border-[#C8EB5F]/20 transition-all duration-300 space-y-3 block hover:-translate-y-0.5"
               >
                 <PhoneCall className="text-[#C8EB5F]" size={20} />
                 <h4 className="text-white text-xs font-mono tracking-widest uppercase">Hotline Intake (WhatsApp)</h4>
-                <p className="text-[11px] text-neutral-400 font-light">+92 370 8201211</p>
+                <p className="text-[11px] text-neutral-400 font-light">+92 323 3260859</p>
               </a>
 
               <div className="p-6 rounded-2xl bg-zinc-950/40 border border-white/5 hover:border-[#C8EB5F]/20 transition-colors space-y-3">
@@ -403,7 +403,7 @@ export default function ContactPage() {
           </p>
 
           <a 
-            href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%2520online%2520classes%2520with%2520Tajweedpage." 
+            href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%2520online%2520classes%2520with%2520Tajweedpage." 
             target="_blank" 
             rel="noopener noreferrer" 
             className="inline-flex items-center gap-2 group px-10 py-5 bg-[#25D366] text-white font-mono text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-emerald-500 transition-all shadow-xl shadow-[#25D366]/5"
@@ -434,7 +434,7 @@ export default function ContactPage() {
 
         {/* WhatsApp Floating Button */}
         <a 
-          href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%2520online%2520classes%2520with%2520Tajweedpage." 
+          href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%2520online%2520classes%2520with%2520Tajweedpage." 
           target="_blank" 
           rel="noopener noreferrer" 
           className="group relative flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-[0_0_20px_rgba(37,211,102,0.4)] hover:shadow-[0_0_30px_rgba(37,211,102,0.6)] hover:scale-110 transition-all duration-300"

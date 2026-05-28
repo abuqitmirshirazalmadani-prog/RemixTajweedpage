@@ -53,6 +53,13 @@ export function NavigationHeader({ onTrialClick, currentPage }: NavigationHeader
 
           {/* Quick links */}
           <nav className="hidden md:flex items-center gap-8 text-[11px] font-mono tracking-widest text-[#eeeeee]">
+            <Link 
+              href="/" 
+              className={cn("hover:text-[#C8EB5F] transition-colors duration-300", currentPage === "home" ? "text-[#C8EB5F] font-bold" : "")}
+            >
+              HOME
+            </Link>
+
             {/* Courses Dropdown */}
             <div 
               className="relative group py-2"
@@ -254,6 +261,14 @@ export function NavigationHeader({ onTrialClick, currentPage }: NavigationHeader
             exit={{ opacity: 0, y: -20 }}
             className="fixed inset-0 bg-black/95 backdrop-blur-xl z-40 flex flex-col items-center justify-start gap-4 border-b border-[#C8EB5F]/20 pt-20 pb-12 overflow-y-auto px-6"
           >
+            <Link 
+              href="/" 
+              className={cn("text-base tracking-widest uppercase font-serif font-semibold mt-4", currentPage === "home" ? "text-[#C8EB5F]" : "text-[#aaaaaa] hover:text-white")}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Home ✦
+            </Link>
+
             <span className="text-[10px] tracking-[0.2em] font-mono text-[#C8EB5F] uppercase font-bold mb-1">Our Featured Courses</span>
             
             <Link 

@@ -42,12 +42,12 @@ export function GlobalFooter() {
           <h5 className="font-mono text-[10px] tracking-[0.2em] font-bold text-white uppercase">Direct Channels</h5>
           <div className="space-y-3">
             <a 
-              href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%20online%20classes%20with%20Tajweedpage."
+              href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%20online%20classes%20with%20Tajweedpage."
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-3 w-full justify-center bg-[#C8EB5F] text-black hover:bg-white font-mono text-[10px] font-bold uppercase tracking-widest transition-all duration-300"
             >
-              WhatsApp Chat (+923708201211)
+              WhatsApp Chat (+923233260859)
             </a>
             <a 
               href="mailto:abuqitmirshirazalmadani@gmail.com?subject=Tajweedpage%20Quran%20Classes%20Inquiry"
@@ -67,21 +67,24 @@ export function GlobalFooter() {
             <span className="text-[9px] text-neutral-600 block lowercase tracking-wider">
               Established traditional phonic sciences with authentic Ijazah narration chains.
             </span>
+            <p className="text-[9px] text-neutral-500 font-mono tracking-widest uppercase">
+              Developed by <a href="https://abuqitmirlabs.tech" target="_blank" rel="noopener noreferrer" className="text-[#C8EB5F] hover:text-white hover:underline transition-colors font-bold">AbuQitmirLabs.tech</a>
+            </p>
           </div>
           
           <div className="flex flex-wrap items-center justify-center gap-6">
             <a 
-              href="https://wa.me/923708201211?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%20online%20classes%20with%20Tajweedpage."
+              href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%20online%20classes%20with%20Tajweedpage."
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center gap-2 text-[10px] font-mono tracking-wider text-[#C8EB5F] hover:text-white transition-colors font-bold uppercase cursor-pointer"
             >
               <span className="size-2 rounded-full bg-[#C8EB5F] inline-block animate-pulse shrink-0" />
-              <span>WhatsApp Admin (+923708201211)</span>
+              <span>WhatsApp Admin (+923233260859)</span>
             </a>
 
             <a 
-              href="https://www.google.com/search?q=Tajweedpage&stick=H4sIAAAAAAAA_-NgU1I1qDBOTTI2NkxNSkpJTTIH0lYGFalGhskGJsaWxqmpBpYphqaLWLlDErPKU1NTChLTUwFo6QPNNwAAAA&hl=en-GB&mat=CWEeAbVfenJoElcBTVDHnvkfxVBzv5W1rNW9fIld_b-VvjinwHEJBBoXvgRWUH3vq9-jcvSSUZTudv6JM5Kx5syZmqk1teLlBqWSZa1HvTyG1-z41RbZzAAawEFhCa6rtw8&authuser=0"
+              href="https://www.google.com/search?q=Tajweedpage&stick=H4sIAAAAAAAA_-NgU1I1qDBOTTI2NkxNSkpJTTIH0lYGFalGhskGJsaWxqmpBpYphqaLWLlDErPKU1NTChLTUwFo6QPNNwAAAA&hl=en&mat=CWEeAbVfenJoElcBTVDHnrhU7qEayvT6uZHz47Q3Zq2lbDgRBj83NYmYEva2gJE4AbBFmmrUENh2aIJLO_-USjbTCpFBsF5UOA_auJM-o-sQdlPMF3FzfqAi4GCdFPTP4zk&authuser=0"
               target="_blank" 
               rel="noopener noreferrer"
               className="text-[10px] font-mono tracking-wider text-neutral-400 hover:text-[#C8EB5F] hover:underline transition-colors uppercase font-bold cursor-pointer"
