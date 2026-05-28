@@ -451,6 +451,22 @@ export default function BlogPage() {
     keyHighlightsEN: "",
   });
 
+  // Prevent parent body scroll when overlay sheets/modals are active to eliminate double scrollbars
+  useEffect(() => {
+    if (typeof document !== "undefined" && document.body) {
+      if (selectedBlog || bookingOpen || adminPanelOpen) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
+    }
+    return () => {
+      if (typeof document !== "undefined" && document.body) {
+        document.body.style.overflow = "";
+      }
+    };
+  }, [selectedBlog, bookingOpen, adminPanelOpen]);
+
   // Load Bookmarks from LocalStorage
   useEffect(() => {
     try {
