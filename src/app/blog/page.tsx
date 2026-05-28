@@ -795,13 +795,41 @@ export default function BlogPage() {
     return matchesCategory && matchesSearch;
   });
 
-  const handleBookingSubmit = (e: React.FormEvent) => {
+  const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
+
+    const bookingId = "booking_" + Date.now();
+    const submissionData = {
+      id: bookingId,
+      fullName: formData.fullName,
+      email: formData.email,
+      phone: formData.phone || "",
+      course: formData.course,
+      level: formData.level,
+      comments: formData.comments || "",
+      sourcePage: "Blog Page Portal CTA",
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+      // 1. Save data securely to Firebase Firestore
+      await setDoc(doc(db, "bookings", bookingId), submissionData);
+
+      // 2. Trigger Next.js API route to send the email
+      await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(submissionData)
+      });
+    } catch (err) {
+      console.error("Booking registry error:", err);
+    } finally {
       setIsSubmitting(false);
       setFormSubmitted(true);
-    }, 1200);
+    }
   };
 
   return (

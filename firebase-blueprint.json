@@ -80,12 +80,51 @@
         }
       },
       "required": ["id", "slug", "category", "titleNL", "titleEN", "subtitleNL", "subtitleEN", "author", "readTime", "date", "imageUrl", "quoteNL", "quoteEN", "contentNL", "contentEN"]
+    },
+    "booking": {
+      "title": "Trial Booking Registration",
+      "description": "Information collected from prospective students requesting a trial class.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "course": {
+          "type": "string"
+        },
+        "level": {
+          "type": "string"
+        },
+        "comments": {
+          "type": "string"
+        },
+        "sourcePage": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "fullName", "email", "createdAt"]
     }
   },
   "firestore": {
     "blogs": {
       "schema": "blog",
       "description": "Collection of educational Quranic articles."
+    },
+    "bookings": {
+      "schema": "booking",
+      "description": "Collection of leads and trial registrations."
     }
   }
 }

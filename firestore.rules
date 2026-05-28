@@ -73,5 +73,16 @@ service cloud.firestore {
       // Only the verified admin can delete articles
       allow delete: if isAdmin() && isValidId(blogId);
     }
+
+    // 3. Collection Rules for "bookings"
+    match /bookings/{bookingId} {
+      // Public visitors can submit bookings/lead registrations
+      allow create: if isValidId(bookingId)
+        && request.resource.data.fullName is string
+        && request.resource.data.email is string;
+
+      // Only the verified administrator can read, list, update, or delete registrations
+      allow read, list, update, delete: if isAdmin();
+    }
   }
 }

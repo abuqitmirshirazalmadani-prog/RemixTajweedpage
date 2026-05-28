@@ -2,6 +2,9 @@
 
 import React, { useState } from "react";
 import { CheckCircle2, Calendar, Clock, Globe2, Sparkles, Phone, Mail, User, BookOpen, ArrowRight, RotateCcw } from "lucide-react";
+import { db } from "@/lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
+
 
 export function SecureBookingCard() {
   const [name, setName] = useState("");
@@ -42,9 +45,43 @@ export function SecureBookingCard() {
     "08:00 PM - 10:00 PM"
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormSubmitted(true);
+    setIsSubmitting(true);
+
+    const bookingId = "booking_" + Date.now();
+    const submissionData = {
+      id: bookingId,
+      fullName: name,
+      email: email,
+      phone: phone || "",
+      course: route,
+      level: `Date: ${selectedDate}, Slot: ${selectedSlot}, Zone: ${timezone}`,
+      comments: "Submitted from secure booking card",
+      sourcePage: "Main Secure Booking Card",
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+      // 1. Save data securely to Firebase Firestore
+      await setDoc(doc(db, "bookings", bookingId), submissionData);
+
+      // 2. Trigger Next.js API route to send the email
+      await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(submissionData)
+      });
+    } catch (err) {
+      console.error("Booking registry error:", err);
+    } finally {
+      setIsSubmitting(false);
+      setFormSubmitted(true);
+    }
   };
 
   const handleReset = () => {
@@ -314,9 +351,10 @@ export function SecureBookingCard() {
           {/* Submit button */}
           <button
             type="submit"
-            className="w-full bg-[#C8EB5F] text-black font-bold text-xs tracking-[0.1em] uppercase py-4 rounded-2xl hover:bg-white hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 shadow-[0_5px_30px_rgba(200,235,95,0.15)] flex items-center justify-center gap-2 cursor-pointer"
+            disabled={isSubmitting}
+            className="w-full bg-[#C8EB5F] text-black font-bold text-xs tracking-[0.1em] uppercase py-4 rounded-2xl hover:bg-white hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 shadow-[0_5px_30px_rgba(200,235,95,0.15)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
-            <span>SUBMIT INQUIRY RESERVATION</span>
+            <span>{isSubmitting ? "PROCESSING..." : "SUBMIT INQUIRY RESERVATION"}</span>
             <ArrowRight size={14} />
           </button>
         </form>
