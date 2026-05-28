@@ -6,6 +6,7 @@ import { NavigationHeader } from "@/components/ui/navigation-header";
 import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
 import Link from "next/link";
 import Image from "next/image";
+import Markdown from "react-markdown";
 import { 
   ArrowUpRight, 
   Check, 
@@ -288,6 +289,57 @@ const ContactInfoIcon = ({ type }: { type: 'website' | 'phone' | 'address' }) =>
   };
   return <div className="mr-2 flex-shrink-0">{icons[type]}</div>;
 };
+
+// --- CMS Helpers & Resilient Images ---
+const generateSlug = (text: string) => {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s_-]/g, "") // remove anything that is not alphanumeric, whitespace, under, hyphen
+    .replace(/[\s_]+/g, "-")       // replace space/under with single hyphen
+    .replace(/-+/g, "-")           // collapse repeat hyphens
+    .replace(/^-+|-+$/g, "")       // trim leading/trailing hyphens
+    .substring(0, 100);            // fit well under 128 characters
+};
+
+const getFullContent = (content: string[] | string | undefined | null): string => {
+  if (!content) return "";
+  if (Array.isArray(content)) {
+    return content.join("\n\n");
+  }
+  return content;
+};
+
+function ResilientImage({ src, alt, className, fill, sizes, priority, style }: {
+  src: string;
+  alt: string;
+  className?: string;
+  fill?: boolean;
+  sizes?: string;
+  priority?: boolean;
+  style?: React.CSSProperties;
+}) {
+  const [imgSrc, setImgSrc] = useState(src || "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1500&auto=format&fit=crop");
+
+  useEffect(() => {
+    setImgSrc(src || "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1500&auto=format&fit=crop");
+  }, [src]);
+
+  return (
+    <img
+      src={imgSrc}
+      alt={alt}
+      className={cn(className, fill ? "absolute inset-0 w-full h-full object-cover" : "")}
+      sizes={sizes}
+      style={style}
+      loading={priority ? "eager" : "lazy"}
+      onError={() => {
+        setImgSrc("https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1500&auto=format&fit=crop");
+      }}
+      referrerPolicy="no-referrer"
+    />
+  );
+}
 
 export default function BlogPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -1026,12 +1078,11 @@ export default function BlogPage() {
                 
                 {/* Widescreen visual on left */}
                 <div className="lg:col-span-7 relative min-h-[300px] lg:min-h-[500px]">
-                  <Image 
+                  <ResilientImage 
                     src={featured.imageUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1500&auto=format&fit=crop"} 
                     alt={readingLanguage === "NL" ? featured.titleNL : featured.titleEN}
                     fill
-                    className="object-cover brightness-75 group-hover:scale-102 transition-transform duration-[1200ms] ease-out saturate-[0.85] group-hover:saturate-100"
-                    referrerPolicy="no-referrer"
+                    className="group-hover:scale-102 transition-transform duration-[1200ms] ease-out saturate-[0.85] group-hover:saturate-100"
                     priority
                   />
                   <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-black via-black/40 to-transparent" />
@@ -1240,13 +1291,12 @@ export default function BlogPage() {
                             }}
                             className="relative h-60 w-full overflow-hidden cursor-pointer bg-zinc-900"
                           >
-                            <Image 
+                            <ResilientImage 
                               src={blog.imageUrl} 
                               alt={readingLanguage === "NL" ? blog.titleNL : blog.titleEN}
                               fill
-                              className="object-cover group-hover:scale-103 transition-transform duration-700 brightness-90 saturate-[0.8] group-hover:saturate-100"
+                              className="group-hover:scale-103 transition-transform duration-700 brightness-90 saturate-[0.8] group-hover:saturate-100"
                               sizes="(max-width: 768px) 100vw, 35vw"
-                              referrerPolicy="no-referrer"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-65" />
                             
@@ -1637,12 +1687,11 @@ export default function BlogPage() {
                 
                 {/* Visual Cover Banner with full black overlays */}
                 <div className="relative h-[250px] md:h-[400px] w-full rounded-[24px] overflow-hidden shadow-inner font-mono text-zinc-400">
-                  <Image 
+                  <ResilientImage 
                     src={selectedBlog.imageUrl} 
                     alt={readingLanguage === "NL" ? selectedBlog.titleNL : selectedBlog.titleEN} 
                     fill 
-                    className="object-cover brightness-85"
-                    referrerPolicy="no-referrer"
+                    className="brightness-85"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent opacity-80" />
                   
@@ -1688,10 +1737,24 @@ export default function BlogPage() {
                 </div>
 
                 {/* Main Content Body Paragraphs */}
-                <div className="space-y-6 text-sm md:text-base text-neutral-300 font-sans font-light leading-relaxed">
-                  {(readingLanguage === "NL" ? selectedBlog.contentNL : selectedBlog.contentEN).map((p, i) => (
-                    <p key={i}>{p}</p>
-                  ))}
+                <div className="space-y-6 text-sm md:text-base text-neutral-300 font-sans font-light leading-relaxed markdown-container">
+                  <Markdown
+                    components={{
+                      h1: ({node, ...props}) => <h1 style={{ fontFamily: "var(--font-cormorant)" }} className="text-2xl md:text-3xl font-medium text-white mt-8 mb-4 uppercase tracking-wide border-b border-white/10 pb-2 font-normal" {...props} />,
+                      h2: ({node, ...props}) => <h2 style={{ fontFamily: "var(--font-cormorant)" }} className="text-xl md:text-2xl font-normal text-white mt-6 mb-3 uppercase tracking-wide" {...props} />,
+                      h3: ({node, ...props}) => <h3 style={{ fontFamily: "var(--font-cormorant)" }} className="text-lg md:text-xl font-medium text-[#C8EB5F] mt-5 mb-2 font-mono uppercase tracking-widest" {...props} />,
+                      p: ({node, ...props}) => <p className="mb-4 leading-relaxed text-neutral-300 font-sans font-light text-sm md:text-base" {...props} />,
+                      ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4 space-y-2 text-neutral-300" {...props} />,
+                      ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-4 space-y-2 text-neutral-300" {...props} />,
+                      li: ({node, ...props}) => <li className="pl-1 text-neutral-300" {...props} />,
+                      strong: ({node, ...props}) => <strong className="text-[#C8EB5F] font-bold" {...props} />,
+                      em: ({node, ...props}) => <em className="italic text-neutral-200" {...props} />,
+                      blockquote: ({node, ...props}) => <blockquote className="border-l-2 border-[#C8EB5F] bg-[#C8EB5F]/5 p-4 my-4 rounded-r-lg italic text-neutral-200" {...props} />,
+                      a: ({node, ...props}) => <a className="text-[#C8EB5F] underline hover:text-white transition-colors" target="_blank" rel="noopener noreferrer" {...props} />
+                    }}
+                  >
+                    {getFullContent(readingLanguage === "NL" ? selectedBlog.contentNL : selectedBlog.contentEN)}
+                  </Markdown>
                 </div>
 
                 {/* Deep Highlights Checklist Box */}
@@ -2109,7 +2172,7 @@ export default function BlogPage() {
                                 <div key={b.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/1 transition-all">
                                   <div className="flex items-center gap-4 min-w-0">
                                     <div className="h-12 w-16 relative bg-zinc-900 rounded-lg overflow-hidden shrink-0 border border-white/10">
-                                      <Image src={b.imageUrl} alt={b.titleNL} fill className="object-cover" referrerPolicy="no-referrer" />
+                                      <ResilientImage src={b.imageUrl} alt={b.titleNL} fill />
                                     </div>
                                     <div className="min-w-0">
                                       <span className="inline-block text-[8px] px-2 py-0.5 font-mono font-bold tracking-widest text-[#C8EB5F] bg-[#C8EB5F]/10 rounded-full uppercase">
@@ -2204,7 +2267,16 @@ export default function BlogPage() {
                                   required
                                   placeholder="Title in Dutch Language..."
                                   value={editorData.titleNL}
-                                  onChange={(e) => setEditorData({...editorData, titleNL: e.target.value})}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    setEditorData(prev => {
+                                      const updated = { ...prev, titleNL: val };
+                                      if (!editingPost && !prev.titleEN) {
+                                        updated.id = generateSlug(val);
+                                      }
+                                      return updated;
+                                    });
+                                  }}
                                   className="w-full bg-zinc-900 border border-white/5 text-white text-xs px-4 py-3 rounded-xl focus:outline-none focus:border-[#C8EB5F] transition-all font-mono"
                                 />
                               </div>
@@ -2271,7 +2343,16 @@ export default function BlogPage() {
                                   required
                                   placeholder="Title in English Language..."
                                   value={editorData.titleEN}
-                                  onChange={(e) => setEditorData({...editorData, titleEN: e.target.value})}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    setEditorData(prev => {
+                                      const updated = { ...prev, titleEN: val };
+                                      if (!editingPost) {
+                                        updated.id = generateSlug(val || prev.titleNL || "");
+                                      }
+                                      return updated;
+                                    });
+                                  }}
                                   className="w-full bg-zinc-900 border border-white/5 text-white text-xs px-4 py-3 rounded-xl focus:outline-none focus:border-[#C8EB5F] transition-all font-mono"
                                 />
                               </div>

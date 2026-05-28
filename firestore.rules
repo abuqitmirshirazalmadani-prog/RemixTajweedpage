@@ -24,7 +24,7 @@ service cloud.firestore {
       return id is string 
         && id.size() >= 1 
         && id.size() <= 128 
-        && id.matches('^[a-zA-Z0-9_\\-]+$');
+        && id.matches('^[a-zA-Z0-9_-]+$');
     }
 
     // Helper: Validate Blog Post fields
@@ -36,20 +36,20 @@ service cloud.firestore {
         'contentNL', 'contentEN', 'createdAt'
       ])
         && data.id is string && data.id.size() <= 128
-        && data.slug is string && data.slug.size() <= 200
-        && data.category is string && data.category.size() <= 100
-        && data.titleNL is string && data.titleNL.size() <= 300
-        && data.titleEN is string && data.titleEN.size() <= 300
-        && data.subtitleNL is string && data.subtitleNL.size() <= 1000
-        && data.subtitleEN is string && data.subtitleEN.size() <= 1000
+        && data.slug is string && data.slug.size() <= 500
+        && data.category is string && data.category.size() <= 500
+        && data.titleNL is string && data.titleNL.size() <= 1000
+        && data.titleEN is string && data.titleEN.size() <= 1000
+        && data.subtitleNL is string && data.subtitleNL.size() <= 5000
+        && data.subtitleEN is string && data.subtitleEN.size() <= 5000
         && data.author is map
-        && data.readTime is string && data.readTime.size() <= 100
-        && data.date is string && data.date.size() <= 100
-        && data.imageUrl is string && data.imageUrl.size() <= 1500
-        && data.quoteNL is string && data.quoteNL.size() <= 1000
-        && data.quoteEN is string && data.quoteEN.size() <= 1000
-        && data.contentNL is list && data.contentNL.size() <= 100
-        && data.contentEN is list && data.contentEN.size() <= 100;
+        && data.readTime is string && data.readTime.size() <= 500
+        && data.date is string && data.date.size() <= 500
+        && data.imageUrl is string && data.imageUrl.size() <= 5000
+        && data.quoteNL is string && data.quoteNL.size() <= 5000
+        && data.quoteEN is string && data.quoteEN.size() <= 5000
+        && data.contentNL is list && data.contentNL.size() <= 1000
+        && data.contentEN is list && data.contentEN.size() <= 1000;
     }
 
     // 2. Collection Rules for "blogs"
@@ -61,7 +61,7 @@ service cloud.firestore {
       allow create: if isAdmin() 
         && isValidId(blogId) 
         && isValidBlog(request.resource.data)
-        && request.resource.data.createdAt == request.time;
+        && request.resource.data.createdAt is timestamp;
 
       // Only the verified admin can update block contents
       allow update: if isAdmin() 

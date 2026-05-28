@@ -51,9 +51,10 @@ export function GlobalFooter() {
             </a>
             <a 
               href="mailto:abuqitmirshirazalmadani@gmail.com?subject=Tajweedpage%20Quran%20Classes%20Inquiry"
-              className="flex items-center gap-2 px-4 py-3 bg-zinc-900 hover:bg-[#C8EB5F] text-white hover:text-black font-mono text-[10px] font-bold uppercase tracking-widest transition-all duration-300 w-full justify-center"
+              className="flex flex-col items-center justify-center gap-1 px-4 py-3 bg-zinc-900 hover:bg-[#C8EB5F] text-white hover:text-black font-mono text-[9px] font-bold uppercase tracking-widest transition-all duration-300 w-full hover:shadow-[0_0_20px_rgba(200,235,95,0.1)]"
             >
-              Inquire via Email
+              <span>Inquire via Email</span>
+              <span className="text-[8px] opacity-75 lowercase tracking-normal">abuqitmirshirazalmadani@gmail.com</span>
             </a>
           </div>
         </div>

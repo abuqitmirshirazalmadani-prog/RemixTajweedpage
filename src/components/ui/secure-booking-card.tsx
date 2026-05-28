@@ -137,9 +137,10 @@ export function SecureBookingCard() {
               </a>
               <a 
                 href="mailto:abuqitmirshirazalmadani@gmail.com?subject=Tajweedpage%20Booking%2520Submission"
-                className="bg-zinc-950 border border-white/10 text-white font-mono text-[10px] tracking-widest py-3 rounded-xl hover:bg-zinc-90 w-full text-center transition-colors block"
+                className="bg-zinc-950 border border-white/10 text-white font-mono text-[9px] tracking-widest py-2.5 rounded-xl hover:bg-zinc-900 w-full text-center transition-colors block leading-tight px-2"
               >
-                Inquire via Email
+                <span className="block mb-0.5">Inquire via Email</span>
+                <span className="text-[8px] opacity-60 lowercase font-sans normal-case block">abuqitmirshirazalmadani@gmail.com</span>
               </a>
             </div>
           </div>
