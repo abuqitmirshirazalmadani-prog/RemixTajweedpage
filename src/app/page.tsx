@@ -15,6 +15,8 @@ import { FAQAccordionBlock } from "@/components/ui/faq-accordion-block-shadcnui"
 import { PremiumMarquee } from "@/components/ui/premium-marquee";
 import { NavigationHeader } from "@/components/ui/navigation-header";
 import { useRouter } from "next/navigation";
+import { db } from "@/lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
 import { 
   ArrowRight, 
   CheckCircle2, 
@@ -80,6 +82,62 @@ export default function Home() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [bookingType, setBookingType] = useState<"trial" | "demo">("trial");
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [timing, setTiming] = useState("Morning Slots (6:00 AM - 11:00 AM)");
+  const [smtpWarning, setSmtpWarning] = useState(false);
+
+  const handleBookingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSmtpWarning(false);
+
+    const bookingId = "booking_" + Date.now();
+    const submissionData = {
+      id: bookingId,
+      fullName: fullName,
+      email: email,
+      phone: phone || "",
+      course: bookingType === "trial" ? "Free Trial (Home Page)" : "Demo Class (Home Page)",
+      level: `Preferred timing: ${timing}`,
+      comments: "Submitted from primary modal on Home Page",
+      sourcePage: "Home Page Modal CTA",
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+      // 1. Save data securely to Firebase Firestore
+      await setDoc(doc(db, "bookings", bookingId), submissionData);
+
+      // 2. Trigger Next.js API route to send the email
+      const res = await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(submissionData)
+      });
+      const data = await res.json();
+      if (data && data.warning === "SMTP config missing") {
+        setSmtpWarning(true);
+      }
+    } catch (err) {
+      console.error("Booking registry error:", err);
+    } finally {
+      setIsSubmitting(false);
+      setFormSubmitted(true);
+    }
+  };
+
+  const handleReset = () => {
+    setFullName("");
+    setEmail("");
+    setPhone("");
+    setSmtpWarning(false);
+    setFormSubmitted(false);
+  };
   
   // FAQ accordion state
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -437,10 +495,7 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => {
-                setBookingOpen(false);
-                setFormSubmitted(false);
-              }}
+              onClick={handleReset}
               className="absolute inset-0 bg-black/85 backdrop-blur-sm"
             />
 
@@ -452,10 +507,7 @@ export default function Home() {
               className="relative w-full max-w-lg bg-zinc-950 border border-[#C8EB5F]/20 p-8 sm:p-10 rounded-[36px] shadow-[0_0_50px_rgba(200,235,95,0.1)] z-10"
             >
               <button 
-                onClick={() => {
-                  setBookingOpen(false);
-                  setFormSubmitted(false);
-                }}
+                onClick={handleReset}
                 className="absolute top-6 right-6 text-neutral-400 hover:text-white font-mono text-xs uppercase tracking-widest"
               >
                 [ CLOSE ]
@@ -504,8 +556,16 @@ export default function Home() {
                   <CheckCircle2 className="text-[#C8EB5F] mx-auto animate-bounce" size={32} />
                   <h4 className="text-white font-serif text-lg">Inquiry Confirmed</h4>
                   <p className="text-neutral-400 text-xs font-light leading-relaxed">
-                    Success! A coordinator situated inside your specific timezone will contact you over WhatsApp/Email within 2 hours to locks in the exact slots.
+                    Success! A coordinator situated inside your specific timezone will contact you over WhatsApp/Email within 2 hours to lock in the exact slots.
                   </p>
+
+                  {smtpWarning && (
+                    <div className="bg-amber-500/10 border border-amber-500/30 p-3 rounded-lg text-left text-[11px] text-amber-300 font-mono space-y-1">
+                      <p className="font-bold">⚠️ SYSTEM NOTICE (Secrets Setup Required):</p>
+                      <p>Your details are safely recorded in our <strong>Firebase Database "bookings"</strong> collection. However, actual email notification was not dispatched because your <strong>SMTP credentials</strong> are not set in the AI Studio environment variables panel.</p>
+                      <p className="text-[10px] opacity-80">To receive emails, please add keys: <strong>SMTP_HOST</strong>, <strong>SMTP_PORT</strong>, <strong>SMTP_USER</strong>, and <strong>SMTP_PASSWORD</strong> under the Secrets tab in AI Studio.</p>
+                    </div>
+                  )}
                   
                   <div className="flex flex-col gap-2 pt-2">
                     <a 
@@ -525,10 +585,7 @@ export default function Home() {
                   </div>
 
                   <button
-                    onClick={() => {
-                      setBookingOpen(false);
-                      setFormSubmitted(false);
-                    }}
+                    onClick={handleReset}
                     className="mt-2 text-xs font-mono text-neutral-400 hover:text-white hover:underline block mx-auto"
                   >
                     Return to site
@@ -536,10 +593,7 @@ export default function Home() {
                 </div>
               ) : (
                 <form 
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    setFormSubmitted(true);
-                  }}
+                  onSubmit={handleBookingSubmit}
                   className="space-y-4"
                 >
                   <div>
@@ -548,6 +602,8 @@ export default function Home() {
                       type="text"
                       required
                       placeholder="e.g. Salim Ahmed"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
                       className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#C8EB5F]"
                     />
                   </div>
@@ -558,6 +614,8 @@ export default function Home() {
                       type="email"
                       required
                       placeholder="e.g. salim@gmail.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#C8EB5F]"
                     />
                   </div>
@@ -568,24 +626,31 @@ export default function Home() {
                       type="tel"
                       required
                       placeholder="e.g. +1 (555) 420 9100"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
                       className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#C8EB5F]"
                     />
                   </div>
 
                   <div>
                     <label className="text-[10px] tracking-widest font-mono text-neutral-400 uppercase block mb-1.5">Class Timings Preferred</label>
-                    <select className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-neutral-300 focus:outline-none">
-                      <option>Morning Slots (6:00 AM - 11:00 AM)</option>
-                      <option>Afternoon Slots (12:00 PM - 4:00 PM)</option>
-                      <option>Evening Slots (5:00 PM - 10:00 PM)</option>
+                    <select 
+                      value={timing}
+                      onChange={(e) => setTiming(e.target.value)}
+                      className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-neutral-300 focus:outline-none"
+                    >
+                      <option value="Morning Slots (6:00 AM - 11:00 AM)">Morning Slots (6:00 AM - 11:00 AM)</option>
+                      <option value="Afternoon Slots (12:00 PM - 4:00 PM)">Afternoon Slots (12:00 PM - 4:00 PM)</option>
+                      <option value="Evening Slots (5:00 PM - 10:00 PM)">Evening Slots (5:00 PM - 10:00 PM)</option>
                     </select>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full bg-[#C8EB5F] p-4 text-black text-[11px] tracking-widest font-mono uppercase font-bold text-center mt-2 shadow-[0_4px_25px_rgba(200,235,95,0.15)]"
+                    disabled={isSubmitting}
+                    className="w-full bg-[#C8EB5F] p-4 text-black text-[11px] tracking-widest font-mono uppercase font-bold text-center mt-2 shadow-[0_4px_25px_rgba(200,235,95,0.15)] disabled:opacity-50"
                   >
-                    SECURE LIVE ONE-ON-ONE SEAT
+                    {isSubmitting ? "PROCESSING..." : "SECURE LIVE ONE-ON-ONE SEAT"}
                   </button>
                 </form>
               )}

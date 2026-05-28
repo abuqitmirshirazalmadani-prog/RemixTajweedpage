@@ -403,6 +403,7 @@ export default function BlogPage() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [smtpWarning, setSmtpWarning] = useState(false);
 
   // Form entries
   const [formData, setFormData] = useState({
@@ -798,6 +799,7 @@ export default function BlogPage() {
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSmtpWarning(false);
 
     const bookingId = "booking_" + Date.now();
     const submissionData = {
@@ -817,13 +819,17 @@ export default function BlogPage() {
       await setDoc(doc(db, "bookings", bookingId), submissionData);
 
       // 2. Trigger Next.js API route to send the email
-      await fetch("/api/send-email", {
+      const res = await fetch("/api/send-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(submissionData)
       });
+      const data = await res.json();
+      if (data && data.warning === "SMTP config missing") {
+        setSmtpWarning(true);
+      }
     } catch (err) {
       console.error("Booking registry error:", err);
     } finally {
@@ -1955,6 +1961,13 @@ export default function BlogPage() {
                   <p className="text-xs text-neutral-400 leading-relaxed max-w-xs mx-auto">
                     Thank you. A coordinator will contact you shortly via WhatsApp or email to complete your registration.
                   </p>
+                  {smtpWarning && (
+                    <div className="bg-amber-500/10 border border-amber-500/30 p-3.5 rounded-2xl text-left text-[11px] text-amber-300 font-mono space-y-1">
+                      <p className="font-bold">⚠️ SYSTEM NOTICE (Secrets Setup Required):</p>
+                      <p>Your details are safely recorded in our <strong>Firebase Database "bookings"</strong> collection. However, actual email notification was not dispatched because your <strong>SMTP credentials</strong> are not set in the AI Studio environment variables panel.</p>
+                      <p className="text-[10px] opacity-80">To receive emails, please add keys: <strong>SMTP_HOST</strong>, <strong>SMTP_PORT</strong>, <strong>SMTP_USER</strong>, and <strong>SMTP_PASSWORD</strong> under the Secrets tab in AI Studio.</p>
+                    </div>
+                  )}
                   <button
                     onClick={() => {
                       setFormSubmitted(false);

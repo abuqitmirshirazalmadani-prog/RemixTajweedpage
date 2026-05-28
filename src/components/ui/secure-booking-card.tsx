@@ -18,6 +18,7 @@ export function SecureBookingCard() {
   const [timezone, setTimezone] = useState("GMT+5 (Islamabad/Karachi)");
 
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [smtpWarning, setSmtpWarning] = useState(false);
 
   // Timezones suggestions for dynamic selections
   const timezones = [
@@ -50,6 +51,7 @@ export function SecureBookingCard() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSmtpWarning(false);
 
     const bookingId = "booking_" + Date.now();
     const submissionData = {
@@ -69,13 +71,17 @@ export function SecureBookingCard() {
       await setDoc(doc(db, "bookings", bookingId), submissionData);
 
       // 2. Trigger Next.js API route to send the email
-      await fetch("/api/send-email", {
+      const res = await fetch("/api/send-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(submissionData)
       });
+      const data = await res.json();
+      if (data && data.warning === "SMTP config missing") {
+        setSmtpWarning(true);
+      }
     } catch (err) {
       console.error("Booking registry error:", err);
     } finally {
@@ -88,6 +94,7 @@ export function SecureBookingCard() {
     setName("");
     setEmail("");
     setPhone("");
+    setSmtpWarning(false);
     setFormSubmitted(false);
   };
 
@@ -162,6 +169,14 @@ export function SecureBookingCard() {
             <p className="text-neutral-400 text-xs font-light leading-relaxed max-w-xs mx-auto">
               Success! A course assistant will contact you over WhatsApp or Email inside <strong>2 hours</strong> to confirm your custom timezone timings and provide your free Zoom link.
             </p>
+
+            {smtpWarning && (
+              <div className="bg-amber-500/10 border border-amber-500/30 p-4 rounded-2xl text-left text-[11px] text-amber-300 font-mono space-y-1.5 max-w-xs mx-auto">
+                <p className="font-bold">⚠️ SYSTEM NOTICE (Secrets Setup Required):</p>
+                <p>Your details are safely recorded in our <strong>Firebase Database "bookings"</strong> collection. However, actual email notification was not dispatched because your <strong>SMTP credentials</strong> are not set in the AI Studio environment variables panel.</p>
+                <p className="text-[10px] opacity-80 font-sans">To receive emails, please add keys: <strong>SMTP_HOST</strong>, <strong>SMTP_PORT</strong>, <strong>SMTP_USER</strong>, and <strong>SMTP_PASSWORD</strong> under the Secrets tab in AI Studio.</p>
+              </div>
+            )}
 
             <div className="flex flex-col gap-2.5 pt-2 max-w-xs mx-auto">
               <a 
