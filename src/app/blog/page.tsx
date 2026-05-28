@@ -295,11 +295,37 @@ const generateSlug = (text: string) => {
   return text
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9\s_-]/g, "") // remove anything that is not alphanumeric, whitespace, under, hyphen
-    .replace(/[\s_]+/g, "-")       // replace space/under with single hyphen
+    .replace(/[^a-z0-9\s-]/g, "") // remove anything that is not alphanumeric, whitespace, hyphen (no underscores to pass database match rules)
+    .replace(/\s+/g, "-")          // replace space with single hyphen
     .replace(/-+/g, "-")           // collapse repeat hyphens
     .replace(/^-+|-+$/g, "")       // trim leading/trailing hyphens
     .substring(0, 100);            // fit well under 128 characters
+};
+
+const cleanUrl = (input: string): string => {
+  let cleaned = input.trim();
+  if (!cleaned) return "";
+
+  // Extract the last full http/https occurrence in case of bad paste/overwrite
+  const secondHttps = cleaned.indexOf("https://", 1);
+  const secondHttp = cleaned.indexOf("http://", 1);
+
+  if (secondHttps !== -1) {
+    cleaned = cleaned.substring(secondHttps);
+  } else if (secondHttp !== -1) {
+    cleaned = cleaned.substring(secondHttp);
+  } else {
+    // If there is preceding text before http/https, crop to the main url
+    const firstHttps = cleaned.indexOf("https://");
+    const firstHttp = cleaned.indexOf("http://");
+    if (firstHttps > 0) {
+      cleaned = cleaned.substring(firstHttps);
+    } else if (firstHttp > 0) {
+      cleaned = cleaned.substring(firstHttp);
+    }
+  }
+
+  return cleaned;
 };
 
 const getFullContent = (content: string[] | string | undefined | null): string => {
@@ -310,6 +336,8 @@ const getFullContent = (content: string[] | string | undefined | null): string =
   return content;
 };
 
+const FALLBACK_IMAGE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='600' viewBox='0 0 800 600'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2309090b'/><stop offset='100%25' stop-color='%231f1f23'/></linearGradient></defs><rect width='100%25' height='100%25' fill='url(%23g)'/><text x='50%25' y='50%25' fill='%23C8EB5F' font-family='sans-serif' font-size='14' letter-spacing='6' text-anchor='middle' dominant-baseline='middle' opacity='0.7'>TAJWEED JOURNAL</text></svg>";
+
 function ResilientImage({ src, alt, className, fill, sizes, priority, style }: {
   src: string;
   alt: string;
@@ -319,23 +347,34 @@ function ResilientImage({ src, alt, className, fill, sizes, priority, style }: {
   priority?: boolean;
   style?: React.CSSProperties;
 }) {
-  const [imgSrc, setImgSrc] = useState(src || "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1500&auto=format&fit=crop");
+  const [imgSrc, setImgSrc] = useState<string>(src || FALLBACK_IMAGE);
+  const [hasFailedOnce, setHasFailedOnce] = useState<boolean>(false);
 
   useEffect(() => {
-    setImgSrc(src || "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1500&auto=format&fit=crop");
+    setImgSrc(src || FALLBACK_IMAGE);
+    setHasFailedOnce(false);
   }, [src]);
+
+  const handleError = () => {
+    if (!hasFailedOnce) {
+      setHasFailedOnce(true);
+      // First, try a high-quality standard Unsplash fallback
+      setImgSrc("https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1500&auto=format&fit=crop");
+    } else {
+      // If that also fails or is blocked, slide in our gorgeous local vector gradient SVG reference
+      setImgSrc(FALLBACK_IMAGE);
+    }
+  };
 
   return (
     <img
       src={imgSrc}
       alt={alt}
-      className={cn(className, fill ? "absolute inset-0 w-full h-full object-cover" : "")}
+      className={cn(className, fill ? "absolute inset-0 w-full h-full object-cover animate-fade-in" : "")}
       sizes={sizes}
       style={style}
       loading={priority ? "eager" : "lazy"}
-      onError={() => {
-        setImgSrc("https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1500&auto=format&fit=crop");
-      }}
+      onError={handleError}
       referrerPolicy="no-referrer"
     />
   );
@@ -605,7 +644,7 @@ export default function BlogPage() {
     } else {
       setEditingPost(null);
       setEditorData({
-        id: `blog-${Date.now()}`,
+        id: "",
         category: "Tajweed",
         titleNL: "",
         titleEN: "",
@@ -634,9 +673,9 @@ export default function BlogPage() {
     if (!isAdminLoggedIn) return;
     setDbSaving(true);
 
-    const docId = editorData.id.replace(/[^a-zA-Z0-9_\-]/g, "").trim();
+    const docId = generateSlug(editorData.id || editorData.titleEN || editorData.titleNL);
     if (!docId) {
-      alert("Please enter a valid unique identifier (lowercase letters, numbers, and hyphens only).");
+      alert("Please enter a valid unique identifier slug or supply a title.");
       setDbSaving(false);
       return;
     }
@@ -1632,16 +1671,16 @@ export default function BlogPage() {
       {/* Interactive Reader Drawer (Slide-Over panel) */}
       <AnimatePresence>
         {selectedBlog && (
-          <div className="fixed inset-0 z-50 flex justify-end bg-black/80 backdrop-blur-sm" id="blog-reader-backdrop">
+          <div className="fixed inset-0 z-50 flex justify-center bg-[#080808]/98 backdrop-blur-xl" id="blog-reader-backdrop">
             {/* Click backdrop to exit */}
             <div className="absolute inset-0" onClick={() => setSelectedBlog(null)} />
             
             <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 150 }}
-              className="relative w-full max-w-3xl bg-[#080808] border-l border-white/10 h-full flex flex-col z-10 shadow-3xl text-white overflow-hidden"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 30 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full h-full bg-[#080808] flex flex-col z-10 text-white overflow-hidden"
               id="blog-reader-drawer-container"
             >
               
@@ -1682,126 +1721,128 @@ export default function BlogPage() {
                 </div>
               </div>
 
-              {/* Scrollable Article Area */}
-              <div className="flex-1 overflow-y-auto p-6 md:p-12 space-y-8 select-text">
+              {/* Scrollable Article Area - beautifully max-width centered for luxury desktop reading experience */}
+              <div className="flex-1 overflow-y-auto px-6 py-10 md:py-16 select-text bg-[#080808]" id="blog-reader-scrollable">
+                <div className="max-w-4xl mx-auto w-full space-y-12">
                 
-                {/* Visual Cover Banner with full black overlays */}
-                <div className="relative h-[250px] md:h-[400px] w-full rounded-[24px] overflow-hidden shadow-inner font-mono text-zinc-400">
-                  <ResilientImage 
-                    src={selectedBlog.imageUrl} 
-                    alt={readingLanguage === "NL" ? selectedBlog.titleNL : selectedBlog.titleEN} 
-                    fill 
-                    className="brightness-85"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent opacity-80" />
-                  
-                  {/* Floating category + read time badge on bottom-left, exact matches */}
-                  <div className="absolute bottom-6 left-6 z-10 font-mono text-[9px] tracking-widest uppercase bg-black/85 backdrop-blur-md px-3.5 py-2 border border-white/10 rounded-full flex items-center gap-1.5 shadow-xl">
-                    <span className="text-[#C8EB5F] font-bold">{selectedBlog.category.toUpperCase()}</span>
-                    <span className="text-neutral-600">•</span>
-                    <span className="text-neutral-300 font-medium">{selectedBlog.readTime.toUpperCase()}</span>
+                  {/* Visual Cover Banner with full black overlays */}
+                  <div className="relative h-[250px] md:h-[400px] w-full rounded-[24px] overflow-hidden shadow-inner font-mono text-zinc-400">
+                    <ResilientImage 
+                      src={selectedBlog.imageUrl} 
+                      alt={readingLanguage === "NL" ? selectedBlog.titleNL : selectedBlog.titleEN} 
+                      fill 
+                      className="brightness-85"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent opacity-80" />
+                    
+                    {/* Floating category + read time badge on bottom-left, exact matches */}
+                    <div className="absolute bottom-6 left-6 z-10 font-mono text-[9px] tracking-widest uppercase bg-black/85 backdrop-blur-md px-3.5 py-2 border border-white/10 rounded-full flex items-center gap-1.5 shadow-xl">
+                      <span className="text-[#C8EB5F] font-bold">{selectedBlog.category.toUpperCase()}</span>
+                      <span className="text-neutral-600">•</span>
+                      <span className="text-neutral-300 font-medium">{selectedBlog.readTime.toUpperCase()}</span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Article Info Column */}
-                <div className="space-y-4">
-                  <div className="text-[10px] font-mono tracking-[0.25em] text-neutral-500 uppercase flex flex-wrap items-center gap-2 mt-3">
-                    <span>{selectedBlog.date.toUpperCase()}</span>
-                    <span className="text-neutral-700 font-bold">•</span>
-                    <span>Written by {selectedBlog.author.name}</span>
-                  </div>
-                  
-                  <h1 
-                    style={{ fontFamily: "var(--font-cormorant)" }}
-                    className="text-3xl md:text-5xl font-normal leading-tight text-white uppercase tracking-tight"
-                  >
-                    {readingLanguage === "NL" ? selectedBlog.titleNL : selectedBlog.titleEN}
-                  </h1>
-
-                  <p 
-                    style={{ fontFamily: "var(--font-cormorant)" }}
-                    className="font-serif text-sm md:text-xl text-neutral-400 italic max-w-2xl font-light leading-relaxed"
-                  >
-                    {readingLanguage === "NL" ? selectedBlog.subtitleNL : selectedBlog.subtitleEN}
-                  </p>
-                </div>
-
-                {/* Main Excerpt Block Quote */}
-                <div className="bg-[#C8EB5F]/3 border-l-2 border-[#C8EB5F] p-5 my-6 rounded-r-xl">
-                  <p 
-                    style={{ fontFamily: "var(--font-cormorant)" }}
-                    className="font-serif text-md md:text-lg text-neutral-200 italic font-light leading-relaxed"
-                  >
-                    "{readingLanguage === "NL" ? selectedBlog.quoteNL : selectedBlog.quoteEN}"
-                  </p>
-                </div>
-
-                {/* Main Content Body Paragraphs */}
-                <div className="space-y-6 text-sm md:text-base text-neutral-300 font-sans font-light leading-relaxed markdown-container">
-                  <Markdown
-                    components={{
-                      h1: ({node, ...props}) => <h1 style={{ fontFamily: "var(--font-cormorant)" }} className="text-2xl md:text-3xl font-medium text-white mt-8 mb-4 uppercase tracking-wide border-b border-white/10 pb-2 font-normal" {...props} />,
-                      h2: ({node, ...props}) => <h2 style={{ fontFamily: "var(--font-cormorant)" }} className="text-xl md:text-2xl font-normal text-white mt-6 mb-3 uppercase tracking-wide" {...props} />,
-                      h3: ({node, ...props}) => <h3 style={{ fontFamily: "var(--font-cormorant)" }} className="text-lg md:text-xl font-medium text-[#C8EB5F] mt-5 mb-2 font-mono uppercase tracking-widest" {...props} />,
-                      p: ({node, ...props}) => <p className="mb-4 leading-relaxed text-neutral-300 font-sans font-light text-sm md:text-base" {...props} />,
-                      ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4 space-y-2 text-neutral-300" {...props} />,
-                      ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-4 space-y-2 text-neutral-300" {...props} />,
-                      li: ({node, ...props}) => <li className="pl-1 text-neutral-300" {...props} />,
-                      strong: ({node, ...props}) => <strong className="text-[#C8EB5F] font-bold" {...props} />,
-                      em: ({node, ...props}) => <em className="italic text-neutral-200" {...props} />,
-                      blockquote: ({node, ...props}) => <blockquote className="border-l-2 border-[#C8EB5F] bg-[#C8EB5F]/5 p-4 my-4 rounded-r-lg italic text-neutral-200" {...props} />,
-                      a: ({node, ...props}) => <a className="text-[#C8EB5F] underline hover:text-white transition-colors" target="_blank" rel="noopener noreferrer" {...props} />
-                    }}
-                  >
-                    {getFullContent(readingLanguage === "NL" ? selectedBlog.contentNL : selectedBlog.contentEN)}
-                  </Markdown>
-                </div>
-
-                {/* Deep Highlights Checklist Box */}
-                <div className="bg-zinc-950 p-6 md:p-8 rounded-3xl border border-white/5 space-y-4 my-8">
-                  <span className="text-[10px] font-mono tracking-widest text-[#C8EB5F] uppercase block font-bold">CRITICAL KEY TAKEAWAYS</span>
-                  <div className="space-y-3">
-                    {(readingLanguage === "NL" ? selectedBlog.keyHighlightsNL : selectedBlog.keyHighlightsEN).map((h, i) => (
-                      <div key={i} className="flex items-start gap-3 text-xs md:text-sm text-neutral-300 font-sans">
-                        <span className="h-5 w-5 rounded-full border border-[#C8EB5F]/25 bg-[#C8EB5F]/5 flex items-center justify-center shrink-0 mt-0.5">
-                          <Check size={10} className="text-[#C8EB5F]" />
-                        </span>
-                        <span>{h}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Integrated Booking CTA Area within Journal */}
-                <div className="border-t border-white/5 pt-8 text-center space-y-4 bg-zinc-950/40 p-6 rounded-3xl mt-12">
-                  <span 
-                    style={{ fontFamily: "var(--font-cormorant)" }}
-                    className="text-xl md:text-2xl tracking-wide uppercase text-[#C8EB5F] block"
-                  >
-                    Ready to Elevate Your Recitation to elite status?
-                  </span>
-                  <p className="text-xs text-neutral-400 font-light max-w-lg mx-auto leading-relaxed">
-                    Schedule a complimentary 1-on-1 sensing class today with our certified scholars and receive direct expert guidance on your pronunciation.
-                  </p>
-                  <div className="pt-2">
-                    <button 
-                      onClick={() => {
-                        setSelectedBlog(null);
-                        setBookingOpen(true);
-                      }}
-                      className="px-6 py-3 bg-[#C8EB5F] hover:bg-white text-black text-[10px] font-mono font-bold uppercase tracking-widest transition-all rounded-lg cursor-pointer"
+                  {/* Article Info Column */}
+                  <div className="space-y-4">
+                    <div className="text-[10px] font-mono tracking-[0.25em] text-neutral-500 uppercase flex flex-wrap items-center gap-2 mt-3">
+                      <span>{selectedBlog.date.toUpperCase()}</span>
+                      <span className="text-neutral-700 font-bold">•</span>
+                      <span>Written by {selectedBlog.author.name}</span>
+                    </div>
+                    
+                    <h1 
+                      style={{ fontFamily: "var(--font-cormorant)" }}
+                      className="text-3xl md:text-5xl font-normal leading-tight text-white uppercase tracking-tight"
                     >
-                      Secure Free Trial Lesson
-                    </button>
+                      {readingLanguage === "NL" ? selectedBlog.titleNL : selectedBlog.titleEN}
+                    </h1>
+
+                    <p 
+                      style={{ fontFamily: "var(--font-cormorant)" }}
+                      className="font-serif text-sm md:text-xl text-neutral-400 italic max-w-2xl font-light leading-relaxed"
+                    >
+                      {readingLanguage === "NL" ? selectedBlog.subtitleNL : selectedBlog.subtitleEN}
+                    </p>
                   </div>
-                </div>
 
-                {/* Closing signature element */}
-                <div className="py-8 flex items-center justify-between border-t border-white/5 text-neutral-600 font-mono text-[9px] uppercase tracking-widest">
-                  <span>TAJWEEDPAGE RECITATION DEPT</span>
-                  <span>VERIFIED TRUSTED GATEWAY</span>
-                </div>
+                  {/* Main Excerpt Block Quote */}
+                  <div className="bg-[#C8EB5F]/3 border-l-2 border-[#C8EB5F] p-5 my-6 rounded-r-xl">
+                    <p 
+                      style={{ fontFamily: "var(--font-cormorant)" }}
+                      className="font-serif text-md md:text-lg text-neutral-200 italic font-light leading-relaxed"
+                    >
+                      "{readingLanguage === "NL" ? selectedBlog.quoteNL : selectedBlog.quoteEN}"
+                    </p>
+                  </div>
 
+                  {/* Main Content Body Paragraphs */}
+                  <div className="space-y-6 text-sm md:text-base text-neutral-300 font-sans font-light leading-relaxed markdown-container">
+                    <Markdown
+                      components={{
+                        h1: ({node, ...props}) => <h1 style={{ fontFamily: "var(--font-cormorant)" }} className="text-2xl md:text-3xl font-medium text-white mt-8 mb-4 uppercase tracking-wide border-b border-white/10 pb-2 font-normal" {...props} />,
+                        h2: ({node, ...props}) => <h2 style={{ fontFamily: "var(--font-cormorant)" }} className="text-xl md:text-2xl font-normal text-white mt-6 mb-3 uppercase tracking-wide" {...props} />,
+                        h3: ({node, ...props}) => <h3 style={{ fontFamily: "var(--font-cormorant)" }} className="text-lg md:text-xl font-medium text-[#C8EB5F] mt-5 mb-2 font-mono uppercase tracking-widest" {...props} />,
+                        p: ({node, ...props}) => <p className="mb-4 leading-relaxed text-neutral-300 font-sans font-light text-sm md:text-base" {...props} />,
+                        ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4 space-y-2 text-neutral-300" {...props} />,
+                        ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-4 space-y-2 text-neutral-300" {...props} />,
+                        li: ({node, ...props}) => <li className="pl-1 text-neutral-300" {...props} />,
+                        strong: ({node, ...props}) => <strong className="text-[#C8EB5F] font-bold" {...props} />,
+                        em: ({node, ...props}) => <em className="italic text-neutral-200" {...props} />,
+                        blockquote: ({node, ...props}) => <blockquote className="border-l-2 border-[#C8EB5F] bg-[#C8EB5F]/5 p-4 my-4 rounded-r-lg italic text-neutral-200" {...props} />,
+                        a: ({node, ...props}) => <a className="text-[#C8EB5F] underline hover:text-white transition-colors" target="_blank" rel="noopener noreferrer" {...props} />
+                      }}
+                    >
+                      {getFullContent(readingLanguage === "NL" ? selectedBlog.contentNL : selectedBlog.contentEN)}
+                    </Markdown>
+                  </div>
+
+                  {/* Deep Highlights Checklist Box */}
+                  <div className="bg-zinc-950 p-6 md:p-8 rounded-3xl border border-white/5 space-y-4 my-8">
+                    <span className="text-[10px] font-mono tracking-widest text-[#C8EB5F] uppercase block font-bold">CRITICAL KEY TAKEAWAYS</span>
+                    <div className="space-y-3">
+                      {(readingLanguage === "NL" ? selectedBlog.keyHighlightsNL : selectedBlog.keyHighlightsEN).map((h, i) => (
+                        <div key={i} className="flex items-start gap-3 text-xs md:text-sm text-neutral-300 font-sans">
+                          <span className="h-5 w-5 rounded-full border border-[#C8EB5F]/25 bg-[#C8EB5F]/5 flex items-center justify-center shrink-0 mt-0.5">
+                            <Check size={10} className="text-[#C8EB5F]" />
+                          </span>
+                          <span>{h}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Integrated Booking CTA Area within Journal */}
+                  <div className="border-t border-white/5 pt-8 text-center space-y-4 bg-zinc-950/40 p-6 rounded-3xl mt-12">
+                    <span 
+                      style={{ fontFamily: "var(--font-cormorant)" }}
+                      className="text-xl md:text-2xl tracking-wide uppercase text-[#C8EB5F] block"
+                    >
+                      Ready to Elevate Your Recitation to elite status?
+                    </span>
+                    <p className="text-xs text-neutral-400 font-light max-w-lg mx-auto leading-relaxed">
+                      Schedule a complimentary 1-on-1 sensing class today with our certified scholars and receive direct expert guidance on your pronunciation.
+                    </p>
+                    <div className="pt-2">
+                      <button 
+                        onClick={() => {
+                          setSelectedBlog(null);
+                          setBookingOpen(true);
+                        }}
+                        className="px-6 py-3 bg-[#C8EB5F] hover:bg-white text-black text-[10px] font-mono font-bold uppercase tracking-widest transition-all rounded-lg cursor-pointer"
+                      >
+                        Secure Free Trial Lesson
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Closing signature element */}
+                  <div className="py-8 flex items-center justify-between border-t border-white/5 text-neutral-600 font-mono text-[9px] uppercase tracking-widest">
+                    <span>TAJWEEDPAGE RECITATION DEPT</span>
+                    <span>VERIFIED TRUSTED GATEWAY</span>
+                  </div>
+
+                </div>
               </div>
 
             </motion.div>
@@ -2417,13 +2458,25 @@ export default function BlogPage() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                               <div className="space-y-2 md:col-span-2">
                                 <label className="text-[9px] font-mono tracking-widest text-[#888] uppercase block font-bold">COVER PHOTO IMAGE URL</label>
-                                <input 
-                                  type="text"
-                                  required
-                                  value={editorData.imageUrl}
-                                  onChange={(e) => setEditorData({...editorData, imageUrl: e.target.value})}
-                                  className="w-full bg-zinc-900 border border-white/5 text-white text-xs px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-[#C8EB5F] transition-all font-mono"
-                                />
+                                <div className="relative flex items-center">
+                                  <input 
+                                    type="text"
+                                    required
+                                    value={editorData.imageUrl}
+                                    onChange={(e) => setEditorData({...editorData, imageUrl: cleanUrl(e.target.value)})}
+                                    className="w-full bg-zinc-900 border border-white/5 text-white text-xs pl-3.5 pr-10 py-2.5 rounded-xl focus:outline-none focus:border-[#C8EB5F] transition-all font-mono"
+                                  />
+                                  {editorData.imageUrl && (
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditorData({...editorData, imageUrl: ""})}
+                                      className="absolute right-3.5 text-neutral-400 hover:text-[#C8EB5F] transition-all text-xs focus:outline-none cursor-pointer"
+                                      title="Clear image URL"
+                                    >
+                                      ✕
+                                    </button>
+                                  )}
+                                </div>
                               </div>
                               <div className="space-y-2">
                                 <label className="text-[9px] font-mono tracking-widest text-[#888] uppercase block font-bold">READ TIMING (e.g. 5 MIN)</label>
@@ -2460,13 +2513,25 @@ export default function BlogPage() {
                               </div>
                               <div className="space-y-2">
                                 <label className="text-[9px] font-mono tracking-widest text-[#888] uppercase block font-bold">AUTHOR AVATAR URL</label>
-                                <input 
-                                  type="text"
-                                  required
-                                  value={editorData.authorAvatar}
-                                  onChange={(e) => setEditorData({...editorData, authorAvatar: e.target.value})}
-                                  className="w-full bg-zinc-900 border border-white/5 text-white text-xs px-3.5 py-2.5 rounded-xl focus:outline-none focus:border-[#C8EB5F] transition-all font-mono"
-                                />
+                                <div className="relative flex items-center">
+                                  <input 
+                                    type="text"
+                                    required
+                                    value={editorData.authorAvatar}
+                                    onChange={(e) => setEditorData({...editorData, authorAvatar: cleanUrl(e.target.value)})}
+                                    className="w-full bg-zinc-900 border border-white/5 text-white text-xs pl-3.5 pr-10 py-2.5 rounded-xl focus:outline-none focus:border-[#C8EB5F] transition-all font-mono"
+                                  />
+                                  {editorData.authorAvatar && (
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditorData({...editorData, authorAvatar: ""})}
+                                      className="absolute right-3.5 text-neutral-400 hover:text-[#C8EB5F] transition-all text-xs focus:outline-none cursor-pointer"
+                                      title="Clear avatar URL"
+                                    >
+                                      ✕
+                                    </button>
+                                  )}
+                                </div>
                               </div>
                             </div>
 
