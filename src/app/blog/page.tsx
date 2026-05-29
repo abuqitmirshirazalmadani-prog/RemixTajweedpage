@@ -328,12 +328,34 @@ const cleanUrl = (input: string): string => {
   return cleaned;
 };
 
+const convertBareUrlsToMarkdownLinks = (text: string): string => {
+  if (!text) return "";
+  const markdownLinkRegex = /(\[.*?\]\([\s\S]*?\))|(\bhttps?:\/\/[^\s<]+[^\s<.?:!])(?![^<>]*>)/g;
+  return text.replace(markdownLinkRegex, (match, markdownLink, bareUrl) => {
+    if (markdownLink) {
+      return match;
+    }
+    let url = bareUrl;
+    let suffix = "";
+    const trailingPunctuation = /[.,;:!)]+$/;
+    const puncMatch = url.match(trailingPunctuation);
+    if (puncMatch) {
+      url = url.substring(0, url.length - puncMatch[0].length);
+      suffix = puncMatch[0];
+    }
+    return `[${url}](${url})${suffix}`;
+  });
+};
+
 const getFullContent = (content: string[] | string | undefined | null): string => {
   if (!content) return "";
+  let text = "";
   if (Array.isArray(content)) {
-    return content.join("\n\n");
+    text = content.join("\n\n");
+  } else {
+    text = content;
   }
-  return content;
+  return convertBareUrlsToMarkdownLinks(text);
 };
 
 const FALLBACK_IMAGE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='600' viewBox='0 0 800 600'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2309090b'/><stop offset='100%25' stop-color='%231f1f23'/></linearGradient></defs><rect width='100%25' height='100%25' fill='url(%23g)'/><text x='50%25' y='50%25' fill='%23C8EB5F' font-family='sans-serif' font-size='14' letter-spacing='6' text-anchor='middle' dominant-baseline='middle' opacity='0.7'>TAJWEED JOURNAL</text></svg>";
