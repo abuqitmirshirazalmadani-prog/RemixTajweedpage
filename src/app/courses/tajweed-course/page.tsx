@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { NavigationHeader } from "@/components/ui/navigation-header";
-import { HorizonCanvas } from "@/components/ui/horizon-hero-section";
 import { 
   ContainerAnimated, 
   ContainerInset, 

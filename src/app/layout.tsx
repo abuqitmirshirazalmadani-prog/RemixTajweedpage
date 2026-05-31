@@ -8,30 +8,35 @@ import "./globals.css";
 const inter = Inter({ 
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
 });
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-cormorant",
+  display: "swap",
 });
 
 const cinzel = Cinzel_Decorative({
   subsets: ["latin"],
   weight: ["400", "700"],
   variable: "--font-cinzel",
+  display: "swap",
 });
 
 const marcellus = Marcellus({
   subsets: ["latin"],
   weight: ["400"],
   variable: "--font-marcellus",
+  display: "swap",
 });
 
 const lora = Lora({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-lora",
+  display: "swap",
 });
 
 export const metadata: Metadata = {

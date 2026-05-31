@@ -306,6 +306,14 @@ const cleanUrl = (input: string): string => {
   let cleaned = input.trim();
   if (!cleaned) return "";
 
+  // If there is any concatenated double url such as "something.pngps://...", split by "ps://" or similar
+  if (cleaned.includes("postimg.cc")) {
+    const postimgMatch = cleaned.match(/https?:\/\/i\.postimg\.cc\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9._-]+\.(png|jpg|jpeg|webp)/i);
+    if (postimgMatch) {
+      return postimgMatch[0];
+    }
+  }
+
   // Extract the last full http/https occurrence in case of bad paste/overwrite
   const secondHttps = cleaned.indexOf("https://", 1);
   const secondHttp = cleaned.indexOf("http://", 1);
@@ -323,6 +331,13 @@ const cleanUrl = (input: string): string => {
     } else if (firstHttp > 0) {
       cleaned = cleaned.substring(firstHttp);
     }
+  }
+
+  // Final check for prefixed garbage like htthttps:// (just in case)
+  if (cleaned.startsWith("htthttps://")) {
+    cleaned = cleaned.substring(3);
+  } else if (cleaned.startsWith("htthttp://")) {
+    cleaned = cleaned.substring(3);
   }
 
   return cleaned;
@@ -577,6 +592,27 @@ export default function BlogPage() {
       const loaded: BlogPost[] = [];
       snapshot.forEach((docSnap) => {
         const data = docSnap.data();
+        const rawAvatar = data.author?.avatar || "https://picsum.photos/seed/scholar1/150/150";
+        const rawImageUrl = data.imageUrl || "https://picsum.photos/seed/journal/800/600";
+        
+        const cleanedAvatar = cleanUrl(rawAvatar);
+        const cleanedImageUrl = cleanUrl(rawImageUrl);
+
+        // Self-healing database pattern: corrected image URLs will be asynchronously rewritten to Firestore
+        if (rawAvatar !== cleanedAvatar || rawImageUrl !== cleanedImageUrl) {
+          console.log(`Self-healing background sync for doc ${docSnap.id}: correcting url formatting.`);
+          setDoc(doc(db, "blogs", docSnap.id), {
+            ...data,
+            author: {
+              ...(data.author || {}),
+              avatar: cleanedAvatar
+            },
+            imageUrl: cleanedImageUrl
+          }, { merge: true }).catch(err => {
+            console.error("Background Firestore repair failed:", err);
+          });
+        }
+
         loaded.push({
           id: data.id,
           slug: data.slug,
@@ -585,10 +621,14 @@ export default function BlogPage() {
           titleEN: data.titleEN,
           subtitleNL: data.subtitleNL,
           subtitleEN: data.subtitleEN,
-          author: data.author,
+          author: {
+            name: data.author?.name || "Dr. Sheikh Al-Fateh",
+            title: data.author?.title || "Al-Azhar Board of Phonetics",
+            avatar: cleanedAvatar
+          },
           readTime: data.readTime,
           date: data.date,
-          imageUrl: data.imageUrl,
+          imageUrl: cleanedImageUrl,
           quoteNL: data.quoteNL,
           quoteEN: data.quoteEN,
           contentNL: data.contentNL || [],
