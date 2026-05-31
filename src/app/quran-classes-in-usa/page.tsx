@@ -917,7 +917,7 @@ export default function QuranClassesUSAPage() {
           backgroundImage="https://i.postimg.cc/XN1bjzx0/pexels-a-darmel-8164584.jpg"
           contactInfo={{
             website: "tajweedpage.com/usa",
-            phone: "+1 212 555 0199",
+            phone: "+(92) 323-3260859",
             address: "Manhattan, New York, USA"
           }}
         />

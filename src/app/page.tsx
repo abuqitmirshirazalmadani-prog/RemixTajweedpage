@@ -453,6 +453,291 @@ export default function Home() {
         variant="subtle"
       />
 
+      {/* 4.5 CUSTOM LEARNING PROGRAMS */}
+      <section className="py-28 px-6 md:px-12 bg-neutral-900 border-t border-b border-white/5 relative">
+        <div className="max-w-7xl mx-auto text-center mb-16">
+          <p className="text-[10px] tracking-[0.2em] uppercase text-[#C8EB5F] flex justify-center items-center gap-2 mb-4">
+            <span className="w-7 h-[1px] bg-[#C8EB5F]"></span>
+            <span>Choose Your Goal</span>
+            <span className="w-7 h-[1px] bg-[#C8EB5F]"></span>
+          </p>
+          <h2 className="text-4xl md:text-6xl font-light uppercase tracking-tight text-white font-serif text-center">
+            CUSTOM LEARNING PROGRAMS
+          </h2>
+        </div>
+
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          {/* Path 1 */}
+          <div className="group relative h-[420px] overflow-hidden rounded-[28px] border border-white/5">
+            <img 
+              src="https://i.postimg.cc/T2sR66MH/pexels-beyza-yalcin-153182170-34548784.jpg" 
+              alt="Quran Master Program" 
+              className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-10 group-hover:scale-105 transition-all duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent z-10" />
+            <div className="absolute bottom-0 left-0 right-0 p-8 z-20 space-y-3 text-left">
+              <span className="text-[10px] uppercase font-mono tracking-widest text-[#C8EB5F]">INTENSIVE SKILLS</span>
+              <h3 className="text-3xl font-serif text-white tracking-wide">Classical Tajweed Master Series</h3>
+              <p className="text-xs text-neutral-400 font-light leading-relaxed">
+                Master Makharij, Noon Sakinah, Meem Sakinah and Ghunnah. Solid theoretical knowledge paired with heavy practical drills.
+              </p>
+              <button 
+                onClick={() => {
+                  setBookingType("trial");
+                  setBookingOpen(true);
+                }} 
+                className="text-xs tracking-widest uppercase text-[#C8EB5F] font-bold block pt-3 hover:text-white transition-colors cursor-pointer"
+              >
+                RESERVE LEVEL →
+              </button>
+            </div>
+          </div>
+
+          {/* Path 2 */}
+          <div className="group relative h-[420px] overflow-hidden rounded-[28px] border border-white/5">
+            <img 
+              src="https://i.postimg.cc/NMkVNR82/pexels-a-darmel-8164567.jpg" 
+              alt="Fast-track articulation" 
+              className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-10 group-hover:scale-105 transition-all duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent z-10" />
+            <div className="absolute bottom-0 left-0 right-0 p-8 z-20 space-y-3 text-left">
+              <span className="text-[10px] uppercase font-mono tracking-widest text-[#C8EB5F]">FLUENCY POLISH</span>
+              <h3 className="text-3xl font-serif text-white tracking-wide">Step-By-Step Quran Pronunciation</h3>
+              <p className="text-xs text-neutral-400 font-light leading-relaxed">
+                Specially assembled for busy students and adults wishing to wipe out common phonetical deviations and establish clean vocal confidence.
+              </p>
+              <button 
+                onClick={() => {
+                  setBookingType("trial");
+                  setBookingOpen(true);
+                }} 
+                className="text-xs tracking-widest uppercase text-[#C8EB5F] font-bold block pt-3 hover:text-white transition-colors cursor-pointer"
+              >
+                RESERVE LEVEL →
+              </button>
+            </div>
+          </div>
+
+          {/* Path 3 */}
+          <div className="group relative h-[420px] overflow-hidden rounded-[28px] border border-white/5">
+            <img 
+              src="https://i.postimg.cc/J4G6XfF5/pexels-thirdman-7956916.jpg" 
+              alt="Elite Hifdh" 
+              className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-10 group-hover:scale-105 transition-all duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent z-10" />
+            <div className="absolute bottom-0 left-0 right-0 p-8 z-20 space-y-3 text-left">
+              <span className="text-[10px] uppercase font-mono tracking-widest text-amber-300">PREMIUM FOCUS</span>
+              <h3 className="text-3xl font-serif text-white tracking-wide">Elite Hifdh & Tajweed Syllabi</h3>
+              <p className="text-xs text-neutral-400 font-light leading-relaxed">
+                A dual action program covering both memorization and extreme phonetic checking. Attain double certificates under qualified Sheikhs.
+              </p>
+              <button 
+                onClick={() => {
+                  setBookingType("trial");
+                  setBookingOpen(true);
+                }} 
+                className="text-xs tracking-widest uppercase text-amber-300 font-bold block pt-3 hover:text-white transition-colors cursor-pointer"
+              >
+                RESERVE LEVEL →
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 4.6 TUITION / PRICING FORMULES (MEMBERSHIPS) */}
+      <section className="py-32 px-6 md:px-12 bg-black relative overflow-hidden border-t border-b border-white/5">
+        {/* Ambient atmospheric backdrops matching 'Choose Your Reality' style */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-r from-transparent via-[#C8EB5F]/5 to-transparent rounded-full blur-[160px] pointer-events-none" />
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "radial-gradient(ellipse at center, #ffffff 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
+        
+        {/* Section Header */}
+        <div className="text-center mb-20 relative z-10 space-y-4">
+          <p className="inline-flex items-center gap-2 bg-[#C8EB5F]/10 border border-[#C8EB5F]/20 px-3.5 py-1.5 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C8EB5F] animate-pulse"></span>
+            <span className="text-[10px] tracking-[0.3em] font-mono text-[#C8EB5F] uppercase font-bold">SYLLABUS FORMULES</span>
+          </p>
+          <h2 className="text-4xl md:text-6xl font-light uppercase tracking-tight text-white font-serif">
+            TUITION MEMBERSHIP PLANS
+          </h2>
+          <p className="text-neutral-500 text-xs font-light max-w-sm mx-auto leading-relaxed">
+            Transparent pricing for next-generation individual Quran recitation mastery. Choose a learning pace that matches your life.
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch relative z-10">
+          
+          {/* Plan 1: Standard */}
+          <div className="bg-[#090a0d]/80 border border-white/5 p-10 rounded-[32px] flex flex-col justify-between text-left relative overflow-hidden group hover:border-white/15 hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)] transition-all duration-500">
+            {/* Top delicate hairline dither indicator */}
+            <div className="absolute top-0 left-0 w-full h-[2px] bg-white/5 group-hover:bg-[#C8EB5F]/20 transition-all duration-500" />
+            
+            <div className="space-y-8">
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] uppercase font-mono tracking-[0.2em] text-neutral-500 font-bold">SEGMENT 01</span>
+                <span className="text-[9px] uppercase font-mono px-2.5 py-1 rounded-full border border-white/5 bg-white/5 text-neutral-400">
+                  Weekly Guidance
+                </span>
+              </div>
+              
+              <div>
+                <h3 className="text-xl font-serif text-white uppercase tracking-wide group-hover:text-[#C8EB5F] transition-colors duration-300">
+                  Standard Recitation
+                </h3>
+                <div className="mt-4 flex items-baseline gap-2">
+                  <span className="font-serif text-5xl text-white font-light group-hover:text-[#C8EB5F] transition-colors duration-300">$49</span>
+                  <span className="text-xs text-neutral-500 font-mono uppercase tracking-widest">/ month</span>
+                </div>
+              </div>
+
+              <div className="h-[1px] bg-white/5" />
+
+              <ul className="space-y-4 text-xs text-neutral-400 font-light">
+                <li className="flex items-center gap-3">
+                  <span className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center text-[#C8EB5F] shrink-0">✓</span>
+                  <span>Correct Pronunciation (Makharij)</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center text-[#C8EB5F] shrink-0">✓</span>
+                  <span>2 Live One-on-One Classes (Weekly)</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="pt-10">
+              <button 
+                onClick={() => {
+                  setBookingType("trial");
+                  setBookingOpen(true);
+                }}
+                className="w-full text-center border border-white/10 text-white text-[10px] font-bold tracking-[0.2em] uppercase py-4 rounded-2xl hover:text-black hover:bg-[#C8EB5F] hover:border-[#C8EB5F] transition-all duration-300 cursor-pointer"
+              >
+                CHOOSE STANDARD
+              </button>
+            </div>
+          </div>
+
+          {/* Plan 2: Master Highlighted (Atmospheric glow & recommended state) */}
+          <div className="bg-[#0c0d12]/90 border-2 border-[#C8EB5F] p-10 rounded-[32px] flex flex-col justify-between text-left relative overflow-hidden shadow-[0_0_50px_rgba(200,235,95,0.05)]">
+            {/* Top visual recommended banner */}
+            <div className="absolute top-0 left-0 w-full bg-[#C8EB5F] text-black text-[9px] font-mono font-bold tracking-[0.3em] text-center py-2 uppercase font-semibold">
+              Most Popular
+            </div>
+            
+            <div className="space-y-8 pt-6">
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] uppercase font-mono tracking-[0.2em] text-[#C8EB5F] font-bold">SEGMENT 02</span>
+              </div>
+              
+              <div>
+                <h3 className="text-xl font-serif text-white uppercase tracking-wide">
+                  Master Tajweed Program
+                </h3>
+                <div className="mt-4 flex items-baseline gap-2">
+                  <span className="font-serif text-6xl text-white font-medium">$89</span>
+                  <span className="text-xs text-[#C8EB5F] font-mono uppercase tracking-widest">/ month</span>
+                </div>
+              </div>
+
+              <div className="h-[1px] bg-white/10" />
+
+              <ul className="space-y-4 text-xs text-neutral-200 font-light">
+                <li className="flex items-center gap-3">
+                  <span className="w-5 h-5 rounded-md bg-[#C8EB5F]/15 flex items-center justify-center text-[#C8EB5F] shrink-0">✓</span>
+                  <span className="font-normal text-white">4 Live One-on-One Classes (Weekly)</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-5 h-5 rounded-md bg-[#C8EB5F]/15 flex items-center justify-center text-[#C8EB5F] shrink-0">✓</span>
+                  <span>Tailored Quran Pronunciation Polish</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-5 h-5 rounded-md bg-[#C8EB5F]/15 flex items-center justify-center text-[#C8EB5F] shrink-0">✓</span>
+                  <span>Weekly Progress homework & Reports</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-5 h-5 rounded-md bg-[#C8EB5F]/15 flex items-center justify-center text-[#C8EB5F] shrink-0">✓</span>
+                  <span>Course Completion Certificate</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="pt-10">
+              <button 
+                onClick={() => {
+                  setBookingType("trial");
+                  setBookingOpen(true);
+                }}
+                className="w-full text-center bg-[#C8EB5F] text-black font-bold text-[10px] tracking-[0.2em] uppercase py-4 rounded-2xl hover:bg-white transition-all duration-300 shadow-[0_4px_25px_rgba(200,235,95,0.2)] cursor-pointer"
+              >
+                CHOOSE MASTER PRO
+              </button>
+            </div>
+          </div>
+
+          {/* Plan 3: VIP Elite */}
+          <div className="bg-[#090a0d]/80 border border-white/5 p-10 rounded-[32px] flex flex-col justify-between text-left relative overflow-hidden group hover:border-white/15 hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)] transition-all duration-500">
+            {/* Top delicate hairline dither indicator */}
+            <div className="absolute top-0 left-0 w-full h-[2px] bg-white/5 group-hover:bg-[#C8EB5F]/20 transition-all duration-500" />
+            
+            <div className="space-y-8">
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] uppercase font-mono tracking-[0.2em] text-neutral-500 font-bold">SEGMENT 03</span>
+                <span className="text-[9px] uppercase font-mono px-2.5 py-1 rounded-full border border-white/5 bg-white/5 text-neutral-400">
+                  Complete Custom
+                </span>
+              </div>
+              
+              <div>
+                <h3 className="text-xl font-serif text-white uppercase tracking-wide group-hover:text-[#C8EB5F] transition-colors duration-300">
+                  VIP Custom Scholar
+                </h3>
+                <div className="mt-4 flex items-baseline gap-2">
+                  <span className="font-serif text-5xl text-white font-light group-hover:text-[#C8EB5F] transition-colors duration-300">$149</span>
+                  <span className="text-xs text-neutral-500 font-mono uppercase tracking-widest">/ month</span>
+                </div>
+              </div>
+
+              <div className="h-[1px] bg-white/5" />
+
+              <ul className="space-y-4 text-xs text-neutral-400 font-light">
+                <li className="flex items-center gap-3">
+                  <span className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center text-[#C8EB5F] shrink-0">✓</span>
+                  <span>6 Live One-on-One Classes (Weekly)</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center text-[#C8EB5F] shrink-0">✓</span>
+                  <span>Handpicked Elite Scholar assignment</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center text-[#C8EB5F] shrink-0">✓</span>
+                  <span>Personal audio feedback via WhatsApp</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center text-[#C8EB5F] shrink-0">✓</span>
+                  <span>Direct Ijazah Path consultation</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="pt-10">
+              <button 
+                onClick={() => {
+                  setBookingType("trial");
+                  setBookingOpen(true);
+                }}
+                className="w-full text-center border border-white/10 text-white text-[10px] font-bold tracking-[0.2em] uppercase py-4 rounded-2xl hover:text-black hover:bg-[#C8EB5F] hover:border-[#C8EB5F] transition-all duration-300 cursor-pointer"
+              >
+                CHOOSE ELITE VIP
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 5.parent TESTIMONIALS */}
       <section className="relative z-10 py-24 sm:py-32 bg-black border-t border-white/5 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 md:px-12 space-y-16">

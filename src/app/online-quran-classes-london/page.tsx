@@ -639,7 +639,7 @@ export default function LondonQuranClasses() {
         }}
         contactInfo={{
           website: "tajweedpage.com/london",
-          phone: "+44 (0) 745 220 9811",
+          phone: "+(92) 323-3260859",
           address: "Central Court, London, E1 6PX"
         }}
       />

@@ -693,7 +693,7 @@ export default function NetherlandsQuranClasses() {
         }}
         contactInfo={{
           website: "tajweedpage.com/nl",
-          phone: "+31 (0) 20 7401 9283",
+          phone: "+(92) 323-3260859",
           address: "Keizersgracht, 1016 GD Amsterdam, Netherlands"
         }}
       />

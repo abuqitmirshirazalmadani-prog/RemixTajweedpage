@@ -949,7 +949,7 @@ export default function QuranEuropePage() {
           backgroundImage="https://i.postimg.cc/ZRdBMkB1/pexels-timur-weber-9127617.jpg"
           contactInfo={{
             website: "tajweedpage.com",
-            phone: "+44 7946 0958",
+            phone: "+(92) 323-3260859",
             address: "EU Global Hub Coordination"
           }}
           onActionClick={() => {

@@ -935,7 +935,7 @@ export default function QuranClassesUKPage() {
           backgroundImage="https://i.postimg.cc/VLSHr9Xf/pexels-mrashid-15070484.jpg"
           contactInfo={{
             website: "tajweedpage.com/uk",
-            phone: "+44 20 7946 0958",
+            phone: "+(92) 323-3260859",
             address: "Mayfair, London, United Kingdom"
           }}
         />

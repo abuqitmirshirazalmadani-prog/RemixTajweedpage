@@ -1017,7 +1017,7 @@ export default function OnlineQuranClassesCaliforniaPage() {
           backgroundImage="https://images.unsplash.com/photo-1501594907352-04cda38ebc29?q=80&w=1600&auto=format&fit=crop"
           contactInfo={{
             website: "tajweedpage.com/california",
-            phone: "+1 213 555 4233",
+            phone: "+(92) 323-3260859",
             address: "Los Angeles, California, USA"
           }}
         />

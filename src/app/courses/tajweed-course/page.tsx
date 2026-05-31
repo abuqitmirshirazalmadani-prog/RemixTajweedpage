@@ -376,7 +376,7 @@ export default function TajweedCoursePage() {
         backgroundImage="https://i.postimg.cc/7LsH3Zyx/pexels-belalobeid-13549654.jpg"
         contactInfo={{
           website: "tajweedpage.com",
-          phone: "+1 (516) 259-2513",
+          phone: "+(92) 323-3260859",
           address: "NY, USA"
         }}
       />
@@ -804,15 +804,7 @@ export default function TajweedCoursePage() {
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center text-[#C8EB5F] shrink-0">✓</span>
-                  <span>4 Live One-on-One Classes</span>
-                </li>
-                <li className="flex items-center gap-3 text-neutral-600 line-through">
-                  <span className="w-5 h-5 rounded-md bg-[#090a0d] flex items-center justify-center text-neutral-700 shrink-0">✕</span>
-                  <span>Personalized Study Reports</span>
-                </li>
-                <li className="flex items-center gap-3 text-neutral-600 line-through">
-                  <span className="w-5 h-5 rounded-md bg-[#090a0d] flex items-center justify-center text-neutral-700 shrink-0">✕</span>
-                  <span>Course Completion Certificate</span>
+                  <span>2 Live One-on-One Classes (Weekly)</span>
                 </li>
               </ul>
             </div>
@@ -830,16 +822,13 @@ export default function TajweedCoursePage() {
           {/* Plan 2: Master Highlighted (Atmospheric glow & recommended state) */}
           <div className="bg-[#0c0d12]/90 border-2 border-[#C8EB5F] p-10 rounded-[32px] flex flex-col justify-between text-left relative overflow-hidden shadow-[0_0_50px_rgba(200,235,95,0.05)]">
             {/* Top visual recommended banner */}
-            <div className="absolute top-0 left-0 w-full bg-[#C8EB5F] text-black text-[9px] font-mono font-bold tracking-[0.3em] text-center py-2 uppercase">
-              RECOMMENDED SCHOLAR PACKAGE
+            <div className="absolute top-0 left-0 w-full bg-[#C8EB5F] text-black text-[9px] font-mono font-bold tracking-[0.3em] text-center py-2 uppercase font-semibold">
+              Most Popular
             </div>
             
             <div className="space-y-8 pt-6">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] uppercase font-mono tracking-[0.2em] text-[#C8EB5F] font-bold">SEGMENT 02</span>
-                <span className="text-[9px] uppercase font-mono px-2.5 py-1 rounded-full border border-[#C8EB5F]/20 bg-[#C8EB5F]/10 text-[#C8EB5F]">
-                  Most Popular
-                </span>
               </div>
               
               <div>
@@ -857,7 +846,7 @@ export default function TajweedCoursePage() {
               <ul className="space-y-4 text-xs text-neutral-200 font-light">
                 <li className="flex items-center gap-3">
                   <span className="w-5 h-5 rounded-md bg-[#C8EB5F]/15 flex items-center justify-center text-[#C8EB5F] shrink-0">✓</span>
-                  <span className="font-normal text-white">8 Live One-on-One Classes (Twice Weekly)</span>
+                  <span className="font-normal text-white">4 Live One-on-One Classes (Weekly)</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="w-5 h-5 rounded-md bg-[#C8EB5F]/15 flex items-center justify-center text-[#C8EB5F] shrink-0">✓</span>
@@ -912,7 +901,7 @@ export default function TajweedCoursePage() {
               <ul className="space-y-4 text-xs text-neutral-400 font-light">
                 <li className="flex items-center gap-3">
                   <span className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center text-[#C8EB5F] shrink-0">✓</span>
-                  <span>12 Live One-on-One Classes (Flexible)</span>
+                  <span>6 Live One-on-One Classes (Weekly)</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center text-[#C8EB5F] shrink-0">✓</span>
@@ -938,7 +927,6 @@ export default function TajweedCoursePage() {
               </button>
             </div>
           </div>
-
         </div>
       </section>
 

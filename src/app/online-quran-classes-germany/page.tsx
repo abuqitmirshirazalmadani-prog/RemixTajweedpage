@@ -693,7 +693,7 @@ export default function GermanyQuranClasses() {
         }}
         contactInfo={{
           website: "tajweedpage.com/de",
-          phone: "+49 (0) 30 8943 2099",
+          phone: "+(92) 323-3260859",
           address: "Friedrichstraße, 10117 Berlin, Germany"
         }}
       />

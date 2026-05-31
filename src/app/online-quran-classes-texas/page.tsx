@@ -1002,7 +1002,7 @@ export default function OnlineQuranClassesTexasPage() {
           backgroundImage="https://i.postimg.cc/Vvf09fQX/pexels-anat-morad-275582206-34412865.jpg"
           contactInfo={{
             website: "tajweedpage.com/texas",
-            phone: "+1 713 555 9811",
+            phone: "+(92) 323-3260859",
             address: "Houston, Texas, USA"
           }}
         />

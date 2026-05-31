@@ -639,7 +639,7 @@ export default function ManchesterQuranClasses() {
         }}
         contactInfo={{
           website: "tajweedpage.com/manchester",
-          phone: "+44 (0) 745 220 9811",
+          phone: "+(92) 323-3260859",
           address: "Spinningfields, Manchester, M3 3BE"
         }}
       />

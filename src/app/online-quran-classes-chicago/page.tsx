@@ -1002,7 +1002,7 @@ export default function OnlineQuranClassesChicagoPage() {
           backgroundImage="https://i.postimg.cc/W16Dyc9q/pexels-rickyrecap-2539049.jpg"
           contactInfo={{
             website: "tajweedpage.com/chicago",
-            phone: "+1 312 555 0109",
+            phone: "+(92) 323-3260859",
             address: "Loop, Chicago, Illinois, USA"
           }}
         />

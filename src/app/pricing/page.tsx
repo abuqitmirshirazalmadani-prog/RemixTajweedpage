@@ -224,16 +224,20 @@ export default function PricingPage() {
             {/* Plan 1: Starter / Basic Recitation */}
             <div className="relative group bg-zinc-950/50 ring-1 ring-white/10 rounded-3xl p-8 flex flex-col justify-between hover:ring-[#C8EB5F]/30 transition-all duration-300">
               <div className="space-y-6">
-                <div>
-                  <span className="text-[9px] tracking-[0.25em] font-mono text-[#C8EB5F] uppercase block mb-1 font-semibold">BASIC SLOT</span>
-                  <h3 className="text-xl tracking-tight text-white font-serif font-light uppercase">Starter Recitation</h3>
-                  <p className="mt-2 text-xs text-neutral-400 font-sans font-light">Best for introductory Qaida practice</p>
+                <div className="flex justify-between items-center sm:items-start flex-wrap gap-2">
+                  <div>
+                    <span className="text-[9px] tracking-[0.25em] font-mono text-[#C8EB5F] uppercase block mb-1 font-semibold">SEGMENT 01</span>
+                    <h3 className="text-xl tracking-tight text-white font-serif font-light uppercase">Standard Recitation</h3>
+                  </div>
+                  <span className="text-[9px] uppercase font-mono px-2.5 py-1 rounded-full border border-white/5 bg-white/5 text-neutral-400">
+                    Weekly Guidance
+                  </span>
                 </div>
                 <div className="h-px bg-white/5" />
                 <div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-4xl sm:text-5xl font-serif font-light text-white">$45</span>
-                    <span className="text-neutral-500 text-xs font-mono font-light uppercase tracking-wider">/ Every Month</span>
+                    <span className="text-4xl sm:text-5xl font-serif font-light text-white">$49</span>
+                    <span className="text-neutral-500 text-xs font-mono font-light uppercase tracking-wider font-semibold">/ month</span>
                   </div>
                   <p className="text-[10px] text-neutral-500 font-mono mt-1 uppercase">2 live sessions per week</p>
                 </div>
@@ -241,19 +245,11 @@ export default function PricingPage() {
                 <ul className="space-y-4 pt-4 border-t border-white/5">
                   <li className="flex items-start gap-3 text-xs text-neutral-300 font-sans font-light">
                     <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
-                    <span>8 interactive hours per month</span>
-                  </li>
-                  <li className="flex items-start gap-4 text-xs text-neutral-300 font-sans font-light">
-                    <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
-                    <span>Basic classical Arabic alphabets (Qaida)</span>
-                  </li>
-                  <li className="flex items-start gap-3 text-xs text-neutral-300 font-sans font-light">
-                    <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
-                    <span>Personal virtual lecture notebook</span>
+                    <span>Correct Pronunciation (Makharij)</span>
                   </li>
                   <li className="flex items-start gap-3 text-xs text-neutral-300 font-sans font-light pb-4">
                     <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
-                    <span>Dedicated student portal access</span>
+                    <span>2 Live One-on-One Classes (Weekly)</span>
                   </li>
                 </ul>
               </div>
@@ -272,43 +268,44 @@ export default function PricingPage() {
             {/* Plan 2: Pro Plan (Featured) / Intensive Tajweed Precision */}
             <div className="relative group bg-gradient-to-b from-zinc-900/60 via-zinc-950/60 to-zinc-950 border-2 border-[#C8EB5F]/50 shadow-[0_0_50px_rgba(200,235,95,0.06)] rounded-3xl p-8 flex flex-col justify-between hover:border-[#C8EB5F] transition-all duration-300 transform md:-translate-y-2">
               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                <span className="inline-flex items-center gap-1.5 text-[8px] font-mono tracking-widest font-bold text-black bg-[#C8EB5F] rounded-full px-4 py-1 uppercase select-none">
+                <span className="inline-flex items-center gap-1.5 text-[8px] font-mono tracking-widest font-bold text-black bg-[#C8EB5F] rounded-full px-4 py-1 uppercase select-none font-semibold">
                   <Star size={10} fill="black" />
-                  Most Recommended
+                  Most Popular
                 </span>
               </div>
 
               <div className="space-y-6">
-                <div>
-                  <span className="text-[9px] tracking-[0.25em] font-mono text-[#C8EB5F] uppercase block mb-1 font-semibold">PREMIUM MENTORING</span>
-                  <h3 className="text-xl tracking-tight text-white font-serif font-light uppercase">Intensive Tajweed</h3>
-                  <p className="mt-2 text-xs text-neutral-405 font-sans font-light">For comprehensive phonology guidance</p>
+                <div className="flex justify-between items-center sm:items-start flex-wrap gap-2 pt-2">
+                  <div>
+                    <span className="text-[9px] tracking-[0.25em] font-mono text-[#C8EB5F] uppercase block mb-1 font-semibold">SEGMENT 02</span>
+                    <h3 className="text-xl tracking-tight text-white font-serif font-light uppercase">Master Tajweed Program</h3>
+                  </div>
                 </div>
                 <div className="h-px bg-[#C8EB5F]/10" />
                 <div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-4xl sm:text-5xl font-serif font-light text-white">$75</span>
-                    <span className="text-neutral-500 text-xs font-mono font-light uppercase tracking-wider">/ Every Month</span>
+                    <span className="text-4xl sm:text-5xl font-serif font-light text-white">$89</span>
+                    <span className="text-xs text-[#C8EB5F] font-mono uppercase tracking-widest font-semibold">/ month</span>
                   </div>
-                  <p className="text-[10px] text-[#C8EB5F] font-mono mt-1 uppercase">3 live sessions per week</p>
+                  <p className="text-[10px] text-[#C8EB5F] font-mono mt-1 uppercase">4 live sessions per week</p>
                 </div>
                 
                 <ul className="space-y-4 pt-4 border-t border-white/5">
                   <li className="flex items-start gap-3 text-xs text-neutral-250 font-sans font-light">
                     <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
-                    <span>12 premium zoom-based interactive hours</span>
+                    <span>4 Live One-on-One Classes (Weekly)</span>
                   </li>
                   <li className="flex items-start gap-3 text-xs text-neutral-250 font-sans font-light">
                     <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
-                    <span>Intricate phonetic articulation rules (Makhraj)</span>
+                    <span>Tailored Quran Pronunciation Polish</span>
                   </li>
                   <li className="flex items-start gap-3 text-xs text-neutral-250 font-sans font-light">
                     <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
-                    <span>Option to select certified female scholars</span>
+                    <span>Weekly Progress homework & Reports</span>
                   </li>
                   <li className="flex items-start gap-3 text-xs text-neutral-250 font-sans font-light pb-4">
                     <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
-                    <span>Interactive PDF syllabuses & vocal logs</span>
+                    <span>Course Completion Certificate</span>
                   </li>
                 </ul>
               </div>
@@ -327,36 +324,40 @@ export default function PricingPage() {
             {/* Plan 3: Enterprise Plan / Scholar Custom Masterclass */}
             <div className="relative group bg-zinc-950/50 ring-1 ring-white/10 rounded-3xl p-8 flex flex-col justify-between hover:ring-[#C8EB5F]/30 transition-all duration-300">
               <div className="space-y-6">
-                <div>
-                  <span className="text-[9px] tracking-[0.25em] font-mono text-[#C8EB5F] uppercase block mb-1 font-semibold">ELITE MEMORIZATION</span>
-                  <h3 className="text-xl tracking-tight text-white font-serif font-light uppercase">Quranic Masterclass</h3>
-                  <p className="mt-2 text-xs text-neutral-400 font-sans font-light">Engineered for thorough memorization (Hifz)</p>
+                <div className="flex justify-between items-center sm:items-start flex-wrap gap-2">
+                  <div>
+                    <span className="text-[9px] tracking-[0.25em] font-mono text-[#C8EB5F] uppercase block mb-1 font-semibold">SEGMENT 03</span>
+                    <h3 className="text-xl tracking-tight text-white font-serif font-light uppercase">VIP Custom Scholar</h3>
+                  </div>
+                  <span className="text-[9px] uppercase font-mono px-2.5 py-1 rounded-full border border-white/5 bg-white/5 text-neutral-400">
+                    Complete Custom
+                  </span>
                 </div>
                 <div className="h-px bg-white/5" />
                 <div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-4xl sm:text-5xl font-serif font-light text-white">$120</span>
-                    <span className="text-neutral-500 text-xs font-mono font-light uppercase tracking-wider">/ Every Month</span>
+                    <span className="text-4xl sm:text-5xl font-serif font-light text-white">$149</span>
+                    <span className="text-neutral-500 text-xs font-mono font-light uppercase tracking-wider font-semibold">/ month</span>
                   </div>
-                  <p className="text-[10px] text-neutral-500 font-mono mt-1 uppercase">5 live sessions per week</p>
+                  <p className="text-[10px] text-neutral-500 font-mono mt-1 uppercase">6 live sessions per week</p>
                 </div>
                 
                 <ul className="space-y-4 pt-4 border-t border-white/5">
                   <li className="flex items-start gap-3 text-xs text-neutral-300 font-sans font-light">
                     <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
-                    <span>20 comprehensive live sessions per month</span>
+                    <span>6 Live One-on-One Classes (Weekly)</span>
                   </li>
                   <li className="flex items-start gap-4 text-xs text-neutral-300 font-sans font-light">
                     <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
-                    <span>Rigorous memorization tracking & daily mock revision</span>
+                    <span>Handpicked Elite Scholar assignment</span>
                   </li>
                   <li className="flex items-start gap-3 text-xs text-neutral-300 font-sans font-light">
                     <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
-                    <span>Direct WhatsApp monitoring with native Arab scholars</span>
+                    <span>Personal audio feedback via WhatsApp</span>
                   </li>
                   <li className="flex items-start gap-3 text-xs text-neutral-300 font-sans font-light pb-4">
                     <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
-                    <span>Official Ijazah certification preparation tracks</span>
+                    <span>Direct Ijazah Path consultation</span>
                   </li>
                 </ul>
               </div>

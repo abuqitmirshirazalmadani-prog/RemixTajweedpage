@@ -693,7 +693,7 @@ export default function FranceQuranClasses() {
         }}
         contactInfo={{
           website: "tajweedpage.com/fr",
-          phone: "+33 (0) 1 45 61 72 83",
+          phone: "+(92) 323-3260859",
           address: "Rue de la Paix, 75002 Paris, France"
         }}
       />

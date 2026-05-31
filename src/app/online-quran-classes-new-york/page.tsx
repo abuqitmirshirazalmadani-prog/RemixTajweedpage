@@ -1020,7 +1020,7 @@ export default function OnlineQuranClassesNewYorkPage() {
           backgroundImage="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=1600&auto=format&fit=crop"
           contactInfo={{
             website: "tajweedpage.com/new-york",
-            phone: "+1 212 555 7988",
+            phone: "+(92) 323-3260859",
             address: "Manhattan, New York City, USA"
           }}
         />
