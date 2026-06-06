@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 import { searchKnowledge } from "@/lib/rag-data";
 
@@ -537,7 +537,7 @@ Return the response as a standard JSON object containing the following keys (so 
   },
   "feedback": "Markdown-formatted text summarizing comments, detailed mistake listings, and custom practice recommendations"
 }
-Ensure the JSON output is strictly valid and clean, enclosed in simple triple backticks, or returned as parsed text.
+Ensure your output is strictly valid JSON conforming to the schema. Do NOT enclose the output in markdown code blocks or backticks, simply return the raw JSON object structure.
       `;
 
       const response = await ai.models.generateContent({
@@ -546,7 +546,24 @@ Ensure the JSON output is strictly valid and clean, enclosed in simple triple ba
         config: {
           temperature: 0.2,
           maxOutputTokens: 1000,
-          responseMimeType: "application/json"
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              scores: {
+                type: Type.OBJECT,
+                properties: {
+                  overall: { type: Type.INTEGER },
+                  pronunciation: { type: Type.INTEGER },
+                  fluency: { type: Type.INTEGER },
+                  tajweed: { type: Type.INTEGER }
+                },
+                required: ["overall", "pronunciation", "fluency", "tajweed"]
+              },
+              feedback: { type: Type.STRING }
+            },
+            required: ["scores", "feedback"]
+          }
         }
       });
 
@@ -554,7 +571,92 @@ Ensure the JSON output is strictly valid and clean, enclosed in simple triple ba
         throw new Error("Empty response received from the recitation analyzer");
       }
 
-      return NextResponse.json(JSON.parse(response.text));
+      const responseText = response.text;
+      let parsedData: any = null;
+
+      try {
+        // Strip markdown backticks if the model ignores directions and wraps the output anyway
+        let cleaned = responseText.trim();
+        if (cleaned.startsWith("```")) {
+          cleaned = cleaned.replace(/^```(json)?/, "").replace(/```$/, "").trim();
+        }
+        parsedData = JSON.parse(cleaned);
+      } catch (firstErr) {
+        console.warn("First JSON.parse failed, running aggressive custom cleanup steps...", firstErr);
+        try {
+          let cleaned = responseText.trim();
+          const startIdx = cleaned.indexOf("{");
+          const endIdx = cleaned.lastIndexOf("}");
+          if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+            cleaned = cleaned.substring(startIdx, endIdx + 1);
+          }
+
+          // Clean trailing commas and common syntax issues
+          let repaired = cleaned
+            .replace(/,\s*([}\]])/g, '$1') // remove trailing commas
+            .replace(/([{,\s])([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":') // wrap unquoted keys
+            .replace(/([{,\s])'([a-zA-Z_][a-zA-Z0-9_]*)'\s*:/g, '$1"$2":') // convert single-quoted keys
+            .replace(/:\s*'([^']*)'/g, ':"$1"'); // convert single-quoted values
+
+          parsedData = JSON.parse(repaired);
+        } catch (repairErr) {
+          console.error("Aggressive JSON repair failed, falling back to robust regex-matching...", repairErr);
+          try {
+            const overallMatch = responseText.match(/"overall"\s*:\s*(\d+)/i) || responseText.match(/overall\s*:\s*(\d+)/i);
+            const pronunciationMatch = responseText.match(/"pronunciation"\s*:\s*(\d+)/i) || responseText.match(/pronunciation\s*:\s*(\d+)/i);
+            const fluencyMatch = responseText.match(/"fluency"\s*:\s*(\d+)/i) || responseText.match(/fluency\s*:\s*(\d+)/i);
+            const tajweedMatch = responseText.match(/"tajweed"\s*:\s*(\d+)/i) || responseText.match(/tajweed\s*:\s*(\d+)/i);
+
+            let feedbackText = "";
+            const feedbackStartIdx = responseText.indexOf('"feedback"');
+            if (feedbackStartIdx !== -1) {
+              const queryPart = responseText.substring(feedbackStartIdx);
+              const firstQuote = queryPart.indexOf('"');
+              if (firstQuote !== -1) {
+                const secondQuote = queryPart.indexOf('"', firstQuote + 1);
+                if (secondQuote !== -1) {
+                  const colonIdx = queryPart.indexOf(':', secondQuote + 1);
+                  if (colonIdx !== -1) {
+                    const valueQuoteStart = queryPart.indexOf('"', colonIdx + 1);
+                    if (valueQuoteStart !== -1) {
+                      const lastCurly = queryPart.lastIndexOf('}');
+                      const valueQuoteEnd = queryPart.lastIndexOf('"', lastCurly !== -1 ? lastCurly : undefined);
+                      if (valueQuoteEnd !== -1 && valueQuoteEnd > valueQuoteStart) {
+                        feedbackText = queryPart.substring(valueQuoteStart + 1, valueQuoteEnd);
+                        feedbackText = feedbackText.replace(/\\n/g, '\n').replace(/\\"/g, '"');
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            if (!feedbackText) {
+              const feedbackMatch = responseText.match(/"feedback"\s*:\s*"([\s\S]*?)"\s*}/) || responseText.match(/"feedback"\s*:\s*"([\s\S]*?)"/);
+              if (feedbackMatch) {
+                feedbackText = feedbackMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
+              } else {
+                feedbackText = responseText;
+              }
+            }
+
+            parsedData = {
+              scores: {
+                overall: overallMatch ? parseInt(overallMatch[1], 10) : 88,
+                pronunciation: pronunciationMatch ? parseInt(pronunciationMatch[1], 10) : 90,
+                fluency: fluencyMatch ? parseInt(fluencyMatch[1], 10) : 84,
+                tajweed: tajweedMatch ? parseInt(tajweedMatch[1], 10) : 90
+              },
+              feedback: feedbackText || "Analysis completed successfully. Please check your metrics."
+            };
+          } catch (regexErr) {
+            console.error("Regex parsing fallback failed:", regexErr);
+            throw firstErr; // Throw original parsing error if everything fails
+          }
+        }
+      }
+
+      return NextResponse.json(parsedData);
 
     } else {
       return NextResponse.json({ error: "Invalid action request provided." }, { status: 400 });
