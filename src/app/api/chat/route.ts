@@ -6,6 +6,7 @@ import { searchKnowledge } from "@/lib/rag-data";
 const resolveApiKey = () => {
   const keysToTry = [
     "GEMINI_API_KEY",
+    "GEMINI_API_KEY2",
     "NEXT_PUBLIC_GEMINI_API_KEY",
     "AIzaSy GEMINI_API_KEY",
     "AIzaSy_GEMINI_API_KEY",
@@ -24,7 +25,20 @@ const resolveApiKey = () => {
   // Clean values helper
   const clean = (val: any) => {
     if (!val || typeof val !== "string") return null;
-    const trimmed = val.trim().replace(/^['"]|['"]$/g, ""); // Strip wrapping quotes if any
+    let trimmed = val.trim().replace(/^['"]|['"]$/g, ""); // Strip wrapping quotes if any
+    
+    // 1. Double prefix error: If user prepended AlzaSy or AIzaSy in front of an AQ. key (highly common!)
+    // e.g. "AlzaSyAQ.Ab8RN6..." or "AIzaSyAQ.Ab8RN6..." -> strip the prefix and keep the valid "AQ." key
+    const aqIndex = trimmed.indexOf("AQ.");
+    if (aqIndex > 0) {
+      trimmed = trimmed.substring(aqIndex);
+    }
+    
+    // 2. Typing error: If user typed "AlzaSy" (with lowercase l) instead of "AIzaSy" (with capital I) for a standard key
+    if (trimmed.startsWith("AlzaSy") && !trimmed.startsWith("AQ.")) {
+      trimmed = "AIzaSy" + trimmed.substring(6);
+    }
+
     if (
       !trimmed ||
       trimmed === "MY_GEMINI_API_KEY" ||
@@ -34,6 +48,13 @@ const resolveApiKey = () => {
     ) {
       return null;
     }
+
+    // 3. Strict prefix validation: A valid Google AI/Gemini API key must start with "AIzaSy" or "AQ."
+    // If it doesn't, it is a drop-down label like "Remix: Tajweedpage..." or non-key string, so reject it.
+    if (!trimmed.startsWith("AIzaSy") && !trimmed.startsWith("AQ.")) {
+      return null;
+    }
+
     return trimmed;
   };
 
@@ -55,8 +76,10 @@ const resolveApiKey = () => {
       if (val) return val;
     }
     const val = clean(process.env[key]);
-    if (val && (val.startsWith("AIzaSy") || val.startsWith("AQ."))) {
-      return val;
+    if (val && (val.startsWith("AIzaSy") || val.startsWith("AQ.") || val.startsWith("AlzaSy"))) {
+      // Re-run clean on the value after checking start conditions
+      const cleaned = clean(val);
+      if (cleaned) return cleaned;
     }
   }
 
@@ -95,7 +118,7 @@ Here is the certified syllabus lesson matching your request:
 ${doc.content}
 
 ---
-*💡 To unlock advanced dynamic AI chats with personalized answers, please click on the **Secrets** panel at the top-right of your screen in AI Studio, and configure a valid \`GEMINI_API_KEY\` starting with **AIzaSy**.*`;
+*💡 To unlock advanced dynamic AI chats with personalized answers, please click on the **Secrets** panel at the top-right of your screen in AI Studio, and configure a valid \`GEMINI_API_KEY\` (starting with **AIzaSy** or **AQ.**).*`;
     } else {
       feedback = `### 📚 Offline Traditional Learning Guide (RAG Mode)
 
@@ -109,7 +132,7 @@ To help you on your Quranic journey, here is some quick guidance:
 You can also book a live one-on-one lesson with an Ijazah-certified Sheikh at any time on [\`/free-trial\`](/free-trial).
 
 ---
-*💡 To unlock advanced dynamic AI chats with personalized answers, please click on the **Secrets** panel at the top-right of your screen in AI Studio, and configure a valid \`GEMINI_API_KEY\` starting with **AIzaSy**.*`;
+*💡 To unlock advanced dynamic AI chats with personalized answers, please click on the **Secrets** panel at the top-right of your screen in AI Studio, and configure a valid \`GEMINI_API_KEY\` (starting with **AIzaSy** or **AQ.**).*`;
     }
     return NextResponse.json({ 
       text: feedback, 
@@ -136,7 +159,7 @@ Assalamu Alaikum! ${keyNotice}. Guided by our senior instructors, here is your o
 *To activate this roadmap with a native Arab certified tutor, book a free evaluation class at [\`/free-trial\`](/free-trial).*
 
 ---
-*💡 To unlock dynamic neural generation, click **Secrets** in AI Studio and configure a valid \`GEMINI_API_KEY\` starting with **AIzaSy**.*`;
+*💡 To unlock dynamic neural generation, click **Secrets** in AI Studio and configure a valid \`GEMINI_API_KEY\` (starting with **AIzaSy** or **AQ.**).*`;
     return NextResponse.json({ text: feedback });
 
   } else if (action === "homework") {
@@ -156,7 +179,7 @@ Assalamu Alaikum! ${keyNotice}. Your homework submission has been received and e
 *For professional manual grading and certificate tracks, check out our tutor programs at [\`/courses/tajweed-course\`](/courses/tajweed-course) or book a free trial at [\`/free-trial\`](/free-trial).*
 
 ---
-*💡 Configure a valid \`GEMINI_API_KEY\` starting with **AIzaSy** in the workspace **Secrets** panel to enable advanced automated grading.*`;
+*💡 Configure a valid \`GEMINI_API_KEY\` (starting with **AIzaSy** or **AQ.**) in the workspace **Secrets** panel to enable advanced automated grading.*`;
     return NextResponse.json({ text: feedback });
 
   } else if (action === "recitation") {
@@ -180,7 +203,7 @@ Assalamu Alaikum! ${keyNotice}. Here is your diagnostic feedback:
 *To perfect this further and verify your audio with a live human mentor, book a free evaluation class at [/free-trial](/free-trial).*
 
 ---
-*💡 To run dynamic speech phonetic evaluation, configure a valid \`GEMINI_API_KEY\` starting with **AIzaSy** in the workspace **Secrets** panel.*`
+*💡 To run dynamic speech phonetic evaluation, configure a valid \`GEMINI_API_KEY\` (starting with **AIzaSy** or **AQ.**) in the workspace **Secrets** panel.*`
     });
   }
   return NextResponse.json({ error: "Invalid action request provided." }, { status: 400 });
@@ -412,7 +435,7 @@ Ensure the JSON output is strictly valid and clean, enclosed in simple triple ba
       errorString.includes("401") ||
       errorString.includes("credential")
     ) {
-      noticeMessage = `Your configured GEMINI_API_KEY was rejected by Google's API gateway as invalid or unauthorized (API_KEY_INVALID). Please configure your key in the Secrets tab (top-right of screen)`;
+      noticeMessage = `Your configured GEMINI_API_KEY was rejected by Google's API gateway. Google Error: "${error?.message || 'API_KEY_INVALID'}". Please configure your key in the Secrets tab (top-right of screen)`;
     }
 
     try {
