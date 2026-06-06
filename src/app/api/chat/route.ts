@@ -208,18 +208,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if the key starts with 'AIzaSy' or 'AQ.'. If not, warn user immediately to prevent 400 Bad Request
-    if (!apiKey.startsWith("AIzaSy") && !apiKey.startsWith("AQ.")) {
-      return getOfflineResponse(
-        action || "chat",
-        prompt || "",
-        currentLevel || "",
-        goals || "",
-        homeworkContent || "",
-        verseId || "",
-        `The configured GEMINI_API_KEY starts with "${apiKey.substring(0, 5)}..." instead of "AIzaSy" or "AQ.", which is not a valid Google API key structure`
-      );
-    }
+    // No strict format block here, as alternate keys (including those starting with AQ.) can be valid in custom AI Studio developer sandboxes. 
+    // If they fail at the Google API gateway, the try-catch block below will elegantly activate the Offline RAG mode.
 
     // Initialize Gemini SDK lazily only when we know the API key is present
     const ai = getAiClient(apiKey);
