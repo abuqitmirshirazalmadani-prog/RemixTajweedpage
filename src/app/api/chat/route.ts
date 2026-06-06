@@ -2,6 +2,9 @@ import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 import { searchKnowledge } from "@/lib/rag-data";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 // Helper to lazily resolve the GEMINI API key from any potential environment keys to be extremely resilient
 const resolveApiKey = () => {
   const keysToTry = [
