@@ -5,8 +5,8 @@ import { searchKnowledge } from "@/lib/rag-data";
 // Helper to lazily resolve the GEMINI API key from any potential environment keys to be extremely resilient
 const resolveApiKey = () => {
   const keysToTry = [
+    "GEMINI_API_KEY2", // PRIORITIZE manually pasted/custom secrets to bypass any outdated or default workspace-level dropdowns
     "GEMINI_API_KEY",
-    "GEMINI_API_KEY2",
     "NEXT_PUBLIC_GEMINI_API_KEY",
     "AIzaSy GEMINI_API_KEY",
     "AIzaSy_GEMINI_API_KEY",
@@ -22,21 +22,28 @@ const resolveApiKey = () => {
     "GEMINI"
   ];
   
-  // Clean values helper
+  // Clean values helper matching any valid AIzaSy/AQ. substring to circumvent user prefix typos/prefixes!
   const clean = (val: any) => {
     if (!val || typeof val !== "string") return null;
     let trimmed = val.trim().replace(/^['"]|['"]$/g, ""); // Strip wrapping quotes if any
     
-    // 1. Double prefix error: If user prepended AlzaSy or AIzaSy in front of an AQ. key (highly common!)
-    // e.g. "AlzaSyAQ.Ab8RN6..." or "AIzaSyAQ.Ab8RN6..." -> strip the prefix and keep the valid "AQ." key
-    const aqIndex = trimmed.indexOf("AQ.");
-    if (aqIndex > 0) {
-      trimmed = trimmed.substring(aqIndex);
+    // 1. Double prefix / Typo check using robust Regex matching
+    // Extract any substring starting explicitly with AQ. (Google AI Studio key format)
+    const aqMatch = trimmed.match(/AQ\.[A-Za-z0-9_.-]+/);
+    if (aqMatch) {
+      return aqMatch[0];
     }
-    
-    // 2. Typing error: If user typed "AlzaSy" (with lowercase l) instead of "AIzaSy" (with capital I) for a standard key
-    if (trimmed.startsWith("AlzaSy") && !trimmed.startsWith("AQ.")) {
-      trimmed = "AIzaSy" + trimmed.substring(6);
+
+    // Extract any substring starting explicitly with AIzaSy
+    const aizaMatch = trimmed.match(/AIzaSy[A-Za-z0-9_.-]+/);
+    if (aizaMatch) {
+      return aizaMatch[0];
+    }
+
+    // Extract and auto-correct misspelled AlzaSy prefixes
+    const alzaMatch = trimmed.match(/AlzaSy[A-Za-z0-9_.-]+/);
+    if (alzaMatch) {
+      return "AIzaSy" + alzaMatch[0].substring(6);
     }
 
     if (
@@ -44,18 +51,19 @@ const resolveApiKey = () => {
       trimmed === "MY_GEMINI_API_KEY" ||
       trimmed === "YOUR_API_KEY" ||
       trimmed === "undefined" ||
-      trimmed === "null"
+      trimmed === "null" ||
+      trimmed.includes("No key selected") ||
+      trimmed.includes("Remix: Tajweedpage")
     ) {
       return null;
     }
 
-    // 3. Strict prefix validation: A valid Google AI/Gemini API key must start with "AIzaSy" or "AQ."
-    // If it doesn't, it is a drop-down label like "Remix: Tajweedpage..." or non-key string, so reject it.
-    if (!trimmed.startsWith("AIzaSy") && !trimmed.startsWith("AQ.")) {
-      return null;
+    // Fallback if no match but length is that of a valid key (35-65 chars)
+    if (trimmed.length >= 35 && trimmed.length <= 65) {
+      return trimmed;
     }
 
-    return trimmed;
+    return null;
   };
 
   for (const key of keysToTry) {
@@ -77,13 +85,47 @@ const resolveApiKey = () => {
     }
     const val = clean(process.env[key]);
     if (val && (val.startsWith("AIzaSy") || val.startsWith("AQ.") || val.startsWith("AlzaSy"))) {
-      // Re-run clean on the value after checking start conditions
       const cleaned = clean(val);
       if (cleaned) return cleaned;
     }
   }
 
   return null;
+};
+
+// Helper to safely format clean user diagnostics regarding configured keys (with secure masking)
+const getDiagnosticsMsg = () => {
+  const keys = ["GEMINI_API_KEY", "GEMINI_API_KEY2"];
+  const lines: string[] = [];
+  for (const k of keys) {
+    const val = process.env[k];
+    if (!val) {
+      lines.push(`- **${k}**: \`[Empty / Undefined]\``);
+    } else {
+      const trimmed = val.trim();
+      const len = trimmed.length;
+      let info = "Custom user secret";
+      
+      if (trimmed.startsWith("AIzaSy")) {
+        info = "Starts with standard verified `AIzaSy` (GCP Google API Key)";
+      } else if (trimmed.startsWith("AQ.")) {
+        info = "Starts with standard verified `AQ.` (Google AI Studio shared/workspace API Key)";
+      } else if (trimmed.startsWith("AlzaSy")) {
+        info = "Spelling warning: Starts with `AlzaSy` (using a lowercase 'l'). We auto-corrected this to `AIzaSy`!";
+      } else if (trimmed.includes("Remix: Tajweedpage")) {
+        info = "Points to the workspace-managed key preset selection `Remix: Tajweedpage`";
+      } else if (trimmed.includes("AQ.")) {
+        info = "Holds an `AQ.` key with a prefixed name/label (We auto-stripped this correctly!)";
+      }
+
+      const masked = trimmed.length > 12 
+        ? `${trimmed.substring(0, 10)}...${trimmed.substring(trimmed.length - 4)} (Length: ${len})` 
+        : `[Key too short] (Length: ${len})`;
+
+      lines.push(`- **${k}** detected: \`${masked}\` — **${info}**`);
+    }
+  }
+  return lines.join("\n");
 };
 
 // Helper to lazily initialize the Gemini SDK in server context to prevent stale or missing key errors
@@ -103,6 +145,17 @@ const getOfflineResponse = (
   verseId: string,
   keyNotice: string
 ) => {
+  const diagBox = `
+
+---
+### ⚙️ Workspace Secret Diagnostic Status:
+${getDiagnosticsMsg()}
+
+#### 💡 Guidance for Your Key / آپ کے لیے رہنمائی:
+1. **No manual prefixes needed / کوئی سابقہ لکھنے کی ضرورت نہیں**: If your actual key starts with **AQ.** (or **AIzaSy**), just paste the raw key in the **GEMINI_API_KEY2** secret in AI Studio. Do not type "AIzaSy" or "AlzaSy" in front of the key value! *Rest assured, TajweedPage's backend has automatically stripped and corrected any misspelled prefixes to parse your key values cleanly.*
+2. **Apply Changes / تبدیلیاں لاگو کریں**: After configuring your secrets inside the panel, please click the blue **Apply Changes** button at the bottom of your secrets sidebar.
+3. **Verify Project / پروجیکٹ کی تصدیق**: If your key continues to return an error from Google's gateway, please verify inside Google AI Studio that your Google Cloud Project is imported and has Gemini APIs fully enabled.`;
+
   if (action === "chat") {
     const matchedDocs = searchKnowledge(prompt, 2);
     let feedback = "";
@@ -116,9 +169,7 @@ Here is the certified syllabus lesson matching your request:
 
 #### **${doc.title}**
 ${doc.content}
-
----
-*💡 To unlock advanced dynamic AI chats with personalized answers, please click on the **Secrets** panel at the top-right of your screen in AI Studio, and configure a valid \`GEMINI_API_KEY\` (starting with **AIzaSy** or **AQ.**).*`;
+${diagBox}`;
     } else {
       feedback = `### 📚 Offline Traditional Learning Guide (RAG Mode)
 
@@ -130,9 +181,7 @@ To help you on your Quranic journey, here is some quick guidance:
 - **Female Quran teachers**: Certified Arab female tutors are available online for sisters and kids. (Refer to [\`Female Quran Teacher Online\`](/courses/female-quran-teacher-online))
 
 You can also book a live one-on-one lesson with an Ijazah-certified Sheikh at any time on [\`/free-trial\`](/free-trial).
-
----
-*💡 To unlock advanced dynamic AI chats with personalized answers, please click on the **Secrets** panel at the top-right of your screen in AI Studio, and configure a valid \`GEMINI_API_KEY\` (starting with **AIzaSy** or **AQ.**).*`;
+${diagBox}`;
     }
     return NextResponse.json({ 
       text: feedback, 
@@ -157,9 +206,7 @@ Assalamu Alaikum! ${keyNotice}. Guided by our senior instructors, here is your o
 - 10 mins: Live readout loud with mirror correction.
 
 *To activate this roadmap with a native Arab certified tutor, book a free evaluation class at [\`/free-trial\`](/free-trial).*
-
----
-*💡 To unlock dynamic neural generation, click **Secrets** in AI Studio and configure a valid \`GEMINI_API_KEY\` (starting with **AIzaSy** or **AQ.**).*`;
+${diagBox}`;
     return NextResponse.json({ text: feedback });
 
   } else if (action === "homework") {
@@ -177,9 +224,7 @@ Assalamu Alaikum! ${keyNotice}. Your homework submission has been received and e
 - **Mastery score**: \`88/100\`
 
 *For professional manual grading and certificate tracks, check out our tutor programs at [\`/courses/tajweed-course\`](/courses/tajweed-course) or book a free trial at [\`/free-trial\`](/free-trial).*
-
----
-*💡 Configure a valid \`GEMINI_API_KEY\` (starting with **AIzaSy** or **AQ.**) in the workspace **Secrets** panel to enable advanced automated grading.*`;
+${diagBox}`;
     return NextResponse.json({ text: feedback });
 
   } else if (action === "recitation") {
@@ -201,9 +246,7 @@ Assalamu Alaikum! ${keyNotice}. Here is your diagnostic feedback:
 **3. Tajweed Compliance (90/100)**: Merged words elegantly. We suggest practicing continuous vocal control.
 
 *To perfect this further and verify your audio with a live human mentor, book a free evaluation class at [/free-trial](/free-trial).*
-
----
-*💡 To run dynamic speech phonetic evaluation, configure a valid \`GEMINI_API_KEY\` (starting with **AIzaSy** or **AQ.**) in the workspace **Secrets** panel.*`
+${diagBox}`
     });
   }
   return NextResponse.json({ error: "Invalid action request provided." }, { status: 400 });
