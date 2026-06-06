@@ -2,10 +2,12 @@ import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 import { searchKnowledge } from "@/lib/rag-data";
 
-// Initialize Gemini SDK with User-Agent as requested by security & guidelines
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || "",
-});
+// Helper to lazily initialize the Gemini SDK in server context to prevent stale or missing key errors
+const getAiClient = () => {
+  return new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY || "",
+  });
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -120,6 +122,9 @@ Excellent recitation! Here is your diagnostic feedback:
         return NextResponse.json({ error: "Invalid action request provided." }, { status: 400 });
       }
     }
+
+    // Initialize Gemini SDK lazily only when we know the API key is present
+    const ai = getAiClient();
 
     // Resolve model name according to guidelines (gemini-3.5-flash for text/Q&A)
     const modelName = "gemini-3.5-flash";
