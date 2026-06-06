@@ -108,6 +108,13 @@ export function Header({ onBookingClick, className }: HeaderProps) {
 
             <Link href="/quran-classes-for-kids" className="hover:text-[#C8EB5F] transition-colors duration-300">Kids Quran</Link>
             <Link href="/blog" className="hover:text-[#C8EB5F] transition-colors duration-300">Journal</Link>
+            <Link 
+              href="/ai" 
+              className="hover:text-[#C8EB5F] tracking-widest text-[#C8EB5F] font-bold border border-[#C8EB5F]/30 px-3 py-1 rounded-full bg-[#C8EB5F]/5 flex items-center gap-1.5 group/ai transition-all duration-300 hover:bg-[#C8EB5F]/10 text-[10px]"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C8EB5F] group-hover/ai:scale-125 transition-transform duration-300"></span>
+              AI CENTER
+            </Link>
             
             {/* World Timings dropdown */}
             <div 
@@ -385,6 +392,15 @@ export function Header({ onBookingClick, className }: HeaderProps) {
                 </div>
               )}
             </div>
+
+            <Link 
+              href="/ai" 
+              className="text-xs uppercase tracking-wider text-[#C8EB5F] hover:text-white transition-colors bg-[#C8EB5F]/10 border border-[#C8EB5F]/20 px-4 py-1.5 rounded-full flex items-center gap-1.5 font-bold"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C8EB5F] animate-pulse"></span>
+              AI Learning Center
+            </Link>
 
             <div className="w-1/2 h-px bg-white/15 my-2" />
             

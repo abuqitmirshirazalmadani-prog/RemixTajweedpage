@@ -1,0 +1,75 @@
+<svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define gold and lime gradients for luxury premium finish -->
+  <defs>
+    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A67C1E" />
+      <stop offset="30%" stop-color="#F2D279" />
+      <stop offset="70%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#805C10" />
+    </linearGradient>
+    
+    <linearGradient id="lime-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#99B835" />
+      <stop offset="50%" stop-color="#C8EB5F" />
+      <stop offset="100%" stop-color="#E2FF85" />
+    </linearGradient>
+
+    <radialGradient id="bg-radial" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#14161F" />
+      <stop offset="100%" stop-color="#050608" />
+    </radialGradient>
+    
+    <filter id="glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Deep velvet luxury background -->
+  <rect width="300" height="300" rx="40" fill="url(#bg-radial)" />
+  <rect width="298" height="298" x="1" y="1" rx="39" stroke="url(#gold-grad)" stroke-width="1.5" stroke-opacity="0.15" />
+
+  <!-- Subtle sacred geometry background element -->
+  <circle cx="150" cy="142" r="105" stroke="url(#gold-grad)" stroke-width="0.75" stroke-dasharray="2 4" stroke-opacity="0.25" />
+  <circle cx="150" cy="142" r="95" stroke="url(#lime-grad)" stroke-width="0.5" stroke-opacity="0.15" />
+
+  <!-- Outer diamond accents -->
+  <g transform="translate(150, 142)">
+    <path d="M 0,-115 L 4,-111 L 0,-107 L -4,-111 Z" fill="url(#gold-grad)" />
+    <path d="M 0,115 L 4,111 L 0,107 L -4,111 Z" fill="url(#gold-grad)" />
+    <path d="M -115,0 L -111,4 L -107,0 L -111,-4 Z" fill="url(#gold-grad)" />
+    <path d="M 115,0 L 111,4 L 107,0 L 111,-4 Z" fill="url(#gold-grad)" />
+  </g>
+
+  <!-- Styled Open Holy Quran / Wings of Sound Waves -->
+  <!-- Left Wing / Page Page Base -->
+  <path d="M 150,172 C 122,172 90,148 70,115 C 85,110 110,125 150,140 Z" fill="url(#gold-grad)" fill-opacity="0.15" />
+  <!-- Right Wing / Page Base -->
+  <path d="M 150,172 C 178,172 210,148 230,115 C 215,110 190,125 150,140 Z" fill="url(#gold-grad)" fill-opacity="0.15" />
+
+  <!-- Left Page Elegant Curve (Gilded Edge) -->
+  <path d="M 150,165 C 115,165 85,138 65,110 C 85,108 112,122 148,136 C 149,136 150,145 150,165 Z" fill="url(#gold-grad)" />
+  
+  <!-- Right Page Elegant Curve (Gilded Edge) -->
+  <path d="M 150,165 C 185,165 215,138 235,110 C 215,108 188,122 152,136 C 151,136 150,145 150,165 Z" fill="url(#gold-grad)" />
+
+  <!-- Top Sacred Crest (Speech Pronunciation Glow Aspect) -->
+  <!-- Elegant upper crescent curving upwards -->
+  <path d="M 68,100 C 105,75 195,75 232,100 C 210,75 90,75 68,100 Z" fill="url(#lime-grad)" />
+  
+  <!-- Outer Speech Wave Arc (Left) -->
+  <path d="M 150,56 C 110,56 80,72 65,88 C 76,78 108,66 150,66 Z" fill="url(#lime-grad)" filter="url(#glow)" opacity="0.8" />
+  <!-- Outer Speech Wave Arc (Right) -->
+  <path d="M 150,56 C 190,56 220,72 235,88 C 224,78 192,66 150,66 Z" fill="url(#lime-grad)" filter="url(#glow)" opacity="0.8" />
+
+  <!-- Center Rising Light / Golden Mihrab Dome -->
+  <path d="M 150,135 C 144,115 141,85 150,70 C 159,85 156,115 150,135 Z" fill="url(#lime-grad)" />
+  <circle cx="150" cy="62" r="5" fill="url(#lime-grad)" />
+
+  <!-- Elegant Brand Typography Nested underneath -->
+  <text x="150" y="242" font-family="'Cormorant Garamond', serif, sans-serif" font-size="16" font-weight="bold" fill="url(#gold-grad)" letter-spacing="9" text-anchor="middle">TAJWEED</text>
+  <text x="150" y="264" font-family="'Cormorant Garamond', serif, sans-serif" font-size="12" font-weight="normal" fill="url(#lime-grad)" letter-spacing="6" text-anchor="middle">PAGE</text>
+
+  <!-- Micro elegant boundary lines -->
+  <line x1="85" y1="210" x2="215" y2="210" stroke="url(#lime-grad)" stroke-width="1.2" stroke-opacity="0.3" stroke-dasharray="30 4 4 4 30" />
+</svg>

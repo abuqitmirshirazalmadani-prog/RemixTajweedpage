@@ -1,7 +1,9 @@
 {
   "name": "Remix: Tajweedpage",
-  "description": "Modern online Quran and Tajweed learning platform with interactive courses, qualified teachers, and comprehensive resources.",
-  "requestFramePermissions": [],
+  "description": "TajweedPage AI is a complete production-ready AI-powered Quran learning ecosystem combining an AI Tajweed Teacher, homework checker, and real-time recitation voice analyzer.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
   ]

@@ -117,6 +117,14 @@ export function NavigationHeader({ onTrialClick, currentPage }: NavigationHeader
             <Link href="/quran-classes-for-kids" className={cn("hover:text-[#C8EB5F] transition-colors duration-300", currentPage === "kids-quran" ? "text-[#C8EB5F]" : "")}>Kids Quran</Link>
             <Link href="/blog" className={cn("hover:text-[#C8EB5F] transition-colors duration-300", currentPage === "blog" ? "text-[#C8EB5F]" : "")}>Journal</Link>
             
+            <Link 
+              href="/ai" 
+              className={cn("hover:text-[#C8EB5F] transition-colors duration-305 text-[#C8EB5F] font-bold border border-[#C8EB5F]/30 px-3 py-1 rounded-full bg-[#C8EB5F]/5 flex items-center gap-1.5 group/ai transition-all duration-300 hover:bg-[#C8EB5F]/10", currentPage === "ai" ? "bg-[#C8EB5F]/15 border-[#C8EB5F]/50" : "")}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C8EB5F] group-hover/ai:scale-125 transition-transform duration-300"></span>
+              AI CENTER
+            </Link>
+            
             {/* World Timings dropdown */}
             <div 
               className="relative group py-2"
@@ -427,6 +435,15 @@ export function NavigationHeader({ onTrialClick, currentPage }: NavigationHeader
               onClick={() => setMobileMenuOpen(false)}
             >
               Journal ✦
+            </Link>
+
+            <Link 
+              href="/ai" 
+              className={cn("text-base tracking-widest uppercase transition-colors font-serif font-semibold flex items-center gap-1.5", currentPage === "ai" ? "text-[#C8EB5F]" : "text-[#C8EB5F] bg-[#C8EB5F]/10 border border-[#C8EB5F]/20 px-4 py-1.5 rounded-full")}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span className="w-2 h-2 rounded-full bg-[#C8EB5F] animate-pulse"></span>
+              AI Learning Center
             </Link>
 
             <button 
