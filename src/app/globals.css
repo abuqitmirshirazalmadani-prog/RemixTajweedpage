@@ -93,3 +93,11 @@ h1, h2, h3, .luxury-text {
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
+
+/* Hide all page-specific local duplicates of floating WhatsApp and email buttons since they are now unified globally and displayed consistently on every page */
+div.fixed.bottom-6.right-6.flex-col:not(#global-floating-stack),
+div.fixed.bottom-6.right-6.flex.flex-col:not(#global-floating-stack),
+div.fixed.bottom-6.right-6[class*="flex-col"]:not(#global-floating-stack),
+div.fixed[class*="bottom-6"][class*="right-6"][class*="flex-col"]:not(#global-floating-stack) {
+  display: none !important;
+}
