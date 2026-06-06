@@ -7,6 +7,9 @@ const resolveApiKey = () => {
   const keysToTry = [
     "GEMINI_API_KEY",
     "NEXT_PUBLIC_GEMINI_API_KEY",
+    "AIzaSy GEMINI_API_KEY",
+    "AIzaSy_GEMINI_API_KEY",
+    "AIzaSy",
     "Tajweedpage",
     "tajweedpage",
     "TAJWEEDPAGE",
