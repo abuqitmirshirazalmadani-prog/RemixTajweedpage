@@ -60,11 +60,8 @@ const resolveApiKey = () => {
       return null;
     }
 
-    // Fallback if no match but length is that of a valid key (35-65 chars)
-    if (trimmed.length >= 35 && trimmed.length <= 65) {
-      return trimmed;
-    }
-
+    // Google Gemini API keys must start with AIzaSy or AQ. under normal conditions.
+    // Length backup checks without verified prefixes can incorrectly match Vercel/AWS system/agent variables.
     return null;
   };
 
@@ -103,6 +100,24 @@ const resolveApiKey = () => {
   // Scan all environment keys as a fallback for any key containing GEMINI, API, or starting with AIzaSy / AQ.
   for (const key of Object.keys(process.env)) {
     const upperKey = key.toUpperCase();
+
+    // Skip cloud runtime environment internals
+    if (
+      upperKey.startsWith("AWS_") ||
+      upperKey.startsWith("VERCEL_") ||
+      upperKey.startsWith("LAMBDA_") ||
+      upperKey.startsWith("_") ||
+      upperKey.includes("METADATA") ||
+      upperKey.includes("DEPLOYMENT") ||
+      upperKey.includes("REGION") ||
+      upperKey.includes("PORT") ||
+      upperKey.includes("NODE_") ||
+      upperKey.includes("NEXT_") ||
+      upperKey.includes("FUNCTIONS_")
+    ) {
+      continue;
+    }
+
     if (
       upperKey.includes("GEMINI") || 
       upperKey.includes("API") || 
@@ -132,6 +147,24 @@ const getDiagnosticsMsg = () => {
 
   const relevantKeys = uniquelyProbed.filter(k => {
     const uk = k.toUpperCase();
+
+    // Skip cloud runtime environment internals
+    if (
+      uk.startsWith("AWS_") ||
+      uk.startsWith("VERCEL_") ||
+      uk.startsWith("LAMBDA_") ||
+      uk.startsWith("_") ||
+      uk.includes("METADATA") ||
+      uk.includes("DEPLOYMENT") ||
+      uk.includes("REGION") ||
+      uk.includes("PORT") ||
+      uk.includes("NODE_") ||
+      uk.includes("NEXT_") ||
+      uk.includes("FUNCTIONS_")
+    ) {
+      return false;
+    }
+
     return (
       uk.includes("GEMINI") ||
       uk.includes("API") ||
