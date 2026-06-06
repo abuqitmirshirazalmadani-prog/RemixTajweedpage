@@ -11,6 +11,9 @@ const resolveApiKey = () => {
     "AIzaSy GEMINI_API_KEY",
     "AIzaSy_GEMINI_API_KEY",
     "AIzaSy",
+    "Remix",
+    "remix",
+    "REMIX",
     "Tajweedpage",
     "tajweedpage",
     "TAJWEEDPAGE",
@@ -23,7 +26,7 @@ const resolveApiKey = () => {
   ];
   
   // Clean values helper matching any valid AIzaSy/AQ. substring to circumvent user prefix typos/prefixes!
-  const clean = (val: any) => {
+  const clean = (val: any): string | null => {
     if (!val || typeof val !== "string") return null;
     let trimmed = val.trim().replace(/^['"]|['"]$/g, ""); // Strip wrapping quotes if any
     
@@ -52,8 +55,7 @@ const resolveApiKey = () => {
       trimmed === "YOUR_API_KEY" ||
       trimmed === "undefined" ||
       trimmed === "null" ||
-      trimmed.includes("No key selected") ||
-      trimmed.includes("Remix: Tajweedpage")
+      trimmed.includes("No key selected")
     ) {
       return null;
     }
@@ -66,8 +68,35 @@ const resolveApiKey = () => {
     return null;
   };
 
+  // Helper to resolve and dereference indirect keys
+  const lookup = (keyName: string): string | null => {
+    const rawVal = process.env[keyName];
+    if (!rawVal || typeof rawVal !== "string") return null;
+    const trimmed = rawVal.trim().replace(/^['"]|['"]$/g, "");
+    
+    // If the value in process.env points to an existing env variable, dereference it!
+    // Example: GEMINI_API_KEY contains "Remix" or is parsed to point to Remix
+    if (process.env[trimmed] && process.env[trimmed] !== rawVal) {
+      const derefed = lookup(trimmed);
+      if (derefed) return derefed;
+    }
+
+    // Also parse potential names if the environment variable itself has a composite name or label
+    // e.g. "Remix: Tajweedpage" -> check if process.env["Remix"] exists
+    const matchLabel = trimmed.match(/^([A-Za-z0-9_-]+)/);
+    if (matchLabel) {
+      const possibleKey = matchLabel[1];
+      if (process.env[possibleKey] && process.env[possibleKey] !== rawVal) {
+        const derefed = lookup(possibleKey);
+        if (derefed) return derefed;
+      }
+    }
+
+    return clean(trimmed);
+  };
+
   for (const key of keysToTry) {
-    const val = clean(process.env[key]);
+    const val = lookup(key);
     if (val) return val;
   }
   
@@ -76,17 +105,17 @@ const resolveApiKey = () => {
     const upperKey = key.toUpperCase();
     if (
       upperKey.includes("GEMINI") || 
-      upperKey.includes("API_KEY") || 
-      upperKey.includes("GOOGLE_KEY") ||
-      upperKey.includes("TAJWEED")
+      upperKey.includes("API") || 
+      upperKey.includes("KEY") ||
+      upperKey.includes("TAJWEED") ||
+      upperKey.includes("REMIX")
     ) {
-      const val = clean(process.env[key]);
+      const val = lookup(key);
       if (val) return val;
     }
-    const val = clean(process.env[key]);
+    const val = lookup(key);
     if (val && (val.startsWith("AIzaSy") || val.startsWith("AQ.") || val.startsWith("AlzaSy"))) {
-      const cleaned = clean(val);
-      if (cleaned) return cleaned;
+      return val;
     }
   }
 
@@ -95,36 +124,71 @@ const resolveApiKey = () => {
 
 // Helper to safely format clean user diagnostics regarding configured keys (with secure masking)
 const getDiagnosticsMsg = () => {
-  const keys = ["GEMINI_API_KEY", "GEMINI_API_KEY2"];
   const lines: string[] = [];
-  for (const k of keys) {
+  
+  // List system variables to find what variables are actually present
+  const keysToProbe = ["GEMINI_API_KEY", "GEMINI_API_KEY2", "Remix", "remix", "REMIX"];
+  const uniquelyProbed = Array.from(new Set([...keysToProbe, ...Object.keys(process.env)]));
+
+  const relevantKeys = uniquelyProbed.filter(k => {
+    const uk = k.toUpperCase();
+    return (
+      uk.includes("GEMINI") ||
+      uk.includes("API") ||
+      uk.includes("KEY") ||
+      uk.includes("REMIX") ||
+      uk.includes("TAJWEED")
+    );
+  }).sort();
+
+  if (relevantKeys.length === 0) {
+    lines.push(`- **Status**: No relevant keys detected in the environment process.`);
+  }
+
+  for (const k of relevantKeys) {
     const val = process.env[k];
     if (!val) {
       lines.push(`- **${k}**: \`[Empty / Undefined]\``);
     } else {
       const trimmed = val.trim();
       const len = trimmed.length;
-      let info = "Custom user secret";
+      let info = "Custom key";
       
-      if (trimmed.startsWith("AIzaSy")) {
-        info = "Starts with standard verified `AIzaSy` (GCP Google API Key)";
-      } else if (trimmed.startsWith("AQ.")) {
-        info = "Starts with standard verified `AQ.` (Google AI Studio shared/workspace API Key)";
-      } else if (trimmed.startsWith("AlzaSy")) {
-        info = "Spelling warning: Starts with `AlzaSy` (using a lowercase 'l'). We auto-corrected this to `AIzaSy`!";
-      } else if (trimmed.includes("Remix: Tajweedpage")) {
-        info = "Points to the workspace-managed key preset selection `Remix: Tajweedpage`";
-      } else if (trimmed.includes("AQ.")) {
-        info = "Holds an `AQ.` key with a prefixed name/label (We auto-stripped this correctly!)";
+      const cleanVal = trimmed.replace(/^['"]|['"]$/g, "");
+      
+      if (cleanVal.startsWith("AIzaSy")) {
+        info = "Starts with standard `AIzaSy` (Verified GCP Key)";
+      } else if (cleanVal.startsWith("AQ.")) {
+        info = "Starts with standard `AQ.` (Verified AI Studio Workspace Key)";
+      } else if (cleanVal.startsWith("AlzaSy")) {
+        info = "Starts with `AlzaSy` (lowercase 'l' warning - we auto-correct this!)";
+      } else if (process.env[cleanVal]) {
+        info = `Indirect reference: points to another defined key **${cleanVal}**!`;
+      } else {
+        // Check if there is a partial match or if it points to an indirect key
+        const matchLabel = cleanVal.match(/^([A-Za-z0-9_-]+)/);
+        if (matchLabel && process.env[matchLabel[1]]) {
+          info = `Indirect reference: points to defined key **${matchLabel[1]}**!`;
+        }
       }
 
+      // Check for sensitive characters masking
       const masked = trimmed.length > 12 
         ? `${trimmed.substring(0, 10)}...${trimmed.substring(trimmed.length - 4)} (Length: ${len})` 
-        : `[Key too short] (Length: ${len})`;
+        : `\`${trimmed}\` (Length: ${len})`;
 
-      lines.push(`- **${k}** detected: \`${masked}\` — **${info}**`);
+      lines.push(`- **${k}**: \`${masked}\` — **${info}**`);
     }
   }
+
+  const finalKey = resolveApiKey();
+  if (finalKey) {
+    const maskedFinal = `${finalKey.substring(0, 10)}...${finalKey.substring(finalKey.length - 4)}`;
+    lines.push(`- **RESOLVED ACTIVE KEY**: \`${maskedFinal}\` (Success! Securely matched and loaded 🚀)`);
+  } else {
+    lines.push(`- **RESOLVED ACTIVE KEY**: \`[None / Failed to resolve any valid key]\` ❌`);
+  }
+
   return lines.join("\n");
 };
 
