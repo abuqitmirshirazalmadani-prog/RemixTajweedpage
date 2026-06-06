@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Cormorant_Garamond, Cinzel_Decorative, Marcellus, Lora } from "next/font/google";
 import { GlobalFooter } from "@/components/ui/global-footer";
-import { SeoIntegrationBox } from "@/components/ui/seo-integration-box";
 import { FloatingAssistant } from "@/components/ui/floating-assistant";
 import Script from "next/script";
 import "./globals.css";
@@ -91,7 +90,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         </noscript>
         {/* End Google Tag Manager (noscript) */}
         {children}
-        <SeoIntegrationBox />
         <GlobalFooter />
         <FloatingAssistant />
       </body>
