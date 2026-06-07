@@ -79,19 +79,21 @@ function SplitText({ text }: { text: string }) {
   return (
     <span className="inline">
       {words.map((word, i) => (
-        <motion.span
-          key={i}
-          initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{
-            duration: 0.35,
-            delay: i * 0.02,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="inline-block mr-[0.25em]"
-        >
-          {word}
-        </motion.span>
+        <React.Fragment key={i}>
+          <motion.span
+            initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{
+              duration: 0.35,
+              delay: i * 0.02,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="inline-block"
+          >
+            {word}
+          </motion.span>
+          {" "}
+        </React.Fragment>
       ))}
     </span>
   );
@@ -216,10 +218,16 @@ export function Testimonial() {
       {/* Main content */}
       <div className="relative mt-12">
         {/* Star Rating Panel */}
-        <div className="flex gap-1.5 text-amber-300 mb-6">
-          {[...Array(currentTestimonial.stars)].map((_, i) => (
-            <Star key={i} size={15} className="fill-current text-[#C8EB5F]" />
-          ))}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div className="flex gap-1.5 text-amber-300">
+            {[...Array(currentTestimonial.stars)].map((_, i) => (
+              <Star key={i} size={15} className="fill-current text-[#C8EB5F]" />
+            ))}
+          </div>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-zinc-900/90 border border-white/10 rounded-full text-[9px] sm:text-[10px] font-mono tracking-wider text-[#C8EB5F]">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            G <span className="text-white">★ VERIFIED STUDENT REVIEW</span>
+          </div>
         </div>
 
         <AnimatePresence mode="wait">

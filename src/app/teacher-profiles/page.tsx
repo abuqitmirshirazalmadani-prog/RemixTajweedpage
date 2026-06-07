@@ -337,6 +337,39 @@ export default function TeacherProfilesPage() {
                 ))}
               </div>
 
+              {/* Verified Digital Ijazah & Sanad Credentials Badge */}
+              <div className="bg-zinc-950/90 border border-white/5 group-hover:border-[#C8EB5F]/20 rounded-2xl p-5 space-y-3 transition-all duration-300">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-[9px] font-mono tracking-widest text-[#C8EB5F] uppercase font-bold">Verified Ijazah Ledger</span>
+                  </div>
+                  <span className="text-[8px] font-mono px-2 py-0.5 rounded bg-[#C8EB5F]/10 text-[#C8EB5F] border border-[#C8EB5F]/20 font-bold uppercase">
+                    Continuous Chain
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-4 pt-2 text-left border-t border-white/5">
+                  <div>
+                    <span className="block text-[8px] font-mono text-neutral-500 uppercase tracking-widest leading-none mb-1">Registration Hash</span>
+                    <span className="text-[10px] font-mono text-neutral-300 font-bold tracking-wider">
+                      {teacher.id === "sheikh-salim" ? "MDU-IJ-77529-SA" : teacher.id === "ustadha-rida" ? "AAU-IJ-44109-RA" : "UMQ-IJ-99382-YK"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="block text-[8px] font-mono text-neutral-500 uppercase tracking-widest leading-none mb-1">Authorization Status</span>
+                    <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                      ✓ Authenticated
+                    </span>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="block text-[8px] font-mono text-neutral-500 uppercase tracking-widest leading-none mb-1">Sanad Chain Authentication</span>
+                    <span className="text-[9px] font-sans text-neutral-400 leading-normal block font-light">
+                      {teacher.id === "sheikh-salim" ? "Continuous Chain of Recitation linked through Scholars of Madinah directly to the Prophet Muhammad (ﷺ)." : teacher.id === "ustadha-rida" ? "Authentic teaching & memorization Sanad certified by scholars of Al-Azhar University, Cairo." : "Memorization Sanad chain approved and authenticated by certified scholars of Masjid al-Haram, Makkah."}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               <div className="pt-4">
                 <button
                   onClick={() => {

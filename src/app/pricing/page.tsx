@@ -247,9 +247,17 @@ export default function PricingPage() {
                     <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
                     <span>Correct Pronunciation (Makharij)</span>
                   </li>
-                  <li className="flex items-start gap-3 text-xs text-neutral-300 font-sans font-light pb-4">
+                  <li className="flex items-start gap-3 text-xs text-neutral-300 font-sans font-light">
                     <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
                     <span>2 Live One-on-One Classes (Weekly)</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-xs text-neutral-300 font-sans font-light">
+                    <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
+                    <span>Full Access to the AI Learning Center Tools</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-xs text-neutral-300 font-sans font-light pb-4">
+                    <CheckCircle2 className="text-[#C8EB5F] flex-shrink-0 mt-0.5" size={14} />
+                    <span>Digital Homework Review & Diagnostic Reports</span>
                   </li>
                 </ul>
               </div>

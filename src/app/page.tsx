@@ -327,16 +327,12 @@ export default function Home() {
 
       <PremiumMarquee 
         items={[
-          "Online Quran Academy Platform",
-          "Interactive Online Quran Classes",
-          "High-Quality Quran Learning Online",
-          "Expert Online Quran Tutor Consultation",
-          "Specialized Quran Classes For Kids",
-          "Learn Tajweed Online Comfortably",
-          "Madinah-Certified Online Quran Teachers",
-          "Structured Online Islamic Education",
-          "Virtual Quran Learning Worldwide",
-          "Comprehensive Quran Reading Course"
+          "Verified Continuous Reading Chains (Isnad)",
+          "Madinah & Al-Azhar Graduate Mentors",
+          "Phonetic Letter Articulation Mastery",
+          "Personalized One-on-One Live Mentoring",
+          "Comprehensive Pronunciation Diagnostics",
+          "Live Interactive Vocal Evaluations"
         ]}
         speed="80s"
         variant="brand"
@@ -440,14 +436,12 @@ export default function Home() {
 
       <PremiumMarquee 
         items={[
-          "Easy Quran Lessons For Beginners",
-          "Affordable Online Quran Tutor Matching",
-          "Dedicated Online Quran Classes For Sisters",
-          "Custom Beginner Quran Reading Course",
-          "Flexible Daily Timings For Active Lifestyles",
-          "Empathetic Online Quran Teacher For Kids",
-          "One-On-One Tajweed Classes Online",
-          "Virtual Quran Classes For Adult Beginners"
+          "High-Patience Kids Quran Curriculums",
+          "Specialized Sisters Tajweed Circles",
+          "Flexible Daily Slot Schedules",
+          "Complete Memorization Retention Matrices",
+          "Authorized Classical Tajweed Licenses",
+          "Interactive Global Learning Ecosystem"
         ]}
         speed="110s"
         variant="subtle"
