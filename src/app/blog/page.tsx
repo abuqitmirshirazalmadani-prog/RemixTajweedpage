@@ -32,7 +32,9 @@ import {
   LogOut,
   LogIn,
   Settings,
-  ShieldCheck
+  ShieldCheck,
+  Mail,
+  Phone
 } from "lucide-react";
 
 // --- Firebase Core Integrations ---
@@ -45,7 +47,8 @@ import {
   deleteDoc, 
   query, 
   orderBy, 
-  serverTimestamp 
+  serverTimestamp,
+  onSnapshot
 } from "firebase/firestore";
 import { 
   signInWithPopup, 
@@ -461,9 +464,18 @@ export default function BlogPage() {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(false);
   const [adminUser, setAdminUser] = useState<User | null>(null);
   const [adminPanelOpen, setAdminPanelOpen] = useState<boolean>(false);
-  const [adminTab, setAdminTab] = useState<"posts" | "editor">("posts");
+  const [adminTab, setAdminTab] = useState<"posts" | "editor" | "bookings">("posts");
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [bookingsLoading, setBookingsLoading] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [dbSaving, setDbSaving] = useState<boolean>(false);
+
+  // Real-time Notification States & Refs
+  const [soundAlertActive, setSoundAlertActive] = useState<boolean>(true);
+  const [desktopEnabled, setDesktopEnabled] = useState<boolean>(false);
+  const [activeNotification, setActiveNotification] = useState<any | null>(null);
+  const knownBookingIdsRef = useRef<Set<string>>(new Set());
+  const initialLoadDoneRef = useRef<boolean>(false);
 
   // Editor states
   const [editorOpen, setEditorOpen] = useState<boolean>(false);
@@ -659,6 +671,153 @@ export default function BlogPage() {
       setLoading(false);
     }
   };
+
+  const playChimeSound = React.useCallback(() => {
+    if (typeof window === "undefined" || !soundAlertActive) return;
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const context = new AudioCtx();
+      
+      const playTone = (frequency: number, startTime: number, duration: number, volume = 0.1) => {
+        const osc = context.createOscillator();
+        const gain = context.createGain();
+        osc.connect(gain);
+        gain.connect(context.destination);
+        
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(frequency, startTime);
+        
+        gain.gain.setValueAtTime(volume, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+        
+        osc.start(startTime);
+        osc.stop(startTime + duration);
+      };
+      
+      const now = context.currentTime;
+      // Beautiful harmonic luxury chime chord (ascending clean notes)
+      playTone(523.25, now, 0.4);       // C5
+      playTone(659.25, now + 0.1, 0.5); // E5
+      playTone(783.99, now + 0.2, 0.6); // G5
+    } catch (err) {
+      console.warn("Could not play synthesized audio notification:", err);
+    }
+  }, [soundAlertActive]);
+
+  const toggleDesktopNotifications = async () => {
+    if (typeof window === "undefined" || !("Notification" in window)) {
+      alert("Push notifications are not supported on this browser.");
+      return;
+    }
+    if (Notification.permission === "default") {
+      const permission = await Notification.requestPermission();
+      setDesktopEnabled(permission === "granted");
+    } else if (Notification.permission === "denied") {
+      alert("Notification permissions have been blocked. Please enable them in your browser site settings.");
+    } else {
+      setDesktopEnabled(curr => !curr);
+    }
+  };
+
+  const loadBookingsFromDb = async () => {
+    setBookingsLoading(true);
+    try {
+      const q = query(collection(db, "bookings"));
+      const snapshot = await getDocs(q);
+      const loaded: any[] = [];
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        loaded.push({ id: docSnap.id, ...data });
+        knownBookingIdsRef.current.add(docSnap.id);
+      });
+      // Sort newer bookings first
+      loaded.sort((a, b) => {
+        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return bTime - aTime;
+      });
+      setBookings(loaded);
+      playChimeSound(); // Play test chime to verify sound works
+    } catch (err) {
+      console.error("Error loading bookings from Firebase:", err);
+    } finally {
+      setBookingsLoading(false);
+    }
+  };
+
+  // Real-time bookings listener
+  useEffect(() => {
+    if (!isAdminLoggedIn) return;
+
+    if (typeof window !== "undefined" && "Notification" in window) {
+      setDesktopEnabled(Notification.permission === "granted");
+    }
+
+    const q = query(collection(db, "bookings"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const loaded: any[] = [];
+      const freshlyAdded: any[] = [];
+
+      snapshot.forEach((docSnap) => {
+        const id = docSnap.id;
+        const data = docSnap.data();
+        const bk = { id, ...data };
+        loaded.push(bk);
+
+        if (initialLoadDoneRef.current) {
+          if (!knownBookingIdsRef.current.has(id)) {
+            freshlyAdded.push(bk);
+          }
+        }
+        knownBookingIdsRef.current.add(id);
+      });
+
+      // Sort newer bookings first
+      loaded.sort((a, b) => {
+        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return bTime - aTime;
+      });
+
+      setBookings(loaded);
+
+      // Trigger alerts for new bookings
+      if (initialLoadDoneRef.current && freshlyAdded.length > 0) {
+        freshlyAdded.forEach((newBk) => {
+          playChimeSound();
+          setActiveNotification(newBk);
+
+          // Clear automatically
+          setTimeout(() => {
+            setActiveNotification((curr: any) => curr?.id === newBk.id ? null : curr);
+          }, 12000);
+
+          // Web browser desktop notification
+          if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+            try {
+              const systemNotif = new Notification("🔔 NEW CLIENT INQUIRY!", {
+                body: `Name: ${newBk.fullName || "Unspecified"}\nCourse: ${newBk.course || "General Inquiry"}\nPhone: ${newBk.phone || "No phone"}`,
+                icon: "/favicon.ico"
+              });
+              systemNotif.onclick = () => {
+                window.focus();
+                setAdminTab("bookings");
+              };
+            } catch (err) {
+              console.error("Desktop Notification failed:", err);
+            }
+          }
+        });
+      }
+
+      initialLoadDoneRef.current = true;
+    }, (error) => {
+      console.error("Realtime bookings sub error:", error);
+    });
+
+    return () => unsubscribe();
+  }, [isAdminLoggedIn, playChimeSound]);
 
   useEffect(() => {
     loadBlogsFromDb();
@@ -2222,6 +2381,23 @@ export default function BlogPage() {
                         <BookOpen size={12} className="text-[#C8EB5F]" />
                         <span>ALL STORIES ({blogs.length})</span>
                       </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAdminTab("bookings");
+                          loadBookingsFromDb();
+                        }}
+                        className={cn(
+                          "w-full flex items-center gap-2.5 px-4 py-3 rounded-xl text-[10px] font-mono font-bold tracking-widest uppercase transition-all text-left cursor-pointer mt-2",
+                          adminTab === "bookings"
+                            ? "bg-white/5 border border-white/10 text-white"
+                            : "bg-transparent text-neutral-400 hover:text-white hover:bg-white/3"
+                        )}
+                      >
+                        <Calendar size={12} className="text-[#C8EB5F]" />
+                        <span>CLIENT INQUIRIES</span>
+                      </button>
                     </div>
                   )}
 
@@ -2385,6 +2561,150 @@ export default function BlogPage() {
                             )}
                           </div>
 
+                        </div>
+                      )}
+
+                      {/* Sub-tab: Client Inquiries/Bookings Directory */}
+                      {adminTab === "bookings" && (
+                        <div className="space-y-6">
+                          
+                          {/* Sync & Header Action Row */}
+                          <div className="border border-white/5 bg-zinc-900/10 p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div>
+                              <p className="text-[11px] font-mono font-bold text-white uppercase tracking-wider">ACTIVE CLIENT INQUIRY REGISTRY</p>
+                              <p className="text-[9px] text-neutral-500 font-mono mt-0.5">Direct Firestore real-time client lead registrations safely compiled.</p>
+                            </div>
+                            
+                            <button
+                              type="button"
+                              onClick={loadBookingsFromDb}
+                              disabled={bookingsLoading}
+                              className="px-4 py-2 bg-zinc-950 hover:bg-[#C8EB5F] border border-white/10 hover:border-[#C8EB5F] text-neutral-300 hover:text-black text-[9px] font-mono tracking-widest uppercase font-bold rounded-lg transition-all cursor-pointer disabled:opacity-50"
+                            >
+                              {bookingsLoading ? "TESTING..." : "TEST ALERT CHIME"}
+                            </button>
+                          </div>
+
+                          {/* Live Notification Preferences Control Panel */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSoundAlertActive(curr => !curr);
+                                setTimeout(() => playChimeSound(), 50);
+                              }}
+                              className={cn(
+                                "p-3.5 rounded-2xl border font-mono text-[9px] tracking-widest uppercase font-bold flex items-center justify-between transition-all cursor-pointer text-left",
+                                soundAlertActive 
+                                  ? "bg-[#C8EB5F]/10 border-[#C8EB5F]/20 text-[#C8EB5F]" 
+                                  : "bg-[#0b0c0d] border-white/5 text-neutral-500 hover:text-white"
+                              )}
+                            >
+                              <span className="flex items-center gap-2">
+                                <span className={soundAlertActive ? "animate-pulse" : ""}>🔊</span> REALTIME ALERT SOUNDS
+                              </span>
+                              <span className="text-[8px] font-mono px-2 py-0.5 rounded-full bg-black/60 border border-white/10">
+                                {soundAlertActive ? "ACTIVE" : "MUTED"}
+                              </span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={toggleDesktopNotifications}
+                              className={cn(
+                                "p-3.5 rounded-2xl border font-mono text-[9px] tracking-widest uppercase font-bold flex items-center justify-between transition-all cursor-pointer text-left",
+                                desktopEnabled 
+                                  ? "bg-[#C8EB5F]/10 border-[#C8EB5F]/20 text-[#C8EB5F]" 
+                                  : "bg-[#0b0c0d] border-white/5 text-neutral-500 hover:text-white"
+                              )}
+                            >
+                              <span className="flex items-center gap-2">
+                                <span>🖥️</span> DESKTOP BROWSER ALERTS
+                              </span>
+                              <span className="text-[8px] font-mono px-2 py-0.5 rounded-full bg-black/60 border border-white/10">
+                                {desktopEnabled ? "GRANTED" : "ENABLE"}
+                              </span>
+                            </button>
+                          </div>
+
+                          {/* List of bookings */}
+                          <div className="border border-white/5 rounded-2xl divide-y divide-white/5 bg-zinc-950/40 overflow-hidden">
+                            {bookingsLoading ? (
+                              <div className="text-center py-16 text-neutral-500">
+                                <p className="text-xs font-mono uppercase tracking-wider animate-pulse">Loading secure leads directory from cloud database...</p>
+                              </div>
+                            ) : bookings.length === 0 ? (
+                              <div className="text-center py-16 text-neutral-500">
+                                <p className="text-xs font-mono uppercase tracking-wider">No client lead inquiries recorded in current database.</p>
+                              </div>
+                            ) : (
+                              bookings.map((bk) => (
+                                <div key={bk.id} className="p-6 hover:bg-white/1 transition-all space-y-4 text-left">
+                                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-3">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <span className="text-sm font-serif font-semibold text-white uppercase tracking-wide">
+                                        {bk.fullName}
+                                      </span>
+                                      <span className="text-[8px] px-2 py-0.5 font-mono text-neutral-400 bg-white/5 border border-white/10 rounded-full uppercase">
+                                        {bk.sourcePage || "General Portal"}
+                                      </span>
+                                    </div>
+                                    <span className="text-[8px] font-mono text-neutral-500">
+                                      {bk.createdAt ? new Date(bk.createdAt).toLocaleString("en-US", { hour12: true }) : "N/A"}
+                                    </span>
+                                  </div>
+
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-[10px] font-mono text-neutral-350">
+                                    <div className="flex items-center gap-2 bg-black/60 p-3 rounded-xl border border-white/5">
+                                      <Mail size={12} className="text-[#C8EB5F] shrink-0" />
+                                      <div className="min-w-0 flex-1">
+                                        <span className="text-[8px] text-neutral-500 uppercase block leading-none mb-0.5">Email Address</span>
+                                        <span className="truncate break-all select-all text-white block font-mono">{bk.email}</span>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 bg-black/60 p-3 rounded-xl border border-white/5">
+                                      <Phone size={12} className="text-[#C8EB5F] shrink-0" />
+                                      <div className="min-w-0 flex-1">
+                                        <span className="text-[8px] text-neutral-500 uppercase block leading-none mb-0.5">WhatsApp Coordinate</span>
+                                        <a 
+                                          href={`https://wa.me/${bk.phone ? bk.phone.replace(/[^0-9]/g, '') : ''}`} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer" 
+                                          className="truncate text-[#C8EB5F] hover:underline block font-bold select-all"
+                                        >
+                                          {bk.phone} ↗
+                                        </a>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 bg-black/60 p-3 rounded-xl border border-white/5">
+                                      <Award size={12} className="text-neutral-500 shrink-0" />
+                                      <div className="min-w-0 flex-1">
+                                        <span className="text-[8px] text-neutral-500 uppercase block leading-none mb-0.5">Course Segment</span>
+                                        <span className="truncate text-neutral-200 block font-bold">{bk.course || "Not specified"}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {(bk.level || bk.comments) && (
+                                    <div className="bg-black/50 p-3.5 rounded-xl border border-white/5 space-y-2 text-[9.5px] font-mono text-neutral-400">
+                                      {bk.level && (
+                                        <div>
+                                          <span className="text-neutral-500 text-[8px] uppercase font-bold block mb-0.5">Selected Schedule & Timezone</span>
+                                          <span className="text-neutral-200">{bk.level}</span>
+                                        </div>
+                                      )}
+                                      {bk.comments && (
+                                        <div>
+                                          <span className="text-neutral-500 text-[8px] uppercase font-bold block mb-0.5">Coordinator Context Notes</span>
+                                          <span className="text-neutral-350">{bk.comments}</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              ))
+                            )}
+                          </div>
                         </div>
                       )}
 
@@ -2736,6 +3056,63 @@ export default function BlogPage() {
           </svg>
         </a>
       </div>
+
+      {/* Global Realtime Inquiries Notification Slide-Down Toast */}
+      <AnimatePresence>
+        {activeNotification && (
+          <motion.div
+            initial={{ opacity: 0, y: -80, x: "-50%", scale: 0.93 }}
+            animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
+            exit={{ opacity: 0, y: -40, x: "-50%", scale: 0.93 }}
+            transition={{ type: "spring", stiffness: 350, damping: 24 }}
+            className="fixed top-8 left-1/2 z-[300] w-[calc(100%-2.5rem)] max-w-md bg-[#090a0d] border-2 border-[#C8EB5F] shadow-[0_25px_60px_rgba(200,235,95,0.22)] rounded-[22px] overflow-hidden p-5 text-left select-none"
+          >
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#C8EB5F] to-transparent animate-pulse" />
+            
+            <div className="flex items-start gap-4">
+              <div className="h-10 w-10 shrink-0 bg-[#C8EB5F]/10 border border-[#C8EB5F]/30 rounded-xl flex items-center justify-center text-[#C8EB5F] text-lg animate-bounce duration-1000">
+                🔔
+              </div>
+              
+              <div className="flex-1 min-w-0 space-y-1">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[8px] font-mono font-black tracking-widest text-[#C8EB5F] uppercase bg-[#C8EB5F]/10 border border-[#C8EB5F]/20 px-2 py-0.5 rounded-full">
+                    NEW CLIENT INQUIRY
+                  </span>
+                  <button
+                    onClick={() => setActiveNotification(null)}
+                    className="text-neutral-500 hover:text-white transition-colors cursor-pointer text-xs font-bold px-1.5 py-0.5"
+                  >
+                    ✕
+                  </button>
+                </div>
+                
+                <h5 className="font-serif text-sm font-semibold text-white uppercase tracking-wide leading-snug">
+                  {activeNotification.fullName || "GUEST VISITOR"}
+                </h5>
+                
+                <p className="text-[9.5px] font-mono text-neutral-400">
+                  Topic: <span className="text-white font-bold">{activeNotification.course || "General Inquiry"}</span>
+                </p>
+
+                <div className="pt-2 flex items-center gap-2.5">
+                  <a 
+                    href={`https://wa.me/${activeNotification.phone ? activeNotification.phone.replace(/[^0-9]/g, '') : ''}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 bg-[#C8EB5F] text-black hover:bg-white text-[8px] font-mono font-black tracking-widest uppercase rounded-lg transition-colors flex items-center gap-1 shrink-0"
+                  >
+                    WhatsApp Coordinate ↗
+                  </a>
+                  <span className="text-[8px] text-neutral-500 font-mono truncate select-all">
+                    {activeNotification.phone}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </main>
   );

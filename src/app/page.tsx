@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn, handleEmailClick } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -137,6 +137,7 @@ export default function Home() {
     setPhone("");
     setSmtpWarning(false);
     setFormSubmitted(false);
+    setBookingOpen(false);
   };
   
   // FAQ accordion state
@@ -815,13 +816,13 @@ export default function Home() {
                   <span className="text-[10px] font-mono tracking-wider font-extrabold uppercase">WhatsApp Admin</span>
                   <span className="text-[9px] font-mono opacity-80 mt-0.5">+923233260859</span>
                 </a>
-                <a 
-                  href="mailto:abuqitmirshirazalmadani@gmail.com?subject=Tajweedpage%20Quran%20Classes%20Inquiry"
-                  className="flex flex-col items-center justify-center p-3.5 bg-zinc-950 hover:bg-zinc-900 text-white border border-white/10 text-center transition-all duration-300 rounded-xl"
+                <button 
+                  onClick={(e) => handleEmailClick(e, "Tajweedpage Quran Classes Inquiry")}
+                  className="flex flex-col items-center justify-center p-3.5 bg-zinc-950 hover:bg-zinc-900 text-white border border-white/10 text-center transition-all duration-300 rounded-xl cursor-pointer"
                 >
                   <span className="text-[10px] font-mono tracking-wider font-bold uppercase text-[#C8EB5F]">Direct Email</span>
                   <span className="text-[8px] font-mono opacity-85 mt-0.5 truncate w-full">abuqitmirshirazalmadani@gmail.com</span>
-                </a>
+                </button>
               </div>
 
               <div className="relative flex py-2 items-center mb-4">
@@ -855,19 +856,19 @@ export default function Home() {
                     >
                       Instant WhatsApp Follow-up
                     </a>
-                    <a 
-                      href="mailto:abuqitmirshirazalmadani@gmail.com?subject=Tajweedpage%20Form%20Submission"
-                      className="bg-zinc-900 text-white border border-white/10 font-mono text-[10px] tracking-widest py-2.5 rounded-lg hover:bg-zinc-805 text-center transition-colors"
+                    <button 
+                      onClick={(e) => handleEmailClick(e, "Tajweedpage Form Submission")}
+                      className="bg-zinc-900 text-white border border-white/10 font-mono text-[10px] tracking-widest py-2.5 rounded-lg hover:bg-zinc-800 text-center transition-colors cursor-pointer w-full"
                     >
                       Email: abuqitmirshirazalmadani@gmail.com
-                    </a>
+                    </button>
                   </div>
 
                   <button
                     onClick={handleReset}
-                    className="mt-2 text-xs font-mono text-neutral-400 hover:text-white hover:underline block mx-auto"
+                    className="w-full mt-3 bg-white hover:bg-[#C8EB5F] text-black font-sans text-xs font-semibold py-3.5 rounded-xl uppercase tracking-wider text-center transition-all duration-300 cursor-pointer shadow-lg hover:shadow-[0_4px_20px_rgba(200,235,95,0.2)]"
                   >
-                    Return to site
+                    Close & Return to Site
                   </button>
                 </div>
               ) : (

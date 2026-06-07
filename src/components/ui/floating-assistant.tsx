@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Sparkles, X, Send, ArrowRight, MessageSquare, Info, Mail, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import { handleEmailClick } from "@/lib/utils";
 
 export function FloatingAssistant() {
   const [isOpen, setIsOpen] = useState(false);
@@ -85,22 +86,22 @@ export function FloatingAssistant() {
           {!isOpen && (
             <>
               {/* Email Trigger Button (Top) */}
-              <motion.a 
+              <motion.button 
                 key="global-email"
                 id="global-email-btn"
-                href="mailto:abuqitmirshirazalmadani@gmail.com" 
+                onClick={(e) => handleEmailClick(e, "Tajweedpage Quran Classes Inquiry")} 
                 initial={{ opacity: 0, scale: 0.8, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.8, y: 10 }}
                 transition={{ duration: 0.2 }}
-                className="pointer-events-auto group relative flex items-center justify-center w-14 h-14 bg-zinc-900 border border-white/10 text-[#C8EB5F] hover:text-white rounded-full shadow-lg hover:border-[#C8EB5F]/20 hover:scale-105 transition-all duration-300"
+                className="pointer-events-auto group relative flex items-center justify-center w-14 h-14 bg-zinc-900 border border-white/10 text-[#C8EB5F] hover:text-white rounded-full shadow-lg hover:border-[#C8EB5F]/20 hover:scale-105 transition-all duration-300 cursor-pointer"
               >
                 <span className="absolute right-16 bg-zinc-900 text-white text-[10px] tracking-wide font-mono px-3 py-2 rounded-lg border border-white/10 opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 whitespace-nowrap shadow-xl flex items-center gap-2">
                   Send Email
                   <div className="absolute top-1/2 -right-1 -mt-1 w-2 h-2 bg-zinc-900 border-r border-t border-white/10 rotate-45" />
                 </span>
                 <Mail size={22} />
-              </motion.a>
+              </motion.button>
 
               {/* WhatsApp Trigger Button (Middle) */}
               <motion.a 

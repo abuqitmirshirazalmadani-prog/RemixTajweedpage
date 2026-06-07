@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { NavigationHeader } from "@/components/ui/navigation-header";
 import { motion, AnimatePresence } from "motion/react";
+import { db } from "@/lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
 import Link from "next/link";
 import { PremiumMarquee } from "@/components/ui/premium-marquee";
 import { 
@@ -27,6 +29,7 @@ export default function OnlineHifzClassesPage() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [bookingType, setBookingType] = useState<"trial" | "demo">("trial");
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [smtpWarning, setSmtpWarning] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#050505] text-neutral-300 font-sans antialiased selection:bg-[#C8EB5F] selection:text-black overflow-x-hidden relative">
@@ -226,17 +229,30 @@ export default function OnlineHifzClassesPage() {
                 </p>
               </div>
 
-              {formSubmitted ? (
+               {formSubmitted ? (
                 <div className="bg-[#C8EB5F]/10 border border-[#C8EB5F]/30 p-6 rounded-2xl text-center space-y-4">
                   <CheckCircle2 className="text-[#C8EB5F] mx-auto animate-bounce" size={32} />
                   <h4 className="text-white font-serif text-lg">Inquiry Confirmed</h4>
-                  <p className="text-neutral-404 text-xs font-light leading-relaxed font-sans">
+                  <p className="text-[#C8EB5F] font-mono text-[9px] uppercase tracking-wider block mb-1">
+                    Assigned ID: #HIFZ-{Math.floor(100000 + Math.random() * 900000)}
+                  </p>
+                  <p className="text-neutral-400 text-xs font-light leading-relaxed font-sans">
                     Success! We will contact you over WhatsApp/Email within 2 hours to confirm your scheduled slot.
                   </p>
+
+                  {smtpWarning && (
+                    <div className="bg-amber-500/10 border border-amber-500/30 p-3 rounded-lg text-left text-[11px] text-amber-300 font-mono space-y-1">
+                      <p className="font-bold">⚠️ SYSTEM NOTICE (Secrets Setup Required):</p>
+                      <p>Your details are safely recorded in our <strong>Firebase Database "bookings"</strong> collection. However, actual email notification was not dispatched because your <strong>SMTP credentials</strong> are not set in the AI Studio environment variables panel.</p>
+                      <p className="text-[10px] opacity-80">To receive emails, please add keys: <strong>SMTP_HOST</strong>, <strong>SMTP_PORT</strong>, <strong>SMTP_USER</strong>, and <strong>SMTP_PASSWORD</strong> under the Secrets tab in AI Studio.</p>
+                    </div>
+                  )}
+
                   <button
                     onClick={() => {
                       setBookingOpen(false);
                       setFormSubmitted(false);
+                      setSmtpWarning(false);
                     }}
                     className="mt-2 text-xs font-mono text-[#C8EB5F] hover:underline cursor-pointer"
                   >
@@ -245,9 +261,47 @@ export default function OnlineHifzClassesPage() {
                 </div>
               ) : (
                 <form 
-                  onSubmit={(e) => {
+                  onSubmit={async (e) => {
                     e.preventDefault();
-                    setFormSubmitted(true);
+                    const formData = new FormData(e.currentTarget);
+                    const nameVal = formData.get("fullName") as string;
+                    const emailVal = formData.get("email") as string;
+                    const phoneVal = formData.get("whatsapp") as string;
+                    
+                    const bookingId = "booking_" + Date.now();
+                    const submissionData = {
+                      id: bookingId,
+                      fullName: nameVal,
+                      email: emailVal,
+                      phone: phoneVal || "",
+                      course: "Online Hifz Classes",
+                      level: `Preferred: ${bookingType === "trial" ? "Complimentary Pass" : "Diagnostic Class"}`,
+                      comments: "Submitted from 'Talk to Hifz Coordinator' CTA",
+                      sourcePage: "Online Hifz Classes Page",
+                      createdAt: new Date().toISOString()
+                    };
+
+                    try {
+                      // 1. Save data securely to Firebase Firestore
+                      await setDoc(doc(db, "bookings", bookingId), submissionData);
+
+                      // 2. Trigger Next.js API route to send the email
+                      const emailRes = await fetch("/api/send-email", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(submissionData)
+                      });
+                      const emailData = await emailRes.json();
+                      if (emailData && emailData.warning === "SMTP config missing") {
+                        setSmtpWarning(true);
+                      }
+                    } catch (err) {
+                      console.error("Booking submit error:", err);
+                    } finally {
+                      setFormSubmitted(true);
+                    }
                   }}
                   className="space-y-4"
                 >
@@ -255,6 +309,7 @@ export default function OnlineHifzClassesPage() {
                     <label className="text-[10px] tracking-widest font-mono text-neutral-400 uppercase block mb-1.5">Full Name</label>
                     <input
                       type="text"
+                      name="fullName"
                       required
                       placeholder="e.g. Salim Ahmed"
                       className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#C8EB5F]"
@@ -265,6 +320,7 @@ export default function OnlineHifzClassesPage() {
                     <label className="text-[10px] tracking-widest font-mono text-neutral-400 uppercase block mb-1.5">Email Address</label>
                     <input
                       type="email"
+                      name="email"
                       required
                       placeholder="e.g. salim@gmail.com"
                       className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-[#fff] focus:outline-none focus:border-[#C8EB5F]"
@@ -275,6 +331,7 @@ export default function OnlineHifzClassesPage() {
                     <label className="text-[10px] tracking-widest font-mono text-neutral-400 uppercase block mb-1.5">WhatsApp Number</label>
                     <input
                       type="tel"
+                      name="whatsapp"
                       required
                       placeholder="e.g. +1 (555) 420 9100"
                       className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-[#fff] focus:outline-none focus:border-[#C8EB5F]"
@@ -283,7 +340,7 @@ export default function OnlineHifzClassesPage() {
 
                   <button
                     type="submit"
-                    className="w-full bg-[#C8EB5F] p-4 text-black text-[11px] tracking-widest font-mono uppercase font-bold text-center mt-2 shadow-[0_4px_25px_rgba(200,235,95,0.15)] cursor-pointer"
+                    className="w-full bg-[#C8EB5F] p-4 text-black text-[11px] tracking-widest font-mono uppercase font-bold text-center mt-2 shadow-[0_4px_25px_rgba(200,235,95,0.15)] cursor-pointer hover:bg-white transition-colors duration-300"
                   >
                     SECURE LIVE TRIAL
                   </button>

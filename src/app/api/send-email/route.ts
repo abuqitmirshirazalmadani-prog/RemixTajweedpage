@@ -18,14 +18,22 @@ export async function POST(req: NextRequest) {
     const smtpUser = process.env.SMTP_USER;
     const smtpPass = process.env.SMTP_PASSWORD;
 
-    // Check if configuration exists
-    if (!smtpHost || !smtpUser || !smtpPass) {
-      console.warn("SMTP settings are missing in process.env. Fallback strategy initiated.");
+    const isInvalidHost = !!smtpHost && (
+      smtpHost.includes("Remix") || 
+      smtpHost.includes("Tajweedpage") || 
+      !smtpHost.includes(".")
+    );
+
+    // Check if configuration exists or is invalid
+    if (!smtpHost || !smtpUser || !smtpPass || isInvalidHost) {
+      console.warn("SMTP settings are missing or invalid in process.env. Fallback strategy initiated.");
       return NextResponse.json(
         {
           success: false,
           warning: "SMTP config missing",
-          message: "Please configure SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASSWORD in your Secrets tab in AI Studio.",
+          message: isInvalidHost 
+            ? `Your SMTP_HOST is currently configured as "${smtpHost}". This hostname is invalid. Please replace it with your real SMTP server domain (e.g., smtp.gmail.com, mail.privateemail.com) in the Secrets/Environment Variables tab within Google AI Studio settings.`
+            : "Please configure SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASSWORD in your Secrets tab in AI Studio.",
           data: { fullName, email, phone, course, level, comments, sourcePage }
         },
         { status: 200 } // Return 200 so the client modal doesn't crash on incomplete server variables
@@ -105,8 +113,12 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error("Nodemailer SMTP Error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Internal Mail Router Error" },
-      { status: 500 }
+      { 
+        success: false, 
+        warning: "SMTP config missing", 
+        error: error.message || "Internal Mail Router Error" 
+      },
+      { status: 200 }
     );
   }
 }
