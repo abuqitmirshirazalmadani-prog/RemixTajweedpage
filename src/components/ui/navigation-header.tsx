@@ -124,6 +124,8 @@ export function NavigationHeader({ onTrialClick, currentPage }: NavigationHeader
               <span className="w-1.5 h-1.5 rounded-full bg-[#C8EB5F] group-hover/ai:scale-125 transition-transform duration-300"></span>
               AI CENTER
             </Link>
+
+
             
             {/* World Timings dropdown */}
             <div 
@@ -445,6 +447,8 @@ export function NavigationHeader({ onTrialClick, currentPage }: NavigationHeader
               <span className="w-2 h-2 rounded-full bg-[#C8EB5F] animate-pulse"></span>
               AI Learning Center
             </Link>
+
+
 
             <button 
               onClick={() => {

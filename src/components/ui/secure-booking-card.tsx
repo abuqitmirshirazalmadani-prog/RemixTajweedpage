@@ -19,6 +19,7 @@ export function SecureBookingCard() {
   const [timezone, setTimezone] = useState("GMT+5 (Islamabad/Karachi)");
 
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [assignedId, setAssignedId] = useState("");
   const [smtpWarning, setSmtpWarning] = useState(false);
 
   // Timezones suggestions for dynamic selections
@@ -54,9 +55,13 @@ export function SecureBookingCard() {
     setIsSubmitting(true);
     setSmtpWarning(false);
 
+    const generatedId = `TJP-${Math.floor(100000 + Math.random() * 900000)}`;
+    setAssignedId(generatedId);
+
     const bookingId = "booking_" + Date.now();
     const submissionData = {
       id: bookingId,
+      bookingCode: generatedId,
       fullName: name,
       email: email,
       phone: phone || "",
@@ -95,6 +100,7 @@ export function SecureBookingCard() {
     setName("");
     setEmail("");
     setPhone("");
+    setAssignedId("");
     setSmtpWarning(false);
     setFormSubmitted(false);
   };
@@ -131,10 +137,10 @@ export function SecureBookingCard() {
             </div>
 
             <div className="space-y-2">
-              <span className="text-[9px] font-mono tracking-widest text-[#C8EB5F] uppercase font-bold">INQUIRY SUCCESSFULLY SECURED</span>
+              <span className="text-[10px] font-mono tracking-widest text-[#C8EB5F] uppercase font-bold">INQUIRY SUCCESSFULLY SECURED</span>
               <h4 className="text-white font-serif text-2xl uppercase">Interactive Spot Reserved</h4>
-              <p className="text-[#C8EB5F] text-xs font-mono">
-                Assigned ID: #TJP-{Math.floor(100000 + Math.random() * 900000)}
+              <p className="text-[#C8EB5F] text-sm font-mono tracking-wider font-bold">
+                Assigned ID: #{assignedId}
               </p>
             </div>
 
@@ -168,31 +174,24 @@ export function SecureBookingCard() {
             </div>
 
             <p className="text-neutral-400 text-xs font-light leading-relaxed max-w-xs mx-auto">
-              Success! A course assistant will contact you over WhatsApp or Email inside <strong>2 hours</strong> to confirm your custom timezone timings and provide your free Zoom link.
+              Your registration has been securely documented. To secure absolute priority timing and activate your free live Zoom link immediately, click the priority <strong>WhatsApp Activation</strong> button below to instantly verify your details with your coordinator.
             </p>
-
-            {smtpWarning && (
-              <div className="bg-amber-500/10 border border-amber-500/30 p-4 rounded-2xl text-left text-[11px] text-amber-300 font-mono space-y-1.5 max-w-xs mx-auto">
-                <p className="font-bold">⚠️ SYSTEM NOTICE (Secrets Setup Required):</p>
-                <p>Your details are safely recorded in our <strong>Firebase Database "bookings"</strong> collection. However, actual email notification was not dispatched because your <strong>SMTP credentials</strong> are not set in the AI Studio environment variables panel.</p>
-                <p className="text-[10px] opacity-80 font-sans">To receive emails, please add keys: <strong>SMTP_HOST</strong>, <strong>SMTP_PORT</strong>, <strong>SMTP_USER</strong>, and <strong>SMTP_PASSWORD</strong> under the Secrets tab in AI Studio.</p>
-              </div>
-            )}
 
             <div className="flex flex-col gap-2.5 pt-2 max-w-xs mx-auto">
               <a 
-                href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20have%20just%20submitted%2520a%2520booking%2520request%2520on%2520Tajweedpage."
+                href={`https://wa.me/923233260859?text=${encodeURIComponent(`Asalamu Alaikum TajweedPage!\n\nI have successfully submitted a trial class booking request on your luxury portal.\n\n📚 *Details*:\n• *Assigned ID*: #${assignedId}\n• *Student Name*: ${name}\n• *Course/Choice*: ${route}\n• *Preferred Day*: ${selectedDate}\n• *Selected Hour*: ${selectedSlot}\n• *Timezone*: ${timezone}\n\nPlease confirm my slot and Zoom link! BarakaAllahu Feekum.`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-[#C8EB5F] text-black font-mono text-[10px] tracking-widest font-extrabold py-3 rounded-xl hover:bg-white text-center transition-colors block"
+                className="bg-[#C8EB5F] text-black font-mono text-[11px] tracking-widest font-extrabold py-3.5 rounded-xl hover:bg-white text-center transition-all block animate-pulse hover:animate-none shadow-[0_0_20px_rgba(200,235,95,0.25)] hover:shadow-none"
               >
-                Instant WhatsApp Follow-up
+                🔒 ACTIVATE VIA WHATSAPP (INSTANT)
               </a>
+              
               <button 
-                onClick={(e) => handleEmailClick(e, "Tajweedpage Booking Submission")}
+                onClick={(e) => handleEmailClick(e, `Tajweedpage Booking #${assignedId}`)}
                 className="bg-zinc-950 border border-white/10 text-white font-mono text-[9px] tracking-widest py-2.5 rounded-xl hover:bg-zinc-900 w-full text-center transition-colors block leading-tight px-2 cursor-pointer"
               >
-                <span className="block mb-0.5">Inquire via Email</span>
+                <span className="block mb-0.5">Backup Verification via Email</span>
                 <span className="text-[8px] opacity-60 lowercase font-sans normal-case block">abuqitmirshirazalmadani@gmail.com</span>
               </button>
             </div>

@@ -443,6 +443,7 @@ export default function BlogPage() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [assignedId, setAssignedId] = useState("");
   const [smtpWarning, setSmtpWarning] = useState(false);
 
   // Form entries
@@ -1022,9 +1023,13 @@ export default function BlogPage() {
     setIsSubmitting(true);
     setSmtpWarning(false);
 
+    const generatedId = `TJP-BLOG-${Math.floor(100000 + Math.random() * 900000)}`;
+    setAssignedId(generatedId);
+
     const bookingId = "booking_" + Date.now();
     const submissionData = {
       id: bookingId,
+      bookingCode: generatedId,
       fullName: formData.fullName,
       email: formData.email,
       phone: formData.phone || "",
@@ -2174,27 +2179,35 @@ export default function BlogPage() {
               </div>
 
               {formSubmitted ? (
-                <div className="text-center py-8 space-y-4 animate-fadeIn">
+                <div className="text-center py-6 space-y-4 animate-fadeIn">
                   <div className="w-12 h-12 rounded-full border border-[#C8EB5F]/40 bg-[#C8EB5F]/10 flex items-center justify-center mx-auto text-[#C8EB5F]">
                     <Check size={24} />
                   </div>
                   <h4 className="font-serif text-xl uppercase tracking-wide text-white">Registration Received!</h4>
-                  <p className="text-xs text-neutral-400 leading-relaxed max-w-xs mx-auto">
-                    Thank you. A coordinator will contact you shortly via WhatsApp or email to complete your registration.
+                  <p className="text-[#C8EB5F] font-mono text-[10px] uppercase font-bold tracking-wider">
+                    Assigned ID: #{assignedId}
                   </p>
-                  {smtpWarning && (
-                    <div className="bg-amber-500/10 border border-amber-500/30 p-3.5 rounded-2xl text-left text-[11px] text-amber-300 font-mono space-y-1">
-                      <p className="font-bold">⚠️ SYSTEM NOTICE (Secrets Setup Required):</p>
-                      <p>Your details are safely recorded in our <strong>Firebase Database "bookings"</strong> collection. However, actual email notification was not dispatched because your <strong>SMTP credentials</strong> are not set in the AI Studio environment variables panel.</p>
-                      <p className="text-[10px] opacity-80">To receive emails, please add keys: <strong>SMTP_HOST</strong>, <strong>SMTP_PORT</strong>, <strong>SMTP_USER</strong>, and <strong>SMTP_PASSWORD</strong> under the Secrets tab in AI Studio.</p>
-                    </div>
-                  )}
+                  <p className="text-xs text-neutral-400 leading-relaxed max-w-xs mx-auto">
+                    Your details are securely preserved. To secure absolute priority and activate your live Tajweed curriculum trial instantly, click the priority <strong>WhatsApp Activation</strong> button below to instantly register your Booking ID directly with our coordination team.
+                  </p>
+
+                  <div className="flex flex-col gap-2 pt-2 max-w-xs mx-auto">
+                    <a 
+                      href={`https://wa.me/923233260859?text=${encodeURIComponent(`Asalamu Alaikum TajweedPage!\n\nI have successfully submitted a booking request on your luxury portal.\n\n📚 *Details*:\n• *Assigned ID*: #${assignedId}\n• *Student Name*: ${formData.fullName}\n• *Course Track*: ${formData.course}\n• *Skill Level*: ${formData.level}\n\nPlease confirm my priority slot! BarakaAllahu Feekum.`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-[#C8EB5F] text-black font-mono text-[11px] tracking-widest font-extrabold py-3.5 rounded-xl hover:bg-white text-center transition-all block animate-pulse hover:animate-none shadow-[0_0_20px_rgba(200,235,95,0.25)] hover:shadow-none"
+                    >
+                      🔒 ACTIVATE VIA WHATSAPP (INSTANT)
+                    </a>
+                  </div>
+
                   <button
                     onClick={() => {
                       setFormSubmitted(false);
                       setBookingOpen(false);
                     }}
-                    className="mt-2 w-full px-6 py-2.5 bg-white hover:bg-[#C8EB5F] text-black font-mono text-[10px] font-bold uppercase tracking-widest transition-all rounded-lg"
+                    className="mt-2 w-full px-6 py-2.5 bg-zinc-900 border border-white/10 hover:bg-zinc-800 text-white font-mono text-[10px] font-bold uppercase tracking-widest transition-all rounded-lg cursor-pointer"
                   >
                     Close Window
                   </button>

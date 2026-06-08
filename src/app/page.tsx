@@ -82,6 +82,7 @@ export default function Home() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [bookingType, setBookingType] = useState<"trial" | "demo">("trial");
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [assignedId, setAssignedId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -94,9 +95,13 @@ export default function Home() {
     setIsSubmitting(true);
     setSmtpWarning(false);
 
+    const generatedId = `TJP-HOM-${Math.floor(100000 + Math.random() * 900000)}`;
+    setAssignedId(generatedId);
+
     const bookingId = "booking_" + Date.now();
     const submissionData = {
       id: bookingId,
+      bookingCode: generatedId,
       fullName: fullName,
       email: email,
       phone: phone || "",
@@ -135,6 +140,7 @@ export default function Home() {
     setFullName("");
     setEmail("");
     setPhone("");
+    setAssignedId("");
     setSmtpWarning(false);
     setFormSubmitted(false);
     setBookingOpen(false);
@@ -835,32 +841,28 @@ export default function Home() {
                 <div className="bg-[#C8EB5F]/10 border border-[#C8EB5F]/30 p-6 rounded-2xl text-center space-y-4">
                   <CheckCircle2 className="text-[#C8EB5F] mx-auto animate-bounce" size={32} />
                   <h4 className="text-white font-serif text-lg">Inquiry Confirmed</h4>
-                  <p className="text-neutral-400 text-xs font-light leading-relaxed">
-                    Success! A coordinator situated inside your specific timezone will contact you over WhatsApp/Email within 2 hours to lock in the exact slots.
+                  <p className="text-[#C8EB5F] font-mono text-[10px] uppercase tracking-wider font-bold block mb-1">
+                    Assigned ID: #{assignedId}
                   </p>
-
-                  {smtpWarning && (
-                    <div className="bg-amber-500/10 border border-amber-500/30 p-3 rounded-lg text-left text-[11px] text-amber-300 font-mono space-y-1">
-                      <p className="font-bold">⚠️ SYSTEM NOTICE (Secrets Setup Required):</p>
-                      <p>Your details are safely recorded in our <strong>Firebase Database "bookings"</strong> collection. However, actual email notification was not dispatched because your <strong>SMTP credentials</strong> are not set in the AI Studio environment variables panel.</p>
-                      <p className="text-[10px] opacity-80">To receive emails, please add keys: <strong>SMTP_HOST</strong>, <strong>SMTP_PORT</strong>, <strong>SMTP_USER</strong>, and <strong>SMTP_PASSWORD</strong> under the Secrets tab in AI Studio.</p>
-                    </div>
-                  )}
+                  <p className="text-neutral-400 text-xs font-light leading-relaxed">
+                    Your details are saved. To secure absolute priority and activate your complimentary Zoom class spot, click the priority <strong>WhatsApp Activation</strong> button below to instantly register your class coordinates with your personal scheduling coordinator.
+                  </p>
                   
                   <div className="flex flex-col gap-2 pt-2">
                     <a 
-                      href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20have%20just%20submitted%20a%20booking%20request%20on%20Tajweedpage."
+                      href={`https://wa.me/923233260859?text=${encodeURIComponent(`Asalamu Alaikum TajweedPage!\n\nI have successfully submitted a class inquiry on your luxury portal.\n\n📚 *Details*:\n• *Assigned ID*: #${assignedId}\n• *Student Name*: ${fullName}\n• *Desired Class*: ${bookingType === "trial" ? "Free Live Trial" : "Diagnostic Demo Class"}\n• *Preferred Timing*: ${timing}\n\nPlease confirm my live slot! BarakaAllahu Feekum.`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-[#C8EB5F] text-black font-mono text-[10px] tracking-widest font-bold py-2.5 rounded-lg hover:bg-white text-center transition-colors"
+                      className="bg-[#C8EB5F] text-black font-mono text-[11px] tracking-widest font-extrabold py-3.5 rounded-xl hover:bg-white text-center transition-all block animate-pulse hover:animate-none shadow-[0_0_20px_rgba(200,235,95,0.25)] hover:shadow-none"
                     >
-                      Instant WhatsApp Follow-up
+                      🔒 ACTIVATE VIA WHATSAPP (INSTANT)
                     </a>
+                    
                     <button 
-                      onClick={(e) => handleEmailClick(e, "Tajweedpage Form Submission")}
-                      className="bg-zinc-900 text-white border border-white/10 font-mono text-[10px] tracking-widest py-2.5 rounded-lg hover:bg-zinc-800 text-center transition-colors cursor-pointer w-full"
+                      onClick={(e) => handleEmailClick(e, `Tajweedpage Form Inquiry #${assignedId}`)}
+                      className="bg-zinc-900 text-white border border-white/10 font-mono text-[10px] tracking-widest py-2.5 rounded-lg hover:bg-zinc-850 text-center transition-colors cursor-pointer w-full"
                     >
-                      Email: abuqitmirshirazalmadani@gmail.com
+                      Backup: abuqitmirshirazalmadani@gmail.com
                     </button>
                   </div>
 
