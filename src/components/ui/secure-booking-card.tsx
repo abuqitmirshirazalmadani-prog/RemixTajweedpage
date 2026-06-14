@@ -189,10 +189,10 @@ export function SecureBookingCard() {
               
               <button 
                 onClick={(e) => handleEmailClick(e, `Tajweedpage Booking #${assignedId}`)}
-                className="bg-zinc-950 border border-white/10 text-white font-mono text-[9px] tracking-widest py-2.5 rounded-xl hover:bg-zinc-900 w-full text-center transition-colors block leading-tight px-2 cursor-pointer"
+                className="bg-zinc-950 border border-white/10 text-white font-mono text-[9px] tracking-widest py-2.5 rounded-xl hover:bg-zinc-900 w-full text-center transition-colors block leading-tight px-1.5 cursor-pointer flex flex-col items-center justify-center gap-0.5"
               >
-                <span className="block mb-0.5">Backup Verification via Email</span>
-                <span className="text-[8px] opacity-60 lowercase font-sans normal-case block">abuqitmirshirazalmadani@gmail.com</span>
+                <span className="block font-bold">Email: hello@abuqitmirlabs.tech</span>
+                <span className="text-[7.5px] opacity-60 lowercase font-sans normal-case block">Backup: abuqitmirshirazalmadani@gmail.com</span>
               </button>
             </div>
           </div>

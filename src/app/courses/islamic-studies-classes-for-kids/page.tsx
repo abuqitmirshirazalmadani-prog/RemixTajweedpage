@@ -344,7 +344,7 @@ export default function IslamicStudiesClassesForKidsPage() {
         
         {/* Email Floating Button */}
         <a 
-          href="mailto:abuqitmirshirazalmadani@gmail.com" 
+          href="mailto:hello@abuqitmirlabs.tech" 
           className="group relative flex items-center justify-center w-14 h-14 bg-neutral-900 text-white rounded-full border border-white/10 shadow-lg hover:bg-[#C8EB5F] hover:text-black hover:scale-110 transition-all duration-300"
         >
           <span className="absolute right-16 bg-white text-black text-[10px] font-bold px-3 py-2 rounded-lg opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-305 whitespace-nowrap shadow-xl flex items-center gap-2">

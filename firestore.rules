@@ -45,11 +45,15 @@ service cloud.firestore {
         && data.author is map
         && data.readTime is string && data.readTime.size() <= 500
         && data.date is string && data.date.size() <= 500
-        && data.imageUrl is string && data.imageUrl.size() <= 5000
+        && data.imageUrl is string && data.imageUrl.size() <= 1200000
         && data.quoteNL is string && data.quoteNL.size() <= 5000
         && data.quoteEN is string && data.quoteEN.size() <= 5000
         && data.contentNL is list && data.contentNL.size() <= 1000
-        && data.contentEN is list && data.contentEN.size() <= 1000;
+        && data.contentEN is list && data.contentEN.size() <= 1000
+        && (!('keyHighlightsNL' in data) || data.keyHighlightsNL is list)
+        && (!('keyHighlightsEN' in data) || data.keyHighlightsEN is list)
+        && (!('keywords' in data) || data.keywords is list)
+        && (!('inArticleImages' in data) || data.inArticleImages is list);
     }
 
     // 2. Collection Rules for "blogs"

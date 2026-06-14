@@ -83,6 +83,7 @@ interface BlogPost {
   keyHighlightsEN: string[];
   keywords?: string[];
   createdAt?: any;
+  inArticleImages?: { id: string; url: string; alt: string; }[];
 }
 
 // --- Sample Premium Blog Data ---
@@ -500,7 +501,294 @@ export default function BlogPage() {
     contentEN: "",
     keyHighlightsNL: "",
     keyHighlightsEN: "",
+    inArticleImages: [] as { id: string; url: string; alt: string; }[],
   });
+
+  const [imageInputMode, setImageInputMode] = useState<"url" | "upload">("upload");
+  const [compressionLoading, setCompressionLoading] = useState<boolean>(false);
+
+  const getInArticlePayloadSizeKb = () => {
+    let size = 0;
+    if (editorData.inArticleImages) {
+      editorData.inArticleImages.forEach(img => {
+        if (img.url && img.url.startsWith("data:")) {
+          size += (img.url.length * 3) / 4 / 1024;
+        }
+      });
+    }
+    return size;
+  };
+
+  const handleInArticleUpload = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setCompressionLoading(true);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        // highly optimized 750px max size
+        const maxDim = 750;
+
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          try {
+            // optimized WebP compression at 0.45 quality
+            const compressedDataUrl = canvas.toDataURL("image/webp", 0.45);
+            setEditorData((prev) => {
+              const currentImages = [...prev.inArticleImages];
+              currentImages[index] = {
+                ...currentImages[index],
+                url: compressedDataUrl,
+              };
+              return { ...prev, inArticleImages: currentImages };
+            });
+          } catch (err) {
+            console.error("Canvas WebP compression failed, fallback to jpeg 0.5", err);
+            try {
+              const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.5);
+              setEditorData((prev) => {
+                const currentImages = [...prev.inArticleImages];
+                currentImages[index] = {
+                  ...currentImages[index],
+                  url: compressedDataUrl,
+                };
+                return { ...prev, inArticleImages: currentImages };
+              });
+            } catch (fbErr) {
+              setEditorData((prev) => {
+                const currentImages = [...prev.inArticleImages];
+                currentImages[index] = {
+                  ...currentImages[index],
+                  url: event.target?.result as string,
+                };
+                return { ...prev, inArticleImages: currentImages };
+              });
+            }
+          }
+        } else {
+          setEditorData((prev) => {
+            const currentImages = [...prev.inArticleImages];
+            currentImages[index] = {
+              ...currentImages[index],
+              url: event.target?.result as string,
+            };
+            return { ...prev, inArticleImages: currentImages };
+          });
+        }
+        setCompressionLoading(false);
+      };
+      img.onerror = () => {
+        setEditorData((prev) => {
+          const currentImages = [...prev.inArticleImages];
+          currentImages[index] = {
+            ...currentImages[index],
+            url: event.target?.result as string,
+          };
+          return { ...prev, inArticleImages: currentImages };
+        });
+        setCompressionLoading(false);
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.onerror = () => {
+      setCompressionLoading(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setCompressionLoading(true);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        const maxDim = 850;
+
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          try {
+            const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.75);
+            setEditorData((prev) => ({ ...prev, imageUrl: compressedDataUrl }));
+          } catch (err) {
+            console.error("Canvas draw failed base64 compression, using original DataUrl", err);
+            setEditorData((prev) => ({ ...prev, imageUrl: event.target?.result as string }));
+          }
+        } else {
+          setEditorData((prev) => ({ ...prev, imageUrl: event.target?.result as string }));
+        }
+        setCompressionLoading(false);
+      };
+      img.onerror = () => {
+        setEditorData((prev) => ({ ...prev, imageUrl: event.target?.result as string }));
+        setCompressionLoading(false);
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.onerror = () => {
+      setCompressionLoading(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const renderArticleWithImages = (paragraphsList: string[] | string | undefined, inArticleImagesList?: { id: string; url: string; alt: string; }[]) => {
+    if (!paragraphsList) return null;
+    let paragraphs: string[] = [];
+    if (Array.isArray(paragraphsList)) {
+      paragraphs = paragraphsList;
+    } else {
+      paragraphs = paragraphsList.split("\n\n").map(p => p.trim()).filter(p => p !== "");
+    }
+
+    const images = inArticleImagesList || [];
+    if (images.length === 0) {
+      // Direct raw render
+      return (
+        <Markdown
+          components={{
+            h1: ({node, ...props}) => <h1 style={{ fontFamily: "var(--font-cormorant)" }} className="text-2xl md:text-3xl font-medium text-white mt-8 mb-4 uppercase tracking-wide border-b border-white/10 pb-2 font-normal" {...props} />,
+            h2: ({node, ...props}) => <h2 style={{ fontFamily: "var(--font-cormorant)" }} className="text-xl md:text-2xl font-normal text-white mt-6 mb-3 uppercase tracking-wide" {...props} />,
+            h3: ({node, ...props}) => <h3 style={{ fontFamily: "var(--font-cormorant)" }} className="text-lg md:text-xl font-medium text-[#C8EB5F] mt-5 mb-2 font-mono uppercase tracking-widest" {...props} />,
+            p: ({node, ...props}) => <p className="mb-4 leading-relaxed text-neutral-300 font-sans font-light text-sm md:text-base" {...props} />,
+            ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4 space-y-2 text-neutral-300" {...props} />,
+            ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-4 space-y-2 text-neutral-300" {...props} />,
+            li: ({node, ...props}) => <li className="pl-1 text-neutral-300" {...props} />,
+            strong: ({node, ...props}) => <strong className="text-[#C8EB5F] font-bold" {...props} />,
+            em: ({node, ...props}) => <em className="italic text-neutral-200" {...props} />,
+            blockquote: ({node, ...props}) => <blockquote className="border-l-2 border-[#C8EB5F] bg-[#C8EB5F]/5 p-4 my-4 rounded-r-lg italic text-neutral-200" {...props} />,
+            a: ({node, ...props}) => <a className="text-[#C8EB5F] underline hover:text-white transition-colors" target="_blank" rel="noopener noreferrer" {...props} />
+          }}
+        >
+          {getFullContent(paragraphs)}
+        </Markdown>
+      );
+    }
+
+    // Proportional step distribution
+    const items: React.ReactNode[] = [];
+    const step = Math.max(1, Math.floor(paragraphs.length / (images.length + 1)));
+    let imageIndex = 0;
+
+    paragraphs.forEach((pText, pIdx) => {
+      items.push(
+        <div key={`p-${pIdx}`} className="space-y-4">
+          <Markdown
+            components={{
+              h1: ({node, ...props}) => <h1 style={{ fontFamily: "var(--font-cormorant)" }} className="text-2xl md:text-3xl font-medium text-white mt-8 mb-4 uppercase tracking-wide border-b border-white/10 pb-2 font-normal" {...props} />,
+              h2: ({node, ...props}) => <h2 style={{ fontFamily: "var(--font-cormorant)" }} className="text-xl md:text-2xl font-normal text-white mt-6 mb-3 uppercase tracking-wide" {...props} />,
+              h3: ({node, ...props}) => <h3 style={{ fontFamily: "var(--font-cormorant)" }} className="text-lg md:text-xl font-medium text-[#C8EB5F] mt-5 mb-2 font-mono uppercase tracking-widest" {...props} />,
+              p: ({node, ...props}) => <p className="mb-4 leading-relaxed text-neutral-300 font-sans font-light text-sm md:text-base" {...props} />,
+              ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4 space-y-2 text-neutral-300" {...props} />,
+              ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-4 space-y-2 text-neutral-300" {...props} />,
+              li: ({node, ...props}) => <li className="pl-1 text-neutral-300" {...props} />,
+              strong: ({node, ...props}) => <strong className="text-[#C8EB5F] font-bold" {...props} />,
+              em: ({node, ...props}) => <em className="italic text-neutral-200" {...props} />,
+              blockquote: ({node, ...props}) => <blockquote className="border-l-2 border-[#C8EB5F] bg-[#C8EB5F]/5 p-4 my-4 rounded-r-lg italic text-neutral-200" {...props} />,
+              a: ({node, ...props}) => <a className="text-[#C8EB5F] underline hover:text-white transition-colors" target="_blank" rel="noopener noreferrer" {...props} />
+            }}
+          >
+            {convertBareUrlsToMarkdownLinks(pText)}
+          </Markdown>
+        </div>
+      );
+
+      // Distribute image
+      if ((pIdx + 1) % step === 0 && imageIndex < images.length) {
+        const currentImg = images[imageIndex];
+        imageIndex++;
+        items.push(
+          <motion.div 
+            key={`in-art-img-${currentImg.id || imageIndex}`}
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="my-8 rounded-2xl overflow-hidden border border-white/5 bg-zinc-950/40 p-2 text-center"
+          >
+            <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-black/40">
+              <ResilientImage 
+                src={currentImg.url} 
+                alt={currentImg.alt || "In-article illustration"} 
+                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+              />
+            </div>
+            {currentImg.alt && (
+              <p className="mt-2.5 text-[10px] uppercase font-mono tracking-widest text-[#C8EB5F] font-bold">
+                {currentImg.alt}
+              </p>
+            )}
+          </motion.div>
+        );
+      }
+    });
+
+    // Append any residual images that were not output due to division math
+    while (imageIndex < images.length) {
+      const currentImg = images[imageIndex];
+      imageIndex++;
+      items.push(
+        <motion.div 
+          key={`in-art-img-residual-${currentImg.id || imageIndex}`}
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="my-8 rounded-2xl overflow-hidden border border-white/5 bg-zinc-950/40 p-2 text-center"
+        >
+          <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-black/40">
+            <ResilientImage 
+              src={currentImg.url} 
+              alt={currentImg.alt || "In-article illustration"} 
+              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            />
+          </div>
+          {currentImg.alt && (
+            <p className="mt-2.5 text-[10px] uppercase font-mono tracking-widest text-[#C8EB5F] font-bold">
+              {currentImg.alt}
+            </p>
+          )}
+        </motion.div>
+      );
+    }
+
+    return <div className="space-y-6">{items}</div>;
+  };
 
   // Prevent parent body scroll when overlay sheets/modals are active to eliminate double scrollbars
   useEffect(() => {
@@ -649,7 +937,8 @@ export default function BlogPage() {
           keyHighlightsNL: data.keyHighlightsNL || [],
           keyHighlightsEN: data.keyHighlightsEN || [],
           keywords: data.keywords || [],
-          createdAt: data.createdAt
+          createdAt: data.createdAt,
+          inArticleImages: data.inArticleImages || []
         });
       });
 
@@ -898,6 +1187,7 @@ export default function BlogPage() {
         contentEN: post.contentEN.join("\n\n"),
         keyHighlightsNL: post.keyHighlightsNL.join("\n"),
         keyHighlightsEN: post.keyHighlightsEN.join("\n"),
+        inArticleImages: post.inArticleImages || [],
       });
     } else {
       setEditingPost(null);
@@ -920,6 +1210,7 @@ export default function BlogPage() {
         contentEN: "",
         keyHighlightsNL: "",
         keyHighlightsEN: "",
+        inArticleImages: [],
       });
     }
     setAdminTab("editor");
@@ -938,11 +1229,26 @@ export default function BlogPage() {
       return;
     }
 
+    const totalImagePayload = getInArticlePayloadSizeKb() + (editorData.imageUrl.startsWith("data:") ? (editorData.imageUrl.length * 3) / 4 / 1024 : 0);
+    if (totalImagePayload > 800) {
+      alert(`⚠️ Validation Blocked: Total image payload size is ${totalImagePayload.toFixed(1)} KB, which exceeds our secure Firestore 800 KB publishing guard. Please remove some photos, compress them further, or use direct external URLs for secondary slots!`);
+      setDbSaving(false);
+      return;
+    }
+
     try {
       const contentNLArr = editorData.contentNL.split("\n\n").map(p => p.trim()).filter(p => p !== "");
       const contentENArr = editorData.contentEN.split("\n\n").map(p => p.trim()).filter(p => p !== "");
       const highlightsNLArr = editorData.keyHighlightsNL.split("\n").map(l => l.trim()).filter(l => l !== "");
       const highlightsENArr = editorData.keyHighlightsEN.split("\n").map(l => l.trim()).filter(l => l !== "");
+
+      const inArticleImagesFiltered = (editorData.inArticleImages || [])
+        .filter(img => img.url && img.url.trim() !== "")
+        .map(img => ({
+          id: img.id,
+          url: cleanUrl(img.url),
+          alt: img.alt || ""
+        }));
 
       const docRef = doc(db, "blogs", docId);
       const payload: any = {
@@ -967,7 +1273,8 @@ export default function BlogPage() {
         contentEN: contentENArr,
         keyHighlightsNL: highlightsNLArr,
         keyHighlightsEN: highlightsENArr,
-        keywords: editingPost?.keywords || []
+        keywords: editingPost?.keywords || [],
+        inArticleImages: inArticleImagesFiltered
       };
 
       if (editingPost) {
@@ -2062,7 +2369,7 @@ export default function BlogPage() {
                   </div>
 
                   {/* Main Excerpt Block Quote */}
-                  <div className="bg-[#C8EB5F]/3 border-l-2 border-[#C8EB5F] p-5 my-6 rounded-r-xl">
+                  <div className="bg-[#C8EB5F]/5 border-l-2 border-[#C8EB5F] p-5 my-6 rounded-r-xl">
                     <p 
                       style={{ fontFamily: "var(--font-cormorant)" }}
                       className="font-serif text-md md:text-lg text-neutral-200 italic font-light leading-relaxed"
@@ -2073,23 +2380,10 @@ export default function BlogPage() {
 
                   {/* Main Content Body Paragraphs */}
                   <div className="space-y-6 text-sm md:text-base text-neutral-300 font-sans font-light leading-relaxed markdown-container">
-                    <Markdown
-                      components={{
-                        h1: ({node, ...props}) => <h1 style={{ fontFamily: "var(--font-cormorant)" }} className="text-2xl md:text-3xl font-medium text-white mt-8 mb-4 uppercase tracking-wide border-b border-white/10 pb-2 font-normal" {...props} />,
-                        h2: ({node, ...props}) => <h2 style={{ fontFamily: "var(--font-cormorant)" }} className="text-xl md:text-2xl font-normal text-white mt-6 mb-3 uppercase tracking-wide" {...props} />,
-                        h3: ({node, ...props}) => <h3 style={{ fontFamily: "var(--font-cormorant)" }} className="text-lg md:text-xl font-medium text-[#C8EB5F] mt-5 mb-2 font-mono uppercase tracking-widest" {...props} />,
-                        p: ({node, ...props}) => <p className="mb-4 leading-relaxed text-neutral-300 font-sans font-light text-sm md:text-base" {...props} />,
-                        ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4 space-y-2 text-neutral-300" {...props} />,
-                        ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-4 space-y-2 text-neutral-300" {...props} />,
-                        li: ({node, ...props}) => <li className="pl-1 text-neutral-300" {...props} />,
-                        strong: ({node, ...props}) => <strong className="text-[#C8EB5F] font-bold" {...props} />,
-                        em: ({node, ...props}) => <em className="italic text-neutral-200" {...props} />,
-                        blockquote: ({node, ...props}) => <blockquote className="border-l-2 border-[#C8EB5F] bg-[#C8EB5F]/5 p-4 my-4 rounded-r-lg italic text-neutral-200" {...props} />,
-                        a: ({node, ...props}) => <a className="text-[#C8EB5F] underline hover:text-white transition-colors" target="_blank" rel="noopener noreferrer" {...props} />
-                      }}
-                    >
-                      {getFullContent(readingLanguage === "NL" ? selectedBlog.contentNL : selectedBlog.contentEN)}
-                    </Markdown>
+                    {renderArticleWithImages(
+                      readingLanguage === "NL" ? selectedBlog.contentNL : selectedBlog.contentEN,
+                      selectedBlog.inArticleImages
+                    )}
                   </div>
 
                   {/* Deep Highlights Checklist Box */}
@@ -2920,36 +3214,342 @@ export default function BlogPage() {
 
                           </div>
 
+                          {/* 2.5 In-Article Photo Assistant (4 to 6 Photos) */}
+                          <div className="border border-white/5 bg-zinc-950/40 p-5 rounded-2xl space-y-4">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                              <div className="space-y-1">
+                                <span className="text-[10px] font-mono tracking-widest text-[#C8EB5F] uppercase block font-bold">
+                                  2.5 IN-ARTICLE PHOTO ASSISTANT (4 TO 6 PHOTOS)
+                                </span>
+                                <p className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest max-w-xl leading-relaxed">
+                                  Secondary article helper: Upload 4 to 6 inline photos. They will be distributed seamlessly and in clean ratios throughout your article.
+                                </p>
+                              </div>
+                              
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (editorData.inArticleImages.length >= 6) {
+                                    alert("Maximum 6 in-article photos supported!");
+                                    return;
+                                  }
+                                  setEditorData(prev => ({
+                                    ...prev,
+                                    inArticleImages: [
+                                      ...prev.inArticleImages,
+                                      { id: `slot-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, url: "", alt: "" }
+                                    ]
+                                  }));
+                                }}
+                                className="px-3 py-1.5 bg-[#C8EB5F]/10 hover:bg-[#C8EB5F] hover:text-black border border-[#C8EB5F]/20 text-[#C8EB5F] rounded-xl text-[9px] font-mono uppercase tracking-widest font-extrabold transition-all cursor-pointer flex items-center justify-center gap-1 shrink-0 self-start"
+                              >
+                                <Plus size={10} />
+                                Add Slot ({editorData.inArticleImages.length}/6)
+                              </button>
+                            </div>
+
+                            {/* Aggregating total image sizes for warnings */}
+                            {editorData.inArticleImages.length > 0 && (
+                              <div className="space-y-1.5 p-3.5 bg-black/50 border border-white/5 rounded-xl">
+                                <div className="flex justify-between text-[8px] font-mono text-neutral-400 uppercase tracking-widest">
+                                  <span>Total Firestore Payload Meter</span>
+                                  <span className={cn(
+                                    getInArticlePayloadSizeKb() > 700 ? "text-red-400 font-bold" : "text-[#C8EB5F]"
+                                  )}>
+                                    {getInArticlePayloadSizeKb().toFixed(1)} KB / 800 KB Limit
+                                  </span>
+                                </div>
+                                <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden">
+                                  <div 
+                                    className={cn(
+                                      "h-full rounded-full transition-all duration-300",
+                                      getInArticlePayloadSizeKb() > 700 ? "bg-red-500" : "bg-[#C8EB5F]"
+                                    )}
+                                    style={{ width: `${Math.min(100, (getInArticlePayloadSizeKb() / 800) * 100)}%` }}
+                                  />
+                                </div>
+                                {getInArticlePayloadSizeKb() > 700 && (
+                                  <p className="text-[8px] font-mono text-red-400 uppercase tracking-widest leading-relaxed">
+                                    ⚠️ Warning: Approaching the Firestore 800KB maximum save limit. Use lightweight URL compression or direct image links for secondary slots to preserve space.
+                                  </p>
+                                )}
+                              </div>
+                            )}
+
+                            {editorData.inArticleImages.length === 0 ? (
+                              <div className="border border-dashed border-white/10 p-8 rounded-xl text-center space-y-2">
+                                <p className="text-[9.5px] font-mono text-neutral-500 uppercase tracking-widest">
+                                  Currently 0 in-article photos active
+                                </p>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditorData(prev => ({
+                                      ...prev,
+                                      inArticleImages: Array.from({ length: 4 }, (_, i) => ({
+                                        id: `slot-${Date.now()}-${i}`,
+                                        url: "",
+                                        alt: ""
+                                      }))
+                                    }));
+                                  }}
+                                  className="text-[9px] font-mono text-[#C8EB5F] uppercase tracking-widest hover:underline cursor-pointer"
+                                >
+                                  [ Initialize standard 4-photo layout ]
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {editorData.inArticleImages.map((slot, index) => {
+                                  const approxSizeKb = slot.url.startsWith("data:") 
+                                    ? Math.round((slot.url.length * 3) / 4 / 1024) 
+                                    : 0;
+
+                                  return (
+                                    <div 
+                                      key={slot.id || index}
+                                      className="border border-white/5 bg-zinc-900/40 p-4 rounded-xl space-y-3 relative group/slot"
+                                    >
+                                      <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                                        <span className="text-[8.5px] font-mono text-neutral-400 tracking-widest uppercase font-bold">
+                                          PHOTO SLOT #{index + 1}
+                                        </span>
+                                        <div className="flex items-center gap-2">
+                                          {approxSizeKb > 0 && (
+                                            <span className="text-[8px] font-mono text-neutral-500 bg-[#C8EB5F]/5 border border-[#C8EB5F]/10 px-1.5 py-0.5 rounded uppercase font-bold">
+                                              {approxSizeKb} KB
+                                            </span>
+                                          )}
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setEditorData(prev => ({
+                                                ...prev,
+                                                inArticleImages: prev.inArticleImages.filter((_, i) => i !== index)
+                                              }));
+                                            }}
+                                            className="text-neutral-500 hover:text-red-400 transition-colors text-[9px] font-mono uppercase font-bold leading-none select-none cursor-pointer"
+                                          >
+                                            ✕ Remove
+                                          </button>
+                                        </div>
+                                      </div>
+
+                                      {slot.url ? (
+                                        <div className="space-y-2">
+                                          <div className="relative h-28 w-full rounded-lg overflow-hidden border border-white/5 bg-black">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img 
+                                              src={slot.url} 
+                                              alt={slot.alt || "preview"} 
+                                              className="w-full h-full object-contain" 
+                                            />
+                                            <button
+                                              type="button"
+                                              onClick={() => {
+                                                setEditorData(prev => {
+                                                  const copy = [...prev.inArticleImages];
+                                                  copy[index].url = "";
+                                                  return { ...prev, inArticleImages: copy };
+                                                });
+                                              }}
+                                              className="absolute top-2 right-2 bg-black/80 hover:bg-neutral-800 text-white rounded-full w-5 h-5 flex items-center justify-center text-[9px] transition-all cursor-pointer font-bold"
+                                              title="Clear photo content"
+                                            >
+                                              ✕
+                                            </button>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div className="space-y-2">
+                                          <div className="flex gap-2">
+                                            <label className="flex-1 bg-zinc-950 border border-white/5 border-dashed rounded-lg p-3 text-center cursor-pointer hover:border-[#C8EB5F]/30 transition-colors flex flex-col items-center justify-center gap-1">
+                                              <span className="text-[9px] font-mono text-[#C8EB5F] uppercase tracking-widest">Upload File</span>
+                                              <span className="text-[7.5px] font-mono text-neutral-600 uppercase tracking-widest">WebP converter</span>
+                                              <input 
+                                                type="file" 
+                                                accept="image/*" 
+                                                onChange={(e) => handleInArticleUpload(index, e)} 
+                                                className="hidden" 
+                                              />
+                                            </label>
+                                            <div className="flex-1 flex flex-col justify-center p-3.5 bg-zinc-950/80 border border-white/5 rounded-lg space-y-1">
+                                              <span className="text-[7.5px] font-mono text-neutral-500 uppercase tracking-widest">Or direct URL:</span>
+                                              <input 
+                                                type="text"
+                                                placeholder="https://..."
+                                                value={slot.url}
+                                                onChange={(e) => {
+                                                  const val = e.target.value;
+                                                  setEditorData(prev => {
+                                                    const copy = [...prev.inArticleImages];
+                                                    copy[index].url = val;
+                                                    return { ...prev, inArticleImages: copy };
+                                                  });
+                                                }}
+                                                className="w-full bg-zinc-900 border border-white/5 text-[9px] text-white px-2 py-1.5 rounded focus:outline-none focus:border-[#C8EB5F] font-mono"
+                                              />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      <div className="space-y-1">
+                                        <label className="text-[7.5px] font-mono tracking-widest text-[#888] uppercase block font-bold">ALT TEXT (FOR GOOGLE IMAGES SEO)</label>
+                                        <input 
+                                          type="text"
+                                          placeholder="e.g. Beautiful Quran recitation visualizer"
+                                          value={slot.alt}
+                                          onChange={(e) => {
+                                            const val = e.target.value;
+                                            setEditorData(prev => {
+                                              const copy = [...prev.inArticleImages];
+                                              copy[index].alt = val;
+                                              return { ...prev, inArticleImages: copy };
+                                            });
+                                          }}
+                                          className="w-full bg-zinc-950 border border-white/5 text-[10px] text-white px-3 py-2 rounded-lg focus:outline-none focus:border-[#C8EB5F] transition-all font-mono"
+                                        />
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+
                           {/* Metadata Cover parameters */}
                           <div className="border border-white/5 bg-zinc-950/40 p-5 rounded-2xl space-y-4">
                             <span className="text-[10px] font-mono tracking-widest text-neutral-500 uppercase block font-bold">
                               3. METRIC SPECIFICATION DETAILS
                             </span>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              <div className="space-y-2 md:col-span-2">
-                                <label className="text-[9px] font-mono tracking-widest text-[#888] uppercase block font-bold">COVER PHOTO IMAGE URL</label>
-                                <div className="relative flex items-center">
-                                  <input 
-                                    type="text"
-                                    required
-                                    value={editorData.imageUrl}
-                                    onChange={(e) => setEditorData({...editorData, imageUrl: cleanUrl(e.target.value)})}
-                                    className="w-full bg-zinc-900 border border-white/5 text-white text-xs pl-3.5 pr-10 py-2.5 rounded-xl focus:outline-none focus:border-[#C8EB5F] transition-all font-mono"
-                                  />
-                                  {editorData.imageUrl && (
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                              <div className="md:col-span-2 space-y-4">
+                                <div className="flex items-center justify-between">
+                                  <label className="text-[9.5px] font-mono tracking-widest text-[#888] uppercase block font-bold">
+                                    COVER PHOTO SOURCE
+                                  </label>
+                                  <div className="flex gap-1.5 bg-black/60 p-1 rounded-xl border border-white/5">
                                     <button
                                       type="button"
-                                      onClick={() => setEditorData({...editorData, imageUrl: ""})}
-                                      className="absolute right-3.5 text-neutral-400 hover:text-[#C8EB5F] transition-all text-xs focus:outline-none cursor-pointer"
-                                      title="Clear image URL"
+                                      onClick={() => setImageInputMode("upload")}
+                                      className={cn(
+                                        "px-3 py-1 rounded-lg text-[9px] font-mono uppercase tracking-widest transition-all cursor-pointer",
+                                        imageInputMode === "upload" 
+                                          ? "bg-[#C8EB5F] text-black font-extrabold" 
+                                          : "text-neutral-400 hover:text-white"
+                                      )}
                                     >
-                                      ✕
+                                      Upload File
                                     </button>
-                                  )}
+                                    <button
+                                      type="button"
+                                      onClick={() => setImageInputMode("url")}
+                                      className={cn(
+                                        "px-3 py-1 rounded-lg text-[9px] font-mono uppercase tracking-widest transition-all cursor-pointer",
+                                        imageInputMode === "url" 
+                                          ? "bg-[#C8EB5F] text-black font-extrabold" 
+                                          : "text-neutral-400 hover:text-white"
+                                      )}
+                                    >
+                                      Paste URL
+                                    </button>
+                                  </div>
                                 </div>
+
+                                {/* Hidden input to satisfy HTML5 form validation of imageUrl field */}
+                                <input 
+                                  type="hidden" 
+                                  value={editorData.imageUrl} 
+                                  required
+                                />
+
+                                {imageInputMode === "upload" ? (
+                                  <div className="space-y-3">
+                                    <div className="border border-dashed border-white/10 hover:border-[#C8EB5F]/20 transition-colors bg-zinc-900/50 p-6 rounded-2xl text-center space-y-2.5 relative flex flex-col items-center justify-center min-h-[140px]">
+                                      {compressionLoading ? (
+                                        <div className="space-y-2">
+                                          <div className="w-5 h-5 border-2 border-[#C8EB5F] border-t-transparent rounded-full animate-spin mx-auto" />
+                                          <p className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">Optimizing Image...</p>
+                                        </div>
+                                      ) : editorData.imageUrl && editorData.imageUrl.startsWith("data:") ? (
+                                        <div className="flex flex-col items-center gap-3">
+                                          <div className="relative w-36 h-20 rounded-xl overflow-hidden border border-white/15">
+                                            <img 
+                                              src={editorData.imageUrl} 
+                                              alt="Uploaded cover preview" 
+                                              className="w-full h-full object-cover"
+                                            />
+                                            <button
+                                              type="button"
+                                              onClick={() => setEditorData({...editorData, imageUrl: ""})}
+                                              className="absolute top-1 right-1 bg-black/80 hover:bg-neutral-800 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] transition-all cursor-pointer font-bold"
+                                              title="Remove image"
+                                            >
+                                              ✕
+                                            </button>
+                                          </div>
+                                          <p className="text-[9px] font-mono text-emerald-400 uppercase tracking-widest font-bold">✓ Optimized Local Photo Loaded</p>
+                                          <label className="text-[9px] font-mono text-[#C8EB5F] hover:underline cursor-pointer">
+                                            [ Replace Photo Image ]
+                                            <input 
+                                              type="file" 
+                                              accept="image/*" 
+                                              onChange={handleImageUpload} 
+                                              className="hidden" 
+                                            />
+                                          </label>
+                                        </div>
+                                      ) : (
+                                        <div className="space-y-3">
+                                          <p className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">Select PNG, JPG, or WebP</p>
+                                          <label className="inline-block bg-[#C8EB5F]/5 border border-[#C8EB5F]/20 hover:bg-[#C8EB5F]/15 text-[#C8EB5F] px-4 py-2 rounded-xl text-[10px] font-mono uppercase tracking-widest cursor-pointer transition-colors">
+                                            Browse image files
+                                            <input 
+                                              type="file" 
+                                              accept="image/*" 
+                                              onChange={handleImageUpload} 
+                                              className="hidden" 
+                                            />
+                                          </label>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="space-y-2">
+                                    <div className="relative flex items-center">
+                                      <input 
+                                        type="text"
+                                        placeholder="Paste a direct image URL (e.g., https://unsplash.com/...)"
+                                        value={editorData.imageUrl && !editorData.imageUrl.startsWith("data:") ? editorData.imageUrl : ""}
+                                        onChange={(e) => setEditorData({...editorData, imageUrl: cleanUrl(e.target.value)})}
+                                        className="w-full bg-zinc-900 border border-white/5 text-white text-xs pl-3.5 pr-10 py-2.5 rounded-xl focus:outline-none focus:border-[#C8EB5F] transition-all font-mono"
+                                      />
+                                      {editorData.imageUrl && !editorData.imageUrl.startsWith("data:") && (
+                                        <button
+                                          type="button"
+                                          onClick={() => setEditorData({...editorData, imageUrl: ""})}
+                                          className="absolute right-3.5 text-neutral-400 hover:text-[#C8EB5F] transition-all text-xs focus:outline-none cursor-pointer"
+                                          title="Clear image URL"
+                                        >
+                                          ✕
+                                        </button>
+                                      )}
+                                    </div>
+                                    {editorData.imageUrl && !editorData.imageUrl.startsWith("data:") && (
+                                      <div className="flex items-center gap-3 mt-2">
+                                        <div className="w-16 h-10 rounded-lg overflow-hidden border border-white/5 flex-shrink-0">
+                                          <img src={editorData.imageUrl} alt="preview" className="w-full h-full object-cover" />
+                                        </div>
+                                        <span className="text-[8px] font-mono text-[#C8EB5F] uppercase tracking-widest">Direct Image URL Preview Loaded</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                               </div>
-                              <div className="space-y-2">
+                              <div className="space-y-2 self-start pt-[28px]">
                                 <label className="text-[9px] font-mono tracking-widest text-[#888] uppercase block font-bold">READ TIMING (e.g. 5 MIN)</label>
                                 <input 
                                   type="text"

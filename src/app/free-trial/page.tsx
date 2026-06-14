@@ -432,7 +432,7 @@ export default function FreeTrialPage() {
         
         {/* Email Floating Button */}
         <a 
-          href="mailto:abuqitmirshirazalmadani@gmail.com?subject=Tajweedpage%20Quran%2520Lessons%2520Inquiry" 
+          href="mailto:hello@abuqitmirlabs.tech?subject=Tajweedpage%20Quran%2520Lessons%2520Inquiry" 
           className="group relative flex items-center justify-center w-14 h-14 bg-neutral-900 text-white rounded-full border border-white/10 shadow-lg hover:bg-[#C8EB5F] hover:text-black hover:scale-110 transition-all duration-300"
         >
           <span className="absolute right-16 bg-white text-black text-[10px] font-bold px-3 py-2 rounded-lg opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-305 whitespace-nowrap shadow-xl flex items-center gap-2">
@@ -518,11 +518,14 @@ export default function FreeTrialPage() {
                   <span className="text-[9px] font-mono opacity-80 mt-0.5">+923233260859</span>
                 </a>
                 <a 
-                  href="mailto:abuqitmirshirazalmadani@gmail.com?subject=Tajweedpage%20Quran%2520Classes%2520Inquiry"
+                  href="mailto:hello@abuqitmirlabs.tech?subject=Tajweedpage%20Quran%2520Classes%2520Inquiry"
                   className="flex flex-col items-center justify-center p-3.5 bg-zinc-950 hover:bg-zinc-900 text-white border border-white/10 text-center transition-all duration-300 rounded-xl"
                 >
                   <span className="text-[10px] font-mono tracking-wider font-bold uppercase text-[#C8EB5F]">Direct Email</span>
-                  <span className="text-[8px] font-mono opacity-85 mt-0.5 truncate w-full">abuqitmirshirazalmadani@gmail.com</span>
+                  <div className="flex flex-col text-[7.5px] font-mono opacity-85 mt-0.5 leading-tight select-all">
+                    <span>hello@abuqitmirlabs.tech</span>
+                    <span>abuqitmirshirazalmadani@gmail.com</span>
+                  </div>
                 </a>
               </div>
 
@@ -550,10 +553,11 @@ export default function FreeTrialPage() {
                       Instant WhatsApp Follow-up
                     </a>
                     <a 
-                      href="mailto:abuqitmirshirazalmadani@gmail.com?subject=Tajweedpage%20Form%2520Submission"
-                      className="bg-zinc-900 text-white border border-white/10 font-mono text-[10px] tracking-widest py-2.5 rounded-lg hover:bg-zinc-805 text-center transition-colors"
+                      href="mailto:hello@abuqitmirlabs.tech?subject=Tajweedpage%20Form%2520Submission"
+                      className="bg-zinc-900 text-white border border-white/10 font-mono text-[9px] tracking-wider py-2.5 rounded-lg hover:bg-zinc-805 text-center transition-colors flex flex-col items-center justify-center gap-0.5"
                     >
-                      Email: abuqitmirshirazalmadani@gmail.com
+                      <span className="font-bold">Email: hello@abuqitmirlabs.tech</span>
+                      <span className="text-[7.5px] opacity-70">Backup: abuqitmirshirazalmadani@gmail.com</span>
                     </a>
                   </div>
 

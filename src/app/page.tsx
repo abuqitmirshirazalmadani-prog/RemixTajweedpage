@@ -284,6 +284,10 @@ export default function Home() {
             {/* Title & Action left-side */}
             <div className="lg:col-span-8 space-y-6">
               
+              <h2 className="text-[#C8EB5F] text-[11px] sm:text-xs font-mono font-bold tracking-[0.3em] uppercase block">
+                ✦ World&apos;s First AI-Powered Quran Learning Platform ✦
+              </h2>
+
               <h1 className="font-serif text-white font-light text-4xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] tracking-tight uppercase">
                 Learn Quran Online <br />
                 <span className="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-[#C8EB5F] to-emerald-300">
@@ -827,7 +831,10 @@ export default function Home() {
                   className="flex flex-col items-center justify-center p-3.5 bg-zinc-950 hover:bg-zinc-900 text-white border border-white/10 text-center transition-all duration-300 rounded-xl cursor-pointer"
                 >
                   <span className="text-[10px] font-mono tracking-wider font-bold uppercase text-[#C8EB5F]">Direct Email</span>
-                  <span className="text-[8px] font-mono opacity-85 mt-0.5 truncate w-full">abuqitmirshirazalmadani@gmail.com</span>
+                  <div className="flex flex-col text-[7.5px] font-mono opacity-85 mt-0.5 leading-tight select-all">
+                    <span>hello@abuqitmirlabs.tech</span>
+                    <span>abuqitmirshirazalmadani@gmail.com</span>
+                  </div>
                 </button>
               </div>
 
@@ -860,9 +867,10 @@ export default function Home() {
                     
                     <button 
                       onClick={(e) => handleEmailClick(e, `Tajweedpage Form Inquiry #${assignedId}`)}
-                      className="bg-zinc-900 text-white border border-white/10 font-mono text-[10px] tracking-widest py-2.5 rounded-lg hover:bg-zinc-850 text-center transition-colors cursor-pointer w-full"
+                      className="bg-zinc-900 text-white border border-white/10 font-mono text-[9px] tracking-wider py-2.5 rounded-lg hover:bg-zinc-850 text-center transition-colors cursor-pointer w-full flex flex-col items-center justify-center gap-0.5"
                     >
-                      Backup: abuqitmirshirazalmadani@gmail.com
+                      <span className="font-bold">Primary: hello@abuqitmirlabs.tech</span>
+                      <span className="text-[7.5px] opacity-70">Backup: abuqitmirshirazalmadani@gmail.com</span>
                     </button>
                   </div>
 

@@ -12,7 +12,7 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function handleEmailClick(e: React.MouseEvent<any>, subject: string = "Tajweedpage Quran Classes Inquiry") {
   e.preventDefault();
-  const email = "abuqitmirshirazalmadani@gmail.com";
+  const email = "hello@abuqitmirlabs.tech";
   
   try {
     if (navigator.clipboard && navigator.clipboard.writeText) {

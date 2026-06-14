@@ -1011,13 +1011,16 @@ export default function ManchesterQuranClasses() {
             </p>
 
             <div className="space-y-4 border-t border-white/5 pt-8">
-              <div className="flex gap-4 items-center">
+              <div className="flex gap-4 items-center text-left">
                 <div className="w-10 h-10 rounded-full bg-zinc-950 border border-white/10 flex items-center justify-center shrink-0">
                   <Mail className="text-[#C8EB5F]" size={16} />
                 </div>
                 <div>
-                  <span className="text-[9px] font-mono text-neutral-500 uppercase block tracking-wider">SECURE INQUIRY EMAIL</span>
-                  <a href="mailto:abuqitmirshirazalmadani@gmail.com" className="text-xs font-mono text-white hover:text-[#C8EB5F]">abuqitmirshirazalmadani@gmail.com</a>
+                  <span className="text-[9px] font-mono text-neutral-500 uppercase block tracking-wider mb-0.5">SECURE INQUIRY EMAIL</span>
+                  <div className="flex flex-col">
+                    <a href="mailto:hello@abuqitmirlabs.tech" className="text-xs font-mono text-[#C8EB5F] hover:text-white transition-colors font-bold underline leading-normal">hello@abuqitmirlabs.tech</a>
+                    <a href="mailto:abuqitmirshirazalmadani@gmail.com" className="text-[10px] font-mono text-neutral-400 hover:text-[#C8EB5F] transition-colors leading-normal">abuqitmirshirazalmadani@gmail.com</a>
+                  </div>
                 </div>
               </div>
 
@@ -1121,7 +1124,7 @@ export default function ManchesterQuranClasses() {
       {/* Floating Action Buttons */}
       <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-4 items-end">
         <a 
-          href="mailto:abuqitmirshirazalmadani@gmail.com" 
+          href="mailto:hello@abuqitmirlabs.tech" 
           className="group relative flex items-center justify-center w-14 h-14 bg-neutral-900 text-white rounded-full border border-white/10 shadow-lg hover:bg-[#C8EB5F] hover:text-black hover:scale-110 transition-all duration-300"
         >
           <span className="absolute right-16 bg-white text-black text-[10px] font-bold px-3 py-2 rounded-lg opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-305 whitespace-nowrap shadow-xl flex items-center gap-2">

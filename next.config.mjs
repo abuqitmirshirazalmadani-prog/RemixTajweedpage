@@ -2,6 +2,8 @@
 const nextConfig = {
   trailingSlash: false,
   transpilePackages: ['react-markdown', 'motion', 'framer-motion'],
+  compress: true,
+  poweredByHeader: false,
   images: {
     unoptimized: false,
     remotePatterns: [
@@ -30,6 +32,28 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*(svg|png|jpg|jpeg|gif|webp|ico)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
   },
 };
 

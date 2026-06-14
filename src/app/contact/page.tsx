@@ -254,12 +254,15 @@ export default function ContactPage() {
             {/* Structured Quick Direct Info Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
               <a 
-                href="mailto:abuqitmirshirazalmadani@gmail.com?subject=Tajweedpage%20Quran%2520Syllabus%2520Inquiry"
+                href="mailto:hello@abuqitmirlabs.tech?subject=Tajweedpage%20Quran%2520Syllabus%2520Inquiry"
                 className="p-6 rounded-2xl bg-zinc-950/40 border border-white/5 hover:border-[#C8EB5F]/20 transition-all duration-300 space-y-3 block hover:-translate-y-0.5"
               >
                 <Mail className="text-[#C8EB5F]" size={20} />
                 <h4 className="text-white text-xs font-mono tracking-widest uppercase">General Mailbox</h4>
-                <p className="text-[11px] text-neutral-400 font-light truncate">abuqitmirshirazalmadani@gmail.com</p>
+                <div className="flex flex-col gap-1 text-[11px] text-neutral-400 font-light text-left leading-normal">
+                  <span className="text-[#C8EB5F] font-semibold underline">hello@abuqitmirlabs.tech</span>
+                  <span className="text-neutral-500 underline text-[10px]">abuqitmirshirazalmadani@gmail.com</span>
+                </div>
               </a>
 
               <div className="p-6 rounded-2xl bg-zinc-950/40 border border-white/5 hover:border-[#C8EB5F]/20 transition-colors space-y-3">
@@ -422,7 +425,7 @@ export default function ContactPage() {
         
         {/* Email Floating Button */}
         <a 
-          href="mailto:abuqitmirshirazalmadani@gmail.com" 
+          href="mailto:hello@abuqitmirlabs.tech" 
           className="group relative flex items-center justify-center w-14 h-14 bg-neutral-900 text-white rounded-full border border-white/10 shadow-lg hover:bg-[#C8EB5F] hover:text-black hover:scale-110 transition-all duration-300"
         >
           <span className="absolute right-16 bg-white text-black text-[10px] font-bold px-3 py-2 rounded-lg opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-305 whitespace-nowrap shadow-xl flex items-center gap-2">

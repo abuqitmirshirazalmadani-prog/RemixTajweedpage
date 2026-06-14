@@ -40,11 +40,78 @@ const lora = Lora({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.tajweedpage.com"),
   title: "Tajweedpage - Master Quran Recitation with Real-Time Feedback",
   description: "Join our 30-Day Tajweed Mastery System designed for beginners and adults who want to recite the Quran correctly and confidently.",
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "G-755QBQW73T",
   },
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Tajweedpage - Master Quran Recitation with Real-Time Feedback",
+    description: "Join our 30-Day Tajweed Mastery System designed for beginners and adults who want to recite the Quran correctly and confidently.",
+    url: "https://www.tajweedpage.com",
+    siteName: "Tajweedpage",
+    locale: "en_US",
+    type: "website",
+    images: [
+      {
+        url: "/logo.jpg",
+        width: 800,
+        height: 600,
+        alt: "Tajweedpage Premium Quran Learning",
+      }
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tajweedpage - Master Quran Recitation with Real-Time Feedback",
+    description: "Join our 30-Day Tajweed Mastery System designed for beginners and adults who want to recite the Quran correctly and confidently.",
+    images: ["/logo.jpg"],
+  }
+};
+
+const jsonLdSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "EducationalOrganization",
+      "@id": "https://www.tajweedpage.com/#organization",
+      "name": "Tajweedpage",
+      "url": "https://www.tajweedpage.com",
+      "logo": "https://www.tajweedpage.com/logo.svg",
+      "description": "Master Quran Recitation with Real-Time AI Feedback & Live Certified Tutors passed down through authentic Ijazah lineages.",
+      "sameAs": [
+        "https://www.facebook.com/tajweedpage",
+        "https://www.instagram.com/tajweedpage",
+        "https://www.youtube.com/@tajweedpage"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+92 323 3260859",
+        "contactType": "customer service",
+        "email": "hello@abuqitmirlabs.tech",
+        "availableLanguage": ["English", "Arabic", "Urdu"]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.tajweedpage.com/#website",
+      "url": "https://www.tajweedpage.com",
+      "name": "Tajweedpage",
+      "description": "Master Quran Recitation with Real-Time AI Feedback & Live Certified Tutors",
+      "publisher": {
+        "@id": "https://www.tajweedpage.com/#organization"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://www.tajweedpage.com/courses?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ]
 };
 
 export default function RootLayout({
@@ -55,6 +122,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdSchema) }}
+        />
         {/* Google Tag Manager */}
         <Script id="google-tag-manager" strategy="afterInteractive">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':

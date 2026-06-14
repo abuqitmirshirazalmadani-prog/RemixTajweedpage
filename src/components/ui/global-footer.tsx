@@ -50,11 +50,14 @@ export function GlobalFooter() {
               WhatsApp Chat (+923233260859)
             </a>
             <a 
-              href="mailto:abuqitmirshirazalmadani@gmail.com?subject=Tajweedpage%20Quran%20Classes%20Inquiry"
-              className="flex flex-col items-center justify-center gap-1 px-4 py-3 bg-zinc-900 hover:bg-[#C8EB5F] text-white hover:text-black font-mono text-[9px] font-bold uppercase tracking-widest transition-all duration-300 w-full hover:shadow-[0_0_20px_rgba(200,235,95,0.1)]"
+              href="mailto:hello@abuqitmirlabs.tech?subject=Tajweedpage%20Quran%20Classes%20Inquiry"
+              className="flex flex-col items-center justify-center gap-1.5 px-4 py-3 bg-zinc-900 hover:bg-[#C8EB5F] text-white hover:text-black font-mono text-[9px] font-bold uppercase tracking-widest transition-all duration-300 w-full hover:shadow-[0_0_20px_rgba(200,235,95,0.1)] group"
             >
               <span>Inquire via Email</span>
-              <span className="text-[8px] opacity-75 lowercase tracking-normal">abuqitmirshirazalmadani@gmail.com</span>
+              <div className="flex flex-col items-center gap-0.5 mt-0.5">
+                <span className="text-[8.5px] lowercase tracking-normal text-[#C8EB5F] group-hover:text-black font-semibold">hello@abuqitmirlabs.tech</span>
+                <span className="text-[7.5px] opacity-75 lowercase tracking-normal group-hover:text-black">abuqitmirshirazalmadani@gmail.com</span>
+              </div>
             </a>
           </div>
         </div>
@@ -63,8 +66,12 @@ export function GlobalFooter() {
 
       <div className="max-w-7xl mx-auto pt-8 space-y-6">
         <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start gap-6 text-[10px] font-mono tracking-widest text-neutral-500 uppercase border-t border-white/5 pt-8">
-          <div className="space-y-1.5 text-center lg:text-left">
-            <span>© 2026 TAJWEEDPAGE ONLINE ACADEMY. EMAIL: abuqitmirshirazalmadani@gmail.com</span>
+          <div className="space-y-2 text-center lg:text-left">
+            <span className="block">© 2026 TAJWEEDPAGE ONLINE ACADEMY.</span>
+            <div className="flex flex-col gap-0.5 mt-1 font-mono text-[9px] text-neutral-400">
+              <span className="block uppercase tracking-wider">Email 1: <a href="mailto:hello@abuqitmirlabs.tech" className="text-white hover:text-[#C8EB5F] transition-colors underline lowercase">hello@abuqitmirlabs.tech</a></span>
+              <span className="block uppercase tracking-wider2">Email 2: <a href="mailto:abuqitmirshirazalmadani@gmail.com" className="text-white hover:text-[#C8EB5F] transition-colors underline lowercase">abuqitmirshirazalmadani@gmail.com</a></span>
+            </div>
             <span className="text-[9px] text-neutral-600 block lowercase tracking-wider">
               Established traditional phonic sciences with authentic Ijazah narration chains.
             </span>

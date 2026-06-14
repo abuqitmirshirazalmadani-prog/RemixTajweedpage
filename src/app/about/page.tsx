@@ -394,21 +394,27 @@ export default function AboutUsPage() {
             Ready to secure structured live mentorship? Our academy specialists are situated online to customize the ideal timing parameters for you and your family. Reach out instantly.
           </p>
 
-          <div className="space-y-4 max-w-xl mx-auto pt-6">
-            <div className="p-6 sm:p-8 bg-zinc-950/80 border border-white/10 rounded-3xl hover:border-[#C8EB5F]/30 transition-all duration-500 group relative">
-              <span className="block text-[9px] tracking-[0.2em] text-[#C8EB5F] uppercase font-mono mb-2">DIALOGUE VIA EMAIL</span>
-              <a href="mailto:abuqitmirshirazalmadani@gmail.com" className="text-lg sm:text-2xl font-light font-serif text-white group-hover:text-[#C8EB5F] transition-colors break-all">
-                abuqitmirshirazalmadani@gmail.com
-              </a>
+          <div className="space-y-4 max-w-xl mx-auto pt-6">             <div className="p-6 sm:p-8 bg-zinc-950/80 border border-white/10 rounded-3xl hover:border-[#C8EB5F]/30 transition-all duration-500 group relative">
+              <span className="block text-[9px] tracking-[0.2em] text-[#C8EB5F] uppercase font-mono mb-2.5">DIALOGUE VIA EMAIL</span>
+              <div className="flex flex-col gap-2 text-left">
+                <a href="mailto:hello@abuqitmirlabs.tech" className="text-xl sm:text-2xl font-light font-serif text-white hover:text-[#C8EB5F] transition-colors break-all flex flex-col sm:flex-row sm:items-center gap-2">
+                  <span className="text-neutral-500 font-mono text-[10px] tracking-wider uppercase">Primary:</span>
+                  <span className="underline">hello@abuqitmirlabs.tech</span>
+                </a>
+                <a href="mailto:abuqitmirshirazalmadani@gmail.com" className="text-md sm:text-lg font-light font-serif text-neutral-400 hover:text-white transition-colors break-all flex flex-col sm:flex-row sm:items-center gap-2">
+                  <span className="text-neutral-600 font-mono text-[10px] tracking-wider uppercase">Backup:</span>
+                  <span className="underline">abuqitmirshirazalmadani@gmail.com</span>
+                </a>
+              </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a 
-                href="mailto:abuqitmirshirazalmadani@gmail.com" 
+                href="mailto:hello@abuqitmirlabs.tech" 
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-black font-mono text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-neutral-200 transition-all w-full sm:w-auto"
               >
                 <Mail size={16} />
-                Send Email
+                Send Email (hello@abuqitmirlabs.tech)
               </a>
               <a 
                 href="https://wa.me/923233260859?text=Asalamu%20Alaikum,%20I%20am%20interested%20in%20taking%20Tajweed%2520online%2520classes%2520with%2520Tajweedpage." 
@@ -433,7 +439,7 @@ export default function AboutUsPage() {
         
         {/* Email Floating Button */}
         <a 
-          href="mailto:abuqitmirshirazalmadani@gmail.com" 
+          href="mailto:hello@abuqitmirlabs.tech" 
           className="group relative flex items-center justify-center w-14 h-14 bg-neutral-900 text-white rounded-full border border-white/10 shadow-lg hover:bg-[#C8EB5F] hover:text-black hover:scale-110 transition-all duration-300"
         >
           <span className="absolute right-16 bg-white text-black text-[10px] font-bold px-3 py-2 rounded-lg opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-305 whitespace-nowrap shadow-xl flex items-center gap-2">

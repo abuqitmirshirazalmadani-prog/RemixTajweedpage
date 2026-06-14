@@ -52,7 +52,8 @@ export async function POST(req: NextRequest) {
 
     const mailOptions = {
       from: `"TajweedPage Notifications" <${smtpUser}>`,
-      to: "abuqitmirshirazalmadani@gmail.com",
+      to: "hello@abuqitmirlabs.tech",
+      cc: "abuqitmirshirazalmadani@gmail.com",
       replyTo: email,
       subject: `✨ [REGISTER TRACE] New Free Trial Class Student - ${fullName}`,
       html: `

@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.APP_URL || "https://tajweedpage.com";
+  const baseUrl = process.env.APP_URL || "https://www.tajweedpage.com";
 
   // Core Pages
   const corePages = [
@@ -13,6 +13,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/about", changeFrequency: "monthly" as const, priority: 0.8 },
     { path: "/contact", changeFrequency: "monthly" as const, priority: 0.8 },
     { path: "/blog", changeFrequency: "weekly" as const, priority: 0.7 },
+  ];
+
+  // Highly Specific Course Pages
+  const coursesPages = [
+    { path: "/courses/beginner-quran-classes-online", changeFrequency: "weekly" as const, priority: 0.8 },
+    { path: "/courses/female-quran-teacher-online", changeFrequency: "weekly" as const, priority: 0.8 },
+    { path: "/courses/islamic-studies-classes-for-kids", changeFrequency: "weekly" as const, priority: 0.8 },
+    { path: "/courses/online-hifz-classes", changeFrequency: "weekly" as const, priority: 0.8 },
+    { path: "/courses/online-noorani-qaida-classes", changeFrequency: "weekly" as const, priority: 0.8 },
+    { path: "/courses/quran-reading-classes-online", changeFrequency: "weekly" as const, priority: 0.8 },
+    { path: "/courses/tajweed-course", changeFrequency: "weekly" as const, priority: 0.8 },
   ];
 
   // Specific Segment Landing Pages
@@ -46,6 +57,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const allRoutes = [
     ...corePages,
+    ...coursesPages,
     ...specializedPages,
     ...geoTargetedPages,
     ...legalPages,

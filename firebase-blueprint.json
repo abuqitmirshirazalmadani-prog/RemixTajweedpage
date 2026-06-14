@@ -74,6 +74,14 @@
           "type": "array",
           "description": "Bullets of key highlights in English."
         },
+        "keywords": {
+          "type": "array",
+          "description": "SEO keywords search tags."
+        },
+        "inArticleImages": {
+          "type": "array",
+          "description": "Secondary helper inline illustrations."
+        },
         "createdAt": {
           "type": "string",
           "description": "Creation timestamp for sorting."
